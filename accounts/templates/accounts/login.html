@@ -1,6 +1,38 @@
-<h2>ورود</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">ورود</button>
-</form>
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ورود به سایت</title>
+    <link rel="stylesheet" href="{% static 'accounts/login/style.css' %}" />
+</head>
+<body>
+    <div class="form-box">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            <div class="form-field">
+                <label for="{{ form.username.id_for_label }}">نام کاربری</label>
+                {{ form.username }}
+                {{ form.username.errors }}
+            </div>
+
+            <div class="form-field">
+                <label for="{{ form.password.id_for_label }}">رمز عبور</label>
+                {{ form.password }}
+                {{ form.password.errors }}
+            </div>
+
+            <button type="submit">ورود</button>
+
+            <div class="login-link">
+                <span>حساب کاربری ندارید؟</span>
+                <a href="{% url 'register' %}">ثبت نام کنید</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

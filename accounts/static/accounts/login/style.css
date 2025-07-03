@@ -1,0 +1,128 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('/static/fonts/Vazir.ttf') format('truetype');
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-family: vazir;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    background-color: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    align-items: center;
+}
+
+.form-box {
+    background-color: white;
+    padding: 30px 40px;
+    margin: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    width: 400px;
+}
+
+@media only screen and (max-width: 480px) {
+    .form-box {
+        margin-top: -100px;
+    }
+}
+
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    direction: ltr;
+    text-align: right;
+}
+
+.form-field input:hover {
+    border: 1px solid rgb(182, 182, 255);
+}
+
+.form-field input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-field .errorlist {
+    color: #cc0000;
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 200ms;
+}
+
+button[type="submit"]:hover {
+    box-shadow: 0px 0px 20px rgb(187, 92, 206);
+    background-color: rgb(136, 63, 204);
+}
+
+button[type="submit"]:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.login-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.errorlist {
+    list-style-type: none; 
+    padding-left: 0;
+    margin: 0;
+}
+
+.errorlist li::marker {
+    content: none;
+}

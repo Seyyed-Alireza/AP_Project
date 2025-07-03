@@ -14,6 +14,12 @@
     font-family: vazir;
 }
 
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
 header {
     display: flex;
     justify-content: space-between;
@@ -22,23 +28,28 @@ header {
     top: 0px;
     padding: 4px 40px;
     background-color: skyblue;
-    box-shadow: 0px 1px 20px rgb(146, 125, 125);
+    box-shadow: 0px 0px 20px rgb(146, 125, 125);
     border: none;
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
     height: 60px;
-}
-
-@media only screen and (max-width: 480px) {
-    header {
-        padding: 4px 20px;
-    }
 }
 
 .logo, .name {
     display: inline-block;
     margin-left: 20px;
 }
+
+@media only screen and (max-width: 480px) {
+    header {
+        padding: 4px 20px;
+    }
+    .logo, .name {
+        display: inline-block;
+        margin-left: 5px;
+    }
+}
+
 
 .register-login-button {
     padding: 6px 16px;
@@ -63,6 +74,77 @@ header {
     transition: all 100ms;
 }
 
-.scroll {
-    height: 4000px;
+nav {
+    padding: 5px 10px 5px;
+    margin: 20px 10px 5px;
+    border: 1px solid;
+    border-radius: 5px;
 }
+
+main {
+    flex: 1;
+}
+
+.products-aside {
+    display: flex;
+    justify-content: right;
+    gap: 10px;
+}
+
+aside {
+    border: 1px solid;
+    border-radius: 5px;
+    width: 200px;
+    height: 300px;
+    padding: 5px 10px 5px;
+    margin: 20px 10px 5px;
+}
+
+.products {
+    border: 1px solid;
+    padding: 5px 10px 5px;
+    margin: 20px 0px 10px 10px;
+    border-radius: 5px;
+    width: 100%;
+    height: 1000px;
+}
+
+.search-bar {
+    border: 1px solid;
+    padding: 5px 10px 5px;
+    margin: 20px 10px 5px;
+    border-radius: 5px;
+}
+
+
+footer {
+    height: 60px;
+    background-color: skyblue;
+    border: none;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 5px 10px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgb(146, 125, 125);
+    gap: 8px;
+}
+
+#tel-ico {
+    margin-top: 0px;
+}
+
+#tel-ico svg path, #bale-ico svg path {
+    transition: fill 0.3s ease;
+    fill: #000000;
+}
+
+#tel-ico:hover svg path, #bale-ico:hover svg path {
+    fill: #FF1744; 
+}
+
+#bale-ico {
+    margin-top: 8px;
+}
+

@@ -5,7 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm
 
 def register(request):
     if request.method == 'POST':
@@ -37,16 +37,17 @@ def register(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
-
 def user_login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('home')
+            return redirect('mainpage') 
+        else:
+            return render(request, 'accounts/login.html', {'form': form})
     else:
-        form = AuthenticationForm()
+        form = CustomAuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
 
@@ -68,5 +69,9 @@ def activate_account(request, uidb64, token):
         return render(request, 'accounts/activation_success.html')
     else:
         return render(request, 'accounts/activation_failed.html')
+    
+from django.shortcuts import render
 
+def home(request):
+    return render(request, 'mainpage/mainpage.html')
 

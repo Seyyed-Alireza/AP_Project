@@ -112,3 +112,21 @@ button[type="submit"]:active {
     margin-top: 20px;
 }
 
+#to-login {
+    color: #007bff;
+    text-decoration: none;
+}
+
+#to-login:hover {
+    text-decoration: underline;
+}
+
+.errorlist {
+    list-style-type: none; 
+    padding-left: 0;
+    margin: 0;
+}
+
+.errorlist li::marker {
+    content: none;
+}
