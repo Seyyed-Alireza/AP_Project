@@ -131,3 +131,7 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sahseyyedalirezahosseini1384@gmail.com'
 EMAIL_HOST_PASSWORD = 'hzbwesjejfiqdbal'
 
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+

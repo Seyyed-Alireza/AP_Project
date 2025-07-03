@@ -1,0 +1,68 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('/static/fonts/Vazir.ttf') format('truetype');
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: vazir;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0px;
+    padding: 4px 40px;
+    background-color: skyblue;
+    box-shadow: 0px 1px 20px rgb(146, 125, 125);
+    border: none;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    height: 60px;
+}
+
+@media only screen and (max-width: 480px) {
+    header {
+        padding: 4px 20px;
+    }
+}
+
+.logo, .name {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.register-login-button {
+    padding: 6px 16px;
+    margin-right: auto;
+    margin-left: 0px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    background-color: blueviolet;
+    color: white;
+    font-size: 16px;  
+    transition: all 200ms;
+}
+
+.register-login-button:hover {
+    box-shadow: 0px 0px 20px rgb(71, 27, 80);
+    background-color: rgb(116, 27, 199);
+}
+
+.register-login-button:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+.scroll {
+    height: 4000px;
+}

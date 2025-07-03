@@ -1,11 +1,41 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
-    <h1>سلام</h1>
+    <header>
+        <div class="logo">
+            لوگو سایت
+        </div>
+        <div class="name">
+            اسم سایت
+        </div>
+        <button class="register-login-button" type="button" onclick="window.location.href='{% url 'register' %}'">ورود/ ثبت نام</button> 
+    </header>
+    <div class="scroll">
+        <pre>
+            نباسیدب 
+            بلسقبخت
+            لسبهلث
+            لدقثب
+            قلنیقل
+
+
+
+
+
+
+
+
+            لدقثبقف
+            لدقثبقف
+        </pre>
+    </div>
 </body>
 </html>
