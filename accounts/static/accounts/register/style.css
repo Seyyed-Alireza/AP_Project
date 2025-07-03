@@ -30,7 +30,7 @@ body {
 
 .form-box {
     background-color: white;
-    padding: 30px 40px;
+    padding: 30px 20px;
     margin: 40px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -40,6 +40,7 @@ body {
 @media only screen and (max-width: 480px) {
     .form-box {
         margin-top: -100px;
+        padding: 30px 20px;
     }
 }
 

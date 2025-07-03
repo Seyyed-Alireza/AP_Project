@@ -16,7 +16,16 @@
         <div class="name">
             اسم سایت
         </div>
-        <button class="register-login-button" type="button" onclick="window.location.href='{% url 'register' %}'">ورود/ ثبت نام</button> 
+        {% if user.is_authenticated %}
+            <span id="logout-text">برای خارج شدن از حساب کاربری بزن روی دکمه (فعلا درهمین حد)</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="user-name">{{ user.username }}</button>
+            </form>
+        {% else %}
+            <button class="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
+        {% endif %}
+
     </header>
     <nav>
         لینک ها، مثلا کرم ها، ضدآفتاب، دردها و هر کوفت دیگه ای که دخترا به خودشون میزنن
@@ -25,7 +34,7 @@
         <section class="search-bar">
             نوار سرچ
         </section>
-        <div class="products-aside">
+        <div class="products-box">
             <aside>
                 نوار کناری سایت
                 <br>
