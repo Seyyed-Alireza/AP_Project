@@ -40,19 +40,6 @@ header {
     margin-left: 20px;
 }
 
-@media only screen and (max-width: 480px) {
-    header {
-        padding: 4px 20px;
-    }
-    .logo, .name {
-        display: inline-block;
-        margin-left: 5px;
-    }
-    
-    aside {
-        display: none;
-    }
-}
 
 
 .register-login-button {
@@ -193,3 +180,22 @@ footer {
     margin-top: 8px;
 }
 
+
+@media only screen and (max-width: 480px) {
+    header {
+        padding: 4px 20px;
+    }
+    .logo, .name {
+        display: inline-block;
+        margin-left: 5px;
+    }
+    
+    aside {
+        display: none;
+    }
+
+    main {
+        padding: 0px 10px 0px;
+    }
+
+}
