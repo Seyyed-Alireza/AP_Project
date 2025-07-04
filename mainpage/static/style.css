@@ -109,6 +109,7 @@ main {
     display: flex;
     justify-content: center;
     margin: 20px 0px 50px;
+    padding: 0px 10px 0px;
 }
 
 .container {
@@ -192,10 +193,6 @@ footer {
     
     aside {
         display: none;
-    }
-
-    main {
-        padding: 0px 10px 0px;
     }
 
 }
