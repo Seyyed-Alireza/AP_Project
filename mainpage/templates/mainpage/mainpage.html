@@ -1,4 +1,6 @@
 {% load static %}
+{% load persian_filters %}
+{% load star_rating %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -6,7 +8,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+
 </head>
 <body>
     <header>
@@ -45,14 +49,16 @@
                 <section class="products">
                     {% for product in products %}
                         <div class="product_card">
-                            <div class="product_image">عکس</div>
+                            <div class="product_image">
+                                <img src="{% static 'images/product_image.png' %}" alt="عمس محصول">
+                            </div>
                             <div class="product_info">
                                 <div class="product_name">{{ product.name }}</div>
-                                <div class="product_brand">برند محصول</div>
-                                <div class="product_price">{{ product.price }}</div>
+                                <div class="product_brand">برند {{ product.brand }}</div>
+                                <div class="product_price">{{ product.price|persian_numbers }}</div>
                                 <div class="product_view-and-rate">
-                                    <div class="view">تعداد بازدید یا لایک</div>
-                                    <div class="rate">امتیاز</div>
+                                    <div class="view">{{ product.views|persian_numbers }} بازدید</div>
+                                    <div class="rate">{{ product.rating|fa_star_rating|safe }}</div>
                                 </div>
                             </div>
                         </div>
