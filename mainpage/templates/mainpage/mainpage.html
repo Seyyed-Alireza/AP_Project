@@ -43,7 +43,22 @@
                 </aside>
 
                 <section class="products">
-                    جایی که محصولات قرار میگیره
+                    {% for product in products %}
+                        <div class="product_card">
+                            <div class="product_image">عکس</div>
+                            <div class="product_info">
+                                <div class="product_name">{{ product.name }}</div>
+                                <div class="product_brand">برند محصول</div>
+                                <div class="product_price">{{ product.price }}</div>
+                                <div class="product_view-and-rate">
+                                    <div class="view">تعداد بازدید یا لایک</div>
+                                    <div class="rate">امتیاز</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>محصولی برای نمایش وجود ندارد.</p>
+                    {% endfor %}
                 </section>
             </div>
         </div>
