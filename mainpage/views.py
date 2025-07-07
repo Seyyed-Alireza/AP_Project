@@ -44,6 +44,10 @@ def mainpage(request):
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
+    product.views += 1
+    print(product.views)
+    product.save(update_fields=['views'])
+
     comments = product.comments.all().order_by('-created_at')
 
     before_commented = False
@@ -52,7 +56,7 @@ def product_detail(request, pk):
 
     if request.method == 'POST':
         if not request.user.is_authenticated:
-            return redirect('login')  # به صفحه لاگین بفرست
+            return redirect('login')
 
         text = request.POST.get('text')
         rating = request.POST.get('rating')
@@ -65,6 +69,7 @@ def product_detail(request, pk):
                 rating=int(rating)
             )
             return redirect('product_detail', pk=pk)
+
 
     return render(request, 'mainpage/product_detail.html', {
         'product': product,
