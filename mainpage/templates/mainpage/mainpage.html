@@ -8,7 +8,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=5">
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
 
 </head>
@@ -39,36 +39,34 @@
             <section class="search-bar">
                 نوار سرچ
             </section>
-            <div class="products-box">
+            <section class="products-box">
                 <aside>
                     نوار کناری سایت
                     <br>
                     اگه لازم شد
                 </aside>
 
-                <section class="products">
+                <div class="products">
                     {% for product in products %}
-                        <a href="{% url 'product_detail' product.pk %}">
-                            <div class="product_card">
-                                <div class="product_image">
-                                    <img src="{% static 'images/product_image.png' %}" alt="عمس محصول">
+                        <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                                <div class="product_image_div">
+                                    <img src="{{ product.image.url }}" alt="عمس محصول" class="product_image">
                                 </div>
                                 <div class="product_info">
-                                    <div class="product_name">{{ product.name }}</div>
-                                    <div class="product_brand">{{ product.brand }} برند</div>
-                                    <div class="product_price">{{ product.price|persian_numbers }}</div>
+                                    <p class="product_name">{{ product.name }}</p>
+                                    <p class="product_brand">برند {{ product.brand }}</p>
+                                    <p class="product_price">{{ product.price|persian_numbers }}</p>
                                     <div class="product_view-and-rate">
-                                        <div class="view">{{ product.views|persian_numbers }} بازدید</div>
-                                        <div class="rate">{{ product.average_rating|fa_star_rating|safe }}</div>
+                                        <p class="view">{{ product.views|persian_numbers }} بازدید</p>
+                                        <p class="rate">{{ product.average_rating|fa_star_rating|safe }}</p>
                                     </div>
                                 </div>
-                            </div>
                         </a>
                     {% empty %}
                         <p>محصولی برای نمایش وجود ندارد.</p>
                     {% endfor %}
-                </section>
-            </div>
+                </div>
+            </section>
         </div>
     </main>
     <footer>

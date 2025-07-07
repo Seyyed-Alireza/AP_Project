@@ -1,0 +1,233 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('/static/fonts/Vazir.ttf') format('truetype');
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: vazir;
+    /* font-size: 16px; */
+    transition: all 300ms;
+    color: black;
+    line-height: 1.8rem;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    z-index: 10;
+    top: 0px;
+    padding: 4px 40px;
+    background-color: skyblue;
+    box-shadow: 0px 0px 20px rgb(146, 125, 125);
+    border: none;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+    height: 60px;
+}
+
+.logo, .name {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+
+
+.register-login-button {
+    padding: 6px 16px;
+    margin-right: auto;
+    margin-left: 0px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    background-color: blueviolet;
+    color: white;
+    transition: all 200ms;
+}
+
+.register-login-button:hover {
+    box-shadow: 0px 0px 20px rgb(71, 27, 80);
+    background-color: rgb(116, 27, 199);
+    cursor: pointer;
+}
+
+.register-login-button:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+.user-name {
+    font-size: 16px;
+    padding: 6px 16px;
+    margin-right: 10px;
+    margin-left: 0px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    background-color: blueviolet;
+    color: white;
+    transition: all 200ms;
+}
+
+.user-name:hover {
+    box-shadow: 0px 0px 20px rgb(71, 27, 80);
+    background-color: rgb(116, 27, 199);
+    cursor: pointer;
+}
+
+.user-name:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+#logout-text {
+    font-size: 12px;
+    margin-left: 0px;
+    margin-right: auto;
+}
+
+main {
+    flex-grow: 1;
+}
+
+h3 {
+    margin-bottom: 8px;
+}
+
+p {
+    text-align: justify;
+}
+
+.container {
+    width: 100%;
+    max-width: 1360px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.product_info {
+    margin-top: 20px;
+    width: 100%;
+    border-bottom: 1px solid;
+    padding: 0px 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.main_info {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.product_details {
+    margin: 10px 40px;
+}
+
+.image_container {
+    display: none;
+}
+
+.product_image {
+    width: 25%;
+    max-height: 550px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(116, 27, 199, 0.5);
+}
+
+.product_add_exp {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product_introduction, .product_suitable, .product_usage {
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .main_info {
+        flex-direction: column;
+        gap: 10px
+    }
+
+    .product_details {
+        align-self: flex-start;
+        margin-right: 5px;
+    }
+
+    .image_underline {
+        display: inline;
+        width: calc(100% + 40px);
+        border-bottom: 1px solid;
+        box-shadow: 0px 2px 2px rgb(116, 27, 199);
+    }
+
+    .product_image {
+        box-shadow: none;
+    }
+}
+
+
+
+
+
+.comment_box {
+    padding: 10px 20px;
+}
+
+footer {
+    width: 100%;
+    height: 60px;
+    background-color: skyblue;
+    border: none;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 5px 10px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgb(146, 125, 125);
+    gap: 8px;
+}
+
+#tel-ico {
+    margin-top: 0px;
+}
+
+#tel-ico svg path, #bale-ico svg path {
+    transition: fill 0.3s ease;
+    fill: #000000;
+}
+
+#tel-ico:hover svg path, #bale-ico:hover svg path {
+    fill: #FF1744; 
+}
+
+#bale-ico {
+    margin-top: 8px;
+}

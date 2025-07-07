@@ -7,6 +7,9 @@ class Product(models.Model):
     price = models.PositiveIntegerField()
     image = models.ImageField(upload_to='product_images/', default='product_images/default.png')
     views = models.PositiveIntegerField(default=0)
+    description = models.TextField(blank=True, null=True, verbose_name='معرفی محصول')
+    usage = models.TextField(blank=True, null=True, verbose_name='نحوه مصرف')
+    suitable_for = models.CharField(max_length=255, blank=True, null=True, verbose_name='مناسب برای')
 
     def __str__(self):
         return f"{self.name} ({self.brand})"
@@ -25,6 +28,9 @@ class Comment(models.Model):
     text = models.TextField()
     rating = models.PositiveSmallIntegerField()  # 1 تا 5
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('product', 'user')
 
     def __str__(self):
         return f"نظر {self.user.username} برای {self.product.name}"

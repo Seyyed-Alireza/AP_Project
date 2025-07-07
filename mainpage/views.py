@@ -46,6 +46,10 @@ def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     comments = product.comments.all().order_by('-created_at')
 
+    before_commented = False
+    if request.user.is_authenticated:
+        before_commented = product.comments.filter(user=request.user).exists()
+
     if request.method == 'POST':
         if not request.user.is_authenticated:
             return redirect('login')  # به صفحه لاگین بفرست
@@ -65,5 +69,6 @@ def product_detail(request, pk):
     return render(request, 'mainpage/product_detail.html', {
         'product': product,
         'comments': comments,
+        'commented_before': before_commented
     })
 
