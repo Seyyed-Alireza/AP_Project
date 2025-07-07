@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>تست محصولات</title>
+</head>
+<body>
+    <h1>لیست محصولات:</h1>
+    {% if products %}
+        <ul>
+        {% for product in products %}
+            <li>
+                {{ product.id }} - {{ product.name }} - {{ product.brand }} - {{ product.price }} تومان
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>❌ هیچ محصولی وجود ندارد.</p>
+    {% endif %}
+</body>
+</html>

@@ -8,12 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}?v=11">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
 
 </head>
 <body>
-    <header>
+    <header>  
         <div class="logo">
             لوگو سایت
         </div>
@@ -48,7 +48,7 @@
 
                 <section class="products">
                     {% for product in products %}
-                        <a href="#">
+                        <a href="{% url 'product_detail' product.pk %}">
                             <div class="product_card">
                                 <div class="product_image">
                                     <img src="{% static 'images/product_image.png' %}" alt="عمس محصول">
@@ -59,7 +59,7 @@
                                     <div class="product_price">{{ product.price|persian_numbers }}</div>
                                     <div class="product_view-and-rate">
                                         <div class="view">{{ product.views|persian_numbers }} بازدید</div>
-                                        <div class="rate">{{ product.rating|fa_star_rating|safe }}</div>
+                                        <div class="rate">{{ product.average_rating|fa_star_rating|safe }}</div>
                                     </div>
                                 </div>
                             </div>

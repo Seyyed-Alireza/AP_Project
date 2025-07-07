@@ -1,0 +1,58 @@
+{% load humanize %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>{{ product.name }}</h1>
+    <p>برند: {{ product.brand }}</p>
+    <p>قیمت: {{ product.price|intcomma }} تومان</p>
+    <p>میانگین امتیاز: {{ product.average_rating }} / 5</p>
+
+    <img src="{{ product.image.url }}" width="200">
+
+    <hr>
+
+    <h2>نظرات:</h2>
+    {% for comment in comments %}
+        <div>
+            <strong>{{ comment.user.username }}</strong>
+            <span>(امتیاز: {{ comment.rating }}/5)</span>
+            <p>{{ comment.text }}</p>
+        </div>
+        <hr>
+    {% empty %}
+        <p>نظری ثبت نشده است.</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <h3>ارسال نظر:</h3>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="text" required></textarea><br>
+            <label>امتیاز (1 تا 5):</label>
+            <input type="number" name="rating" min="1" max="5" required><br>
+            <button type="submit">ثبت نظر</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">برای ارسال نظر وارد شوید</a></p>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <h3>ارسال نظر:</h3>
+        <form method="post">
+            {% csrf_token %}
+            <textarea name="text" required></textarea><br>
+            <label>امتیاز (1 تا 5):</label>
+            <input type="number" name="rating" min="1" max="5" required><br>
+            <button type="submit">ثبت نظر</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}?next={{ request.path }}">برای ارسال نظر وارد شوید</a></p>
+    {% endif %}
+    </body>
+</html>
