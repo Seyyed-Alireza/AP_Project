@@ -48,20 +48,22 @@
 
                 <section class="products">
                     {% for product in products %}
-                        <div class="product_card">
-                            <div class="product_image">
-                                <img src="{% static 'images/product_image.png' %}" alt="عمس محصول">
-                            </div>
-                            <div class="product_info">
-                                <div class="product_name">{{ product.name }}</div>
-                                <div class="product_brand">برند {{ product.brand }}</div>
-                                <div class="product_price">{{ product.price|persian_numbers }}</div>
-                                <div class="product_view-and-rate">
-                                    <div class="view">{{ product.views|persian_numbers }} بازدید</div>
-                                    <div class="rate">{{ product.rating|fa_star_rating|safe }}</div>
+                        <a href="#">
+                            <div class="product_card">
+                                <div class="product_image">
+                                    <img src="{% static 'images/product_image.png' %}" alt="عمس محصول">
+                                </div>
+                                <div class="product_info">
+                                    <div class="product_name">{{ product.name }}</div>
+                                    <div class="product_brand">{{ product.brand }} برند</div>
+                                    <div class="product_price">{{ product.price|persian_numbers }}</div>
+                                    <div class="product_view-and-rate">
+                                        <div class="view">{{ product.views|persian_numbers }} بازدید</div>
+                                        <div class="rate">{{ product.rating|fa_star_rating|safe }}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     {% empty %}
                         <p>محصولی برای نمایش وجود ندارد.</p>
                     {% endfor %}
