@@ -45,7 +45,6 @@ def mainpage(request):
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     product.views += 1
-    print(product.views)
     product.save(update_fields=['views'])
 
     comments = product.comments.all().order_by('-created_at')

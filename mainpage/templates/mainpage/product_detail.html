@@ -1,5 +1,7 @@
 {% load humanize %}
 {% load static %}
+{% load persian_filters %}
+{% load star_rating %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -40,7 +42,8 @@
                     <p class="product_name">نام: {{ product.name }}</p>
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma }} تومان</p>
-                    <p class="product_rating">میانگین امتیاز: {{ product.average_rating }} / 5</p>
+                    <p class="product_rating"><span class="star">&#9733;</span> {{ product.average_rating|persian_numbers }} امتیاز</p>
+                    <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p>
                 </div>
             </div>
             <div class="product_add_exp">
@@ -59,34 +62,47 @@
             </div>
         </section>
 
-        <section class="comment_box">
-            <h2>نظرات:</h2>
+        <div class="users_comments_upperline"></div>
+        <section class="users_comments">
+            <h2>نظرات کاربران:</h2>
             {% for comment in comments %}
-                <div>
+                <div class="user_review_box">
                     <strong>{{ comment.user.username }}</strong>
-                    <span>(امتیاز: {{ comment.rating }}/5)</span>
-                    <p>{{ comment.text }}</p>
+                    <span>(امتیاز کاربر: {{ comment.rating|persian_numbers }}/{{5|persian_numbers}})</span>
+                    <p class="user_review_text">{{ comment.text }}</p>
                 </div>
-                <hr>
+    
             {% empty %}
-                <p>نظری ثبت نشده است.</p>
+                <p>هنوز برای این محصول نظری ثبت نشده است.</p>
             {% endfor %}
+        </section>
 
+        <div class="users_comments_underline"></div>
+
+        <section class="comment_box">
+            <h3>ارسال نظر برای این محصول:</h3>
             {% if user.is_authenticated %}
                 {% if commented_before %}
-                    <p style="color: red;">شما قبلاً برای این محصول نظر داده‌اید.</p>
+                    <textarea class="review_textarea" style="overflow-y: hidden;" rows="1" readonly name="text" required>
+شما قبلا برای این محصول نظر داده‌اید.
+                    </textarea><br>
                 {% else %}
-                    <h3>ارسال نظر:</h3>
-                    <form method="post">
+                    <form method="post" id="comment_form" novalidate>
                         {% csrf_token %}
-                        <textarea name="text" required></textarea><br>
-                        <label>امتیاز (1 تا 5):</label>
-                        <input type="number" name="rating" min="1" max="5" required><br>
-                        <button type="submit">ثبت نظر</button>
+                        <textarea class="review_textarea" rows="4" placeholder="نظر خود را اینجا بنویسید" name="text" required title="نظر خود را بنویسید"></textarea><br>
+                        <p id="error-message" style="color: red; display: none;"> قسمت نظر نمی‌تواند خالی باشد</p>
+                        <div class="rate_and_submit">
+                            <div class="rate_range">
+                                <label>امتیاز</label>
+                                <input type="range" name="rating" min="1" max="5" value="3" required oninput="rating_output.value = rating.value">
+                                <span><output name="rating_output" id="rating_output">3</output> از {{ 5|persian_numbers }}</span>
+                            </div>
+                            <button type="submit" id="submit_review_button">ثبت نظر</button>
+                        </div>
                     </form>
                 {% endif %}
             {% else %}
-                <p><a href="{% url 'login' %}?next={{ request.path }}">برای ارسال نظر وارد شوید</a></p>
+                <p>برای ارسال نطر وارد <a href="{% url 'login' %}?next={{ request.path }}">حساب کاربری </a> شوید</p>
             {% endif %}
         </section>
     </main>
@@ -107,5 +123,35 @@
         </a>
         
     </footer>
+
+<script>
+    const ratingInput = document.querySelector('input[name="rating"]');
+    const ratingOutput = document.getElementById('rating_output');
+
+    function toPersianNumber(num) {
+        return num.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+    }
+
+    ratingInput.addEventListener('input', () => {
+        ratingOutput.textContent = toPersianNumber(ratingInput.value);
+    });
+
+    ratingOutput.textContent = toPersianNumber(ratingInput.value);
+
+
+    document.getElementById('comment_form').addEventListener('submit', function(event) {
+        const textarea = this.querySelector('textarea[name="text"]');
+        const errorMsg = document.getElementById('error-message');
+
+        if (!textarea.value.trim()) {
+            event.preventDefault(); // جلوگیری از ارسال فرم
+            errorMsg.style.display = 'block'; // نمایش پیام خطا
+            textarea.focus();
+        } else {
+            errorMsg.style.display = 'none'; // پنهان‌کردن پیام اگر پر شده بود
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -50,6 +50,7 @@ header {
 
 
 .register-login-button {
+    font-size: 16px;
     padding: 6px 16px;
     margin-right: auto;
     margin-left: 0px;
@@ -126,7 +127,6 @@ p {
 .product_info {
     margin-top: 20px;
     width: 100%;
-    border-bottom: 1px solid;
     padding: 0px 20px 10px;
     display: flex;
     flex-direction: column;
@@ -156,10 +156,20 @@ p {
     box-shadow: 0px 0px 10px rgba(116, 27, 199, 0.5);
 }
 
+.product_name, .product_brand, .product_price, .product_rating {
+    margin-bottom: 5px;
+}
+
 .product_add_exp {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.star {
+    color: rgb(196, 166, 0);
+    font-size: 26px;
+    vertical-align: -3px;
 }
 
 .product_introduction, .product_suitable, .product_usage {
@@ -170,6 +180,10 @@ p {
 
 
 @media only screen and (max-width: 1000px) {
+    #logout-text {
+        line-height: 1rem;
+    }
+
     .main_info {
         flex-direction: column;
         gap: 10px
@@ -183,7 +197,7 @@ p {
     .image_underline {
         display: inline;
         width: calc(100% + 40px);
-        border-bottom: 1px solid;
+        border-bottom: 1px solid rgb(116, 27, 199);
         box-shadow: 0px 2px 2px rgb(116, 27, 199);
     }
 
@@ -192,12 +206,121 @@ p {
     }
 }
 
+.users_comments {
+    padding: 10px 20px;
+}
 
+.user_review_box {
+    margin-top: 10px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
 
+.user_review_text {
+    text-align: justify;
+}
 
+.fa-star,
+.fa-star-half-stroke {
+    color: gold;
+    font-size: 12px;
+}
+
+.users_comments_upperline {
+    margin-top: 24px;
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid rgb(116, 27, 199);
+    box-shadow: 0px -2px 2px rgb(116, 27, 199);
+}
+
+.users_comments_underline {
+    margin-bottom: 20px;
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid rgb(116, 27, 199);
+    box-shadow: 0px 2px 2px rgb(116, 27, 199);
+}
 
 .comment_box {
     padding: 10px 20px;
+    width: 100%;
+}
+
+.review_textarea {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    resize: none;
+    transition: all 150ms;
+}
+
+.review_textarea:focus {
+    border: 1px solid black;
+    outline: none;
+}
+
+#error-message {
+    margin-right: 10px;
+    margin-top: -5px;
+}
+
+.rate_and_submit {
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.rate_range {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+#submit_review_button {
+    font-size: 16px;
+    padding: 6px 16px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    background-color: blueviolet;
+    color: white;
+    transition: all 200ms;
+}
+
+#submit_review_button:hover {
+    box-shadow: 0px 0px 20px rgb(71, 27, 80);
+    background-color: rgb(116, 27, 199);
+    cursor: pointer;
+}
+
+#submit_review_button:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+a {
+    color: #007bff;
+}
+
+@media only screen and (max-width: 576px) {
+    body {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 4px 20px;
+    }
+
+    .rate_and_submit {
+        flex-direction: column;
+        gap: 15px;
+    }
 }
 
 footer {
