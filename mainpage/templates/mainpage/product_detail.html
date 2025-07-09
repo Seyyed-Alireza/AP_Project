@@ -58,6 +58,13 @@
                     <p>{{ product.usage }}</p>
                 </div>
             </div>
+            <div class="add_product_to_cart">
+                <form method="post" action="{% url 'add_to_cart' product.pk %}">
+                    {% csrf_token %}
+                    <button type="submit">افزودن به سبد خرید</button>
+                </form>
+
+            </div>
         </section>
 
         <div class="users_comments_upperline"></div>

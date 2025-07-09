@@ -47,52 +47,50 @@ header {
     margin-left: 20px;
 }
 
-
-
-.register-login-button {
-    font-size: 16px;
+button {
     padding: 6px 16px;
-    margin-right: auto;
+    font-size: 16px;
+    margin-right: 10px;
     margin-left: 0px;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
     box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    background-color: blueviolet;
+    background-color: rgb(2, 136, 209);
     color: white;
     transition: all 200ms;
 }
 
-.register-login-button:hover {
-    box-shadow: 0px 0px 20px rgb(71, 27, 80);
-    background-color: rgb(116, 27, 199);
+button:hover {
+    box-shadow: 0px 0px 16px rgb(71, 27, 80);
+    background-color: rgb(2, 111, 164);
     cursor: pointer;
 }
 
-.register-login-button:active {
+button:active {
     transform: scale(0.95);
     transition: all 100ms;
 }
 
-.user-name {
+button[type="submit"] {
     font-size: 16px;
-    padding: 6px 16px;
-    margin-right: 10px;
-    margin-left: 0px;
-    border: none;
-    border-radius: 10px;
+    background-color: #03a7ff;
     box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    background-color: blueviolet;
+    border: none;
     color: white;
+    font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
     transition: all 200ms;
 }
 
-.user-name:hover {
-    box-shadow: 0px 0px 20px rgb(71, 27, 80);
-    background-color: rgb(116, 27, 199);
-    cursor: pointer;
+button[type="submit"]:hover {
+    background-color: rgb(0, 143, 214);
+    box-shadow: 0px 0px 20px rgb(187, 92, 206);
 }
 
-.user-name:active {
+button[type="submit"]:active {
     transform: scale(0.95);
     transition: all 100ms;
 }
@@ -280,28 +278,6 @@ p {
     display: flex;
     gap: 16px;
     align-items: center;
-}
-
-#submit_review_button {
-    font-size: 16px;
-    padding: 6px 16px;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    background-color: blueviolet;
-    color: white;
-    transition: all 200ms;
-}
-
-#submit_review_button:hover {
-    box-shadow: 0px 0px 20px rgb(71, 27, 80);
-    background-color: rgb(116, 27, 199);
-    cursor: pointer;
-}
-
-#submit_review_button:active {
-    transform: scale(0.95);
-    transition: all 100ms;
 }
 
 a {
