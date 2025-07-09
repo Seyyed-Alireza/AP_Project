@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'edit_profile/css/style.css' %}" />
 </head>
 <body>
-    <form class="container" method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <h1>ویرایش اطلاعات</h1>
         <label for="id_phone_number">شماره تلفن همراه:</label>
@@ -35,11 +35,16 @@
                 {% if user.userprofile.profile_picture %}
                     <p>تعویض عکس پروفایل</p>
                 {% else %}
-                    <p>بارگذاری تصویر پروفایل</p>
+                    <p>
+                        <svg class="upload_svg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+                        بارگذاری تصویر پروفایل
+                    </p>
                 {% endif %}
-                <input type="file" name="profile_picture" id="id_profile_picture" hidden onchange="document.getElementById('file-name').innerText = this.files[0]?.name || 'فایلی انتخاب نشده';">
+                <input type="file" name="profile_picture" id="id_profile_picture" hidden onchange="document.getElementById('file_name').innerText = this.files[0]?.name || 'فایلی انتخاب نشده';">
                 <button class="upload_pic_btn" type="button" onclick="document.getElementById('id_profile_picture').click()">انتخاب تصویر</button>
-                <span id="file-name">فایلی انتخاب نشده</span>
+                <span id="file_name">فایلی انتخاب نشده</span>
             </div>
         </div>
         <button type="submit">ذخیره تغییرات</button>
