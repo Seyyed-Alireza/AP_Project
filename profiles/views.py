@@ -21,8 +21,13 @@ def profile_edit(request):
     if request.method == 'POST':
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
+            if 'remove_picture' in request.POST:
+                if profile.profile_picture:
+                    profile.profile_picture.delete(save=False)
+                profile.profile_picture = None
+
             form.save()
-            return redirect('editprofile')
+            return redirect('profile')
     else:
         form = UserProfileForm(instance=profile)
 

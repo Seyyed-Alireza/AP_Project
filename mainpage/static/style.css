@@ -49,50 +49,25 @@ header {
     margin-left: 20px;
 }
 
-
-
-.register-login-button {
-    padding: 6px 16px;
-    margin-right: auto;
-    margin-left: 0px;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    background-color: blueviolet;
-    color: white;
-    transition: all 200ms;
-}
-
-.register-login-button:hover {
-    box-shadow: 0px 0px 20px rgb(71, 27, 80);
-    background-color: rgb(116, 27, 199);
-    cursor: pointer;
-}
-
-.register-login-button:active {
-    transform: scale(0.95);
-    transition: all 100ms;
-}
-
-.user-name {
+button {
     padding: 6px 16px;
     margin-right: 10px;
     margin-left: 0px;
     border: none;
     border-radius: 10px;
     box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    background-color: blueviolet;
+    background-color: rgb(2, 136, 209);
     color: white;
     transition: all 200ms;
 }
 
-.user-name:hover {
-    box-shadow: 0px 0px 20px rgb(71, 27, 80);
-    background-color: rgb(116, 27, 199);
+button:hover {
+    box-shadow: 0px 0px 16px rgb(71, 27, 80);
+    background-color: rgb(2, 111, 164);
     cursor: pointer;
 }
 
-.user-name:active {
+button:active {
     transform: scale(0.95);
     transition: all 100ms;
 }

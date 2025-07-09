@@ -9,10 +9,39 @@
     <link rel="stylesheet" href="{% static 'edit_profile/css/style.css' %}" />
 </head>
 <body>
-    <form method="post" enctype="multipart/form-data">
+    <form class="container" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <h2>ویرایش پروفایل</h2>
-        {{ form.as_p }}
+        <h1>ویرایش اطلاعات</h1>
+        <label for="id_phone_number">شماره تلفن همراه:</label>
+        {{ form.phone_number }}
+        <label for="id_address">آدرس:</label>
+        {{ form.address }}
+        <div class="picture_box">
+            {% if user.userprofile.profile_picture %}
+                <label for="id_profile_picture">تصویر پروفایل فعلی:</label>
+                <div class="current-picture">
+                    <img src="{{ user.userprofile.profile_picture.url }}" alt="تصویر فعلی" width="150" style="border-radius: 10px; margin-bottom: 10px;">
+                </div>
+            {% else %}
+                <span>هنوز تصویری برای پروفایل انتخاب نشده است.</span>
+            {% endif %}
+            {% if user.userprofile.profile_picture %}
+                <div class="remove_pic">
+                    <input type="checkbox" id="remove_picture" name="remove_picture">
+                    <label for="remove_picture">حذف تصویر پروفایل</label>
+                </div>
+            {% endif %}
+            <div class="upload_pic">
+                {% if user.userprofile.profile_picture %}
+                    <p>تعویض عکس پروفایل</p>
+                {% else %}
+                    <p>بارگذاری تصویر پروفایل</p>
+                {% endif %}
+                <input type="file" name="profile_picture" id="id_profile_picture" hidden onchange="document.getElementById('file-name').innerText = this.files[0]?.name || 'فایلی انتخاب نشده';">
+                <button class="upload_pic_btn" type="button" onclick="document.getElementById('id_profile_picture').click()">انتخاب تصویر</button>
+                <span id="file-name">فایلی انتخاب نشده</span>
+            </div>
+        </div>
         <button type="submit">ذخیره تغییرات</button>
     </form>
 </body>

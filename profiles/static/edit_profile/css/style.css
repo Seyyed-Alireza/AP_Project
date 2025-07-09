@@ -1,15 +1,58 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('/static/fonts/Vazir.ttf') format('truetype');
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: vazir;
+    font-size: 16px;
+    transition: all 300ms;
+    color: black;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 15px;
+    align-self: center;
+}
+
 form {
     width: 100%;
     background: white;
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 0 6px rgba(0,0,0,0.1);
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
     margin: auto;
 }
 
-h2 {
-    text-align: center;
-    margin-bottom: 15px;
+textarea {
+    resize: none;
 }
 
 button {
@@ -21,7 +64,6 @@ button {
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
-    width: 100%;
 }
 
 button:hover {
@@ -41,4 +83,28 @@ input, textarea {
 label {
     font-weight: bold;
     display: block;
+}
+
+.remove_pic {
+    display: flex;
+    gap: 2px;
+}
+
+#remove_picture {
+    display: block;
+    width: 20px;
+}
+
+.picture_box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.upload_pic {
+    border: 1px solid;
+    border-radius: 5px;
+    padding: 5px;
 }
