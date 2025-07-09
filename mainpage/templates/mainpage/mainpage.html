@@ -23,7 +23,7 @@
         {% if user.is_authenticated %}
             <span id="logout-text">برای وارد شدن به پروفایل بزن روی دکمه (فعلا درهمین حد)</span>
             {% csrf_token %}
-            <button type="button" class="user-name" onclick="window.location.href='{% url 'profile' %}'">{{ user.username }}</button>
+            <button class="user-name" type="button" onclick="window.location.href='{% url 'profile' %}'">{{ user.username }}</button>
         {% else %}
             <button class="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
         {% endif %}

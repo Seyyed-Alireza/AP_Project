@@ -34,7 +34,6 @@ h1 {
 .prof_header {
     width: 100%;
     padding: 20px 30px;
-    border-bottom: 1px solid;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -63,8 +62,94 @@ h1 {
 }
 
 .username {
-    /* margin-top: -10px; */
     font-size: 3rem;
+}
+
+@media only screen and (max-width: 800px) {
+    .prof_pic_default {
+        width: 80px;
+        height: 80px;
+    }
+
+    .prof_pic {
+        width: 80px;
+        height: 80px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .username {
+        font-size: 2rem;
+    }
+}
+
+@media only screen and (max-width: 576px) {
+    * {
+        font-size: 14px;
+    }
+
+    .prof_header {
+        padding: 15px 20px;
+    }
+
+    .prof_pic_and_username {
+        gap: 10px;
+    }
+
+    .prof_pic_default {
+        padding: 6px;
+        width: 48px;
+        height: 48px;
+    }
+
+    .prof_pic {
+        width: 48px;
+        height: 48px;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+        margin-top: -5px;
+    }
+
+    label {
+        font-size: 1.1rem;
+    }
+
+    .username {
+        font-size: 1.3rem;
+    }
+}
+
+.prof_header_underline {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid rgb(114, 113, 196);
+    box-shadow: 0 0 5px rgb(101, 99, 190);
+    margin-bottom: 8px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+}
+
+.phone_number_box, .address_box {
+    display: inline;
+    width: 100%;
+    padding: 10px 20px;
+}
+
+.phone_number {
+    margin-top: 5px;
+    
+}
+
+.address {
+    margin-top: 5px;
+    text-align: justify;
 }
 
 

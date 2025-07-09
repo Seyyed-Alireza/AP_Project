@@ -1,16 +1,17 @@
 {% load static %}
+{% load persian_filters %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ویرایش پروفایل</title>
+    <title>صفحه شخصی</title>
     <link rel="stylesheet" href="{% static 'profiles/css/style.css' %}" />
 </head>
 <body>
-    <section class="container">
-        <div class="prof_header">
+    <div class="container">
+        <section class="prof_header">
             <h1>صفحه شخصی کاربر</h1>
             <div class="prof_pic_and_username">
                 <span class="username">{{ user.username }}</span>
@@ -20,28 +21,31 @@
                     <img class="prof_pic_default" src="{% static 'images/default.svg' %}" alt="عکس پیش‌فرض" width="120">
                 {% endif %}
             </div>
-        </div>
-        {% if user.userprofile.phone_number %}
-            <p>{{ user.userprofile.phone_number }}</p>
-        {% else %}
-            <p>هنوز شماره موبایل خود را وارد نکرده‌اید.</p>
-        {% endif %}
+        </section>
+        <div class="prof_header_underline"></div>
+        <section class="phone_number_box">
+            <label for="#">تلفن همراه</label>
+            {% if user.userprofile.phone_number %}
+                <p class="phone_number">{{ user.userprofile.phone_number|persian_numbers }}</p>
+            {% else %}
+                <p>هنوز شماره تلفن همراه خود را وارد نکرده‌اید.</p>
+            {% endif %}
+        </section>
 
-        {% if user.userprofile.address %}
-            <p>{{ user.userprofile.address }}</p>
-        {% else %}
-            <p>هنوز آدرس خود را وارد نکرده‌ابد.</p>
-        {% endif %}
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <h2>ویرایش پروفایل</h2>
-            {{ form.as_p }}
-            <button type="submit">ذخیره تغییرات</button>
-        </form>
+        <section class="address_box">
+            <label for="#">آدرس کاربر</label>
+            {% if user.userprofile.address %}
+                <p class="address">{{ user.userprofile.address }}</p>
+            {% else %}
+                <p>هنوز آدرس خود را وارد نکرده‌ابد.</p>
+            {% endif %}
+        </section>
+
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="user-name">خروج</button>
         </form>
-    </section>
+        <button class="user-name" type="button" onclick="window.location.href='{% url 'editprofile' %}'">{{ user.username }}</button>
+    </div>
 </body>
 </html>

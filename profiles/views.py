@@ -9,8 +9,21 @@ def profile_view(request):
         form = UserProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('profile')  # بعدا این اسم رو تو urls تنظیم می‌کنیم
+            return redirect('profile')
     else:
         form = UserProfileForm(instance=profile)
 
     return render(request, 'profiles/profile.html', {'form': form})
+
+@login_required
+def profile_edit(request):
+    profile = request.user.userprofile
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('editprofile')
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'profiles/profile_edit.html', {'form': form})    
