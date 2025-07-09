@@ -1,5 +1,6 @@
 {% load static %}
 {% load persian_filters %}
+{% load persian_extras %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -23,8 +24,14 @@
             </div>
         </section>
         <div class="prof_header_underline"></div>
+
+        <section class="date_joined">
+            <label for="#">تاریخ عضویت: </label>
+            <p>{{ user.date_joined|to_jalali|persian_numbers }}</p>
+        </section>
+
         <section class="phone_number_box">
-            <label for="#">تلفن همراه</label>
+            <label for="#">تلفن همراه:</label>
             {% if user.userprofile.phone_number %}
                 <p class="phone_number">{{ user.userprofile.phone_number|persian_numbers }}</p>
             {% else %}

@@ -140,22 +140,20 @@ label {
     display: block;
 }
 
-.phone_number_box, .address_box {
+.phone_number_box, .address_box, .date_joined {
     display: inline;
     width: 100%;
     padding: 10px 20px;
-    margin-top: -18px;
 }
 
-.phone_number_box {
+.phone_number_box, .date_joined {
     margin-top: 0px;
+    display: flex;
+    gap: 5px;
 }
 
-
-.phone_number {
-    margin-top: 5px;
-    margin-right: 10px;
-    
+.phone_number_box, .address_box {
+    margin-top: -18px;
 }
 
 .address {
