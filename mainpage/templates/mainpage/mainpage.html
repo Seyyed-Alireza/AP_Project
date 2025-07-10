@@ -1,3 +1,4 @@
+{% load humanize %}
 {% load static %}
 {% load persian_filters %}
 {% load star_rating %}
@@ -8,7 +9,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>صفحه اصلی</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
 
 </head>
@@ -55,7 +56,7 @@
                                 <div class="product_info">
                                     <p class="product_name">{{ product.name }}</p>
                                     <p class="product_brand">برند {{ product.brand }}</p>
-                                    <p class="product_price">{{ product.price|persian_numbers }} تومان</p>
+                                    <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
                                     <div class="product_view-and-rate">
                                         <p class="view">{{ product.views|persian_numbers }} بازدید</p>
                                         <p class="rate">{{ product.average_rating|fa_star_rating|safe }}</p>

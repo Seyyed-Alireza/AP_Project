@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 {% load persian_filters %}
 {% load persian_extras %}
 
@@ -49,19 +50,51 @@
         </section>
 
         <section class="shopping_cart">
-            <h2>سبد خرید من</h2>
+            <h2 class="shopping_cart_h2">
+                <svg class="shop_icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
+                </svg>
+                سبد خرید من
+            </h2>
             {% if cart_items %}
-                <ul class="cart-list">
+                <div class="cart_products">
                     {% for item in cart_items %}
-                        <li class="cart-item">
-                            <strong>{{ item.product.name }}</strong>
-                            تعداد: {{ item.quantity }}<br>
-                            قیمت: {{ item.product.price }} تومان
-                        </li>
+                        <a href="{% url 'product_detail' item.product.pk %}" class="product_card">
+                            <div class="product_details">   
+                                <div class="product_image_div">
+                                    <img src="{{ item.product.image.url }}" alt="عمس محصول" class="product_image">
+                                </div>
+                                <div class="product_info">
+                                    <p class="product_name pp">{{ item.product.name }}</p>
+                                    <p class="product_brand pp">برند {{ item.product.brand }}</p>
+                                    <p class="product_price pp">{{ item.product.price|intcomma|persian_numbers }} تومان</p>
+                                    <p class="product_quantity pp">تعداد: {{ item.quantity|persian_numbers }}</p>
+                                </div>
+                            </div>
+                            <div class="cart_buttons">
+                                <form action="{% url 'decrease_cart_item' item.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="cart_button">حذف یک عدد</button>
+                                </form>
+                                <form action="{% url 'remove_cart_item' item.product.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="cart_button">حذف محصول</button>
+                                </form>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <p>محصولی برای نمایش وجود ندارد.</p>
                     {% endfor %}
-                </ul>
+                </div>
+                <div class="pay_box">
+                    <p>مبلغ قایل پرداخت: {{ total_shoppingcart_price|persian_numbers }}</p>
+                    <form class="pay_button" method="post" action="{% url 'buy_products' %}">
+                        {% csrf_token %}
+                        <button type="submit">پرداخت</button>
+                    </form>
+                </div>
             {% else %}
-                <p>سبد خرید شما خالی است.</p>
+                <span>سبد خرید شما خالی است.</span>
             {% endif %}
         </section>
 
