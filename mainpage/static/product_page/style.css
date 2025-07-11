@@ -37,8 +37,6 @@ header {
     background-color: skyblue;
     box-shadow: 0px 0px 20px rgb(146, 125, 125);
     border: none;
-    border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
     height: 60px;
 }
 
@@ -274,6 +272,10 @@ p {
     margin-bottom: 20px;
 }
 
+#submit_review_button {
+    margin-top: 0;
+}
+
 .rate_range {
     display: flex;
     gap: 16px;
@@ -304,8 +306,6 @@ footer {
     height: 60px;
     background-color: skyblue;
     border: none;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
     padding: 5px 10px 5px;
     display: flex;
     align-items: center;
