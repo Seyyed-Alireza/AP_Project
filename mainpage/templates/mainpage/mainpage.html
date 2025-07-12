@@ -94,8 +94,8 @@
                                     <p class="product_brand">برند {{ product.brand }}</p>
                                     <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
                                     <div class="product_view-and-rate">
-                                        <p class="view">{{ product.views|persian_numbers }} بازدید</p>
-                                        <p class="rate">{{ product.average_rating|fa_star_rating|safe }}</p>
+                                        <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
+                                        <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
                                     </div>
                                 </div>
                         </a>

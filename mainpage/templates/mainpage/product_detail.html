@@ -41,7 +41,7 @@
                     <p class="product_name">نام: {{ product.name }}</p>
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma|persian_numbers }} تومان</p>
-                    <p class="product_rating"><span class="star">&#9733;</span> {{ product.average_rating|persian_numbers }} امتیاز</p>
+                    <p class="product_rating"><span class="star">&#9733;</span> {{ product.rating|persian_numbers }} امتیاز</p>
                     <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                 </div>
                 <div class="product_suitable">
                     <h3>مناسب برای</h3>
-                    <p>{{ product.suitable_for }}</p>
+                    <p>پوست های {{product.skin_types}}</p>
                 </div>
                 <div class="product_usage">
                     <h3>نحوه ی استفاده</h3>
