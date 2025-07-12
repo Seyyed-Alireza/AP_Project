@@ -14,24 +14,59 @@
     
 </head>
 <body>
-    <header>  
-        <div class="logo">
-            لوگو سایت
+    <header>
+        <div class="header_container">
+            <div class="logo_name">
+                <div class="logo">
+                    لوگو سایت
+                </div>
+                <div class="name">
+                    اسم سایت
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                {% csrf_token %}
+                <button id="user_name" type="button">
+                    {{ user.username }}
+                    {% if user.userprofile.profile_picture %}
+                        <img class="prof_pic" src="{{ user.userprofile.profile_picture.url }}" alt="عکس پروفایل" width="120" height="120">
+                    {% else %}
+                        <img class="prof_pic_default" src="{% static 'images/default.svg' %}" alt="عکس پیش‌فرض" width="120">
+                    {% endif %}
+                </button>
+                <div id="viewport">
+                    <div id="user_box">
+                        <p class="box_name"><span style="font-size: 15px;">نام:</span> {{ user.username }}</p>
+                        <p onclick="window.location.href='{% url 'profile' %}'">
+                            <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                            </svg>
+                            صفحه شخصی
+                        </p>
+                        <p onclick="window.location.href='{% url 'editprofile' %}'">
+                            <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                            </svg>
+                            ویرایش اطلاعات
+                        </p>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="signout">
+                                <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-account-arrow-right-outline" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M19,21V19H15V17H19V15L22,18L19,21M13,18C13,18.71 13.15,19.39 13.42,20H2V17C2,14.79 5.58,13 10,13C11,13 11.96,13.09 12.85,13.26C13.68,13.42 14.44,13.64 15.11,13.92C13.83,14.83 13,16.32 13,18M4,17V18H11C11,16.96 11.23,15.97 11.64,15.08L10,15C6.69,15 4,15.9 4,17M10,4A4,4 0 0,1 14,8A4,4 0 0,1 10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M10,6A2,2 0 0,0 8,8A2,2 0 0,0 10,10A2,2 0 0,0 12,8A2,2 0 0,0 10,6Z"/>
+                                </svg>
+                                خروج
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <button id="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
+            {% endif %}
         </div>
-        <div class="name">
-            اسم سایت
-        </div>
-        {% if user.is_authenticated %}
-            <span id="logout-text">برای وارد شدن به پروفایل بزن روی دکمه (فعلا درهمین حد)</span>
-            {% csrf_token %}
-            <button type="button" class="user-name" onclick="window.location.href='{% url 'profile' %}'">{{ user.username }}</button>
-        {% else %}
-            <button class="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
-        {% endif %}
-
     </header>
 
-    <main class="container">
+    <main id="container" class="container">
         <section class="product_info">
             <div class="main_info">
                 <img src="{{ product.image.url }}" class="product_image">
@@ -89,7 +124,7 @@
             <div class="add_product_to_cart">
                 <form method="post" action="{% url 'add_to_cart' product.pk %}">
                     {% csrf_token %}
-                    <button type="submit">افزودن به سبد خرید</button>
+                    <button type="submit" class="page_button">افزودن به سبد خرید</button>
                 </form>
 
             </div>
@@ -130,7 +165,7 @@
                                 <input type="range" name="rating" min="1" max="5" value="3" required oninput="rating_output.value = rating.value">
                                 <span><output name="rating_output" id="rating_output">3</output> از {{ 5|persian_numbers }}</span>
                             </div>
-                            <button type="submit" id="submit_review_button">ثبت نظر</button>
+                            <button type="submit" id="submit_review_button" class="page_button">ثبت نظر</button>
                         </div>
                     </form>
                 {% endif %}

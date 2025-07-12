@@ -35,7 +35,7 @@ header {
     position: sticky;
     z-index: 10;
     top: 0px;
-    padding: 4px 40px;
+    padding: 4px 20px;
     background-color: skyblue;
     box-shadow: 0px 0px 20px rgb(146, 125, 125);
     border: none;
@@ -45,6 +45,7 @@ header {
 .header_container {
     width: 100%;
     max-width: 1360px;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -169,21 +170,21 @@ button:active {
     box-shadow: none;
 }
 
-
-#logout-text {
-    font-size: 12px;
-    margin-left: 0px;
-    margin-right: auto;
+.nav_container {
+    padding: 0 20px;
 }
 
 nav {
-    padding: 5px 10px 5px;
+    padding: 5px 20px 5px;
     margin: 20px auto 0;
-    max-width: 1360px;
     width: 100%;
+    max-width: 1360px;
 }
 
 nav div {
+    margin: 0 auto;
+    max-width: 1360px;
+    width: 100%;
     padding: 5px 10px 5px;
     border: 1px solid;
     border-radius: 5px;
@@ -195,12 +196,12 @@ main {
     display: flex;
     justify-content: center;
     margin: 20px 0px 50px;
-    padding: 0px 10px 0px;
 }
 
 .container {
     width: 100%;
     max-width: 1360px;
+    padding: 0 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -211,7 +212,7 @@ main {
     width: 100%;
     border: 1px solid;
     padding: 5px 10px 5px;
-    margin: 10px 20px 5px;
+    margin-bottom: 5px;
     border-radius: 5px;
 }
 
@@ -228,12 +229,12 @@ aside {
     width: 300px;
     height: 500px;
     padding: 5px 10px 5px;
-    margin: 20px 10px 5px;
+    margin: 20px 0px 5px;
 }
 
 .products {
     border: none;
-    padding: 5px 10px 5px;
+    padding: 5px 0px;
     margin: 20px 10px 10px 10px;
     border-radius: 5px;
     width: 100%;
