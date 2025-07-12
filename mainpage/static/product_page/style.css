@@ -157,9 +157,25 @@ p {
 }
 
 .product_add_exp {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.product_add_exp div {
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.product_add_exp div h3 {
+    display: inline;
+    border-bottom: 1px solid rgb(100, 100, 100);
+}
+
+.product_add_exp div p {
+    margin-top: 5px;
 }
 
 .star {
@@ -167,13 +183,6 @@ p {
     font-size: 26px;
     vertical-align: -3px;
 }
-
-.product_introduction, .product_suitable, .product_usage {
-    border: 1px solid rgb(200, 200, 200);
-    border-radius: 5px;
-    padding: 5px 10px;
-}
-
 
 @media only screen and (max-width: 1000px) {
     #logout-text {

@@ -34,7 +34,7 @@
     <main class="container">
         <section class="product_info">
             <div class="main_info">
-                <img src="{{ product.image.url }}" width="200" class="product_image">
+                <img src="{{ product.image.url }}" class="product_image">
                 <div class="image_underline"></div>
                 <div class="product_details">
                     <h3>مشخصات محصول</h3>
@@ -42,7 +42,9 @@
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma|persian_numbers }} تومان</p>
                     <p class="product_rating"><span class="star">&#9733;</span> {{ product.rating|persian_numbers }} امتیاز</p>
-                    <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p>
+                    <!-- <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p> -->
+                    <p class="product_comments_number">امتیاز براساس نظر {{ product.sales_count|intcomma|persian_numbers }} خریدار</p>
+
                 </div>
             </div>
             <div class="product_add_exp">
@@ -50,9 +52,34 @@
                     <h3>معرفی محصول</h3>
                     <p>{{ product.description }}</p>
                 </div>
+                <div class="ingredients">
+                    <h3>مواد تشکیل دهنده</h3>
+                    <p>
+                        {% for ingredient in product.ingredients %}
+                            {{ ingredient }}{% if not forloop.last %}، {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
+                <div class="category">
+                    <h3>دسته یندی</h3>
+                    <p>{{ product.get_category_display }}</p>
+                </div>
+                <div class="concerns_targeted">
+                    <h3>موارد استفاده</h3>
+                    <p>
+                        {% for target in product.concerns_targeted %}
+                            {{ target }}{% if not forloop.last %}، {% endif %}
+                        {% endfor %}
+                    </p>
+                </div>
                 <div class="product_suitable">
                     <h3>مناسب برای</h3>
-                    <p>پوست های {{product.skin_types}}</p>
+                    <p>
+                        پوست های 
+                        {% for st in product.get_skin_types_fa %}
+                            {{ st }}{% if not forloop.last %}، {% endif %}
+                        {% endfor %}
+                    </p>
                 </div>
                 <div class="product_usage">
                     <h3>نحوه ی استفاده</h3>

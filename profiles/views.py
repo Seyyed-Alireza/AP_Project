@@ -81,6 +81,13 @@ def remove_cart_item(request, product_id):
 @login_required
 def buy_products(request):
     if request.method == 'POST':
-        ShoppingCartItem.objects.filter(user=request.user).delete()
+        cart_items = ShoppingCartItem.objects.filter(user=request.user)
+
+        for item in cart_items:
+            prduct = item.product
+            prduct.sales_count += item.quantity
+            prduct.save()
+        cart_items.delete()
+
         # می‌تونی اینجا پیام موفقیت یا فاکتور هم بسازی
         return redirect('profile')
