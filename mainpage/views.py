@@ -1,45 +1,33 @@
-# from django.shortcuts import render
-
-# def mainpage(request):
-#     return render(request, 'mainpage/mainpage.html')
-
-
-
-# for test
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Comment
+from django.db.models import Q
 
-
-
-# create random products
-# import random
-
-# names = ['کرم مرطوب‌کننده', 'ضدآفتاب', 'کرم شب', 'تونر', 'ژل شستشو', 'کرم ضدلک', 'ماسک صورت', 'سرم ویتامین C', 'اسکراب', 'کرم دور چشم']
-# brands = ['سینره', 'نوتروژینا', 'لورآل', 'نیوآ', 'گارنیه', 'لاروش پوزای', 'سی‌گل', 'داو', 'فلورمار', 'ثمین']
-
-
-# products = []
-
-# for i in range(1, 21):
-#     product = {
-#         'name': random.choice(names),
-#         'brand': random.choice(brands),
-#         'price': f'{random.randint(80000, 300000):,} تومان',
-#         'image': f'images/product_image.jpg',
-#         'views': random.randint(10, 500),
-#         'rating': round(random.uniform(1, 5), 1)
-#     }
-#     products.append(product)
 
 def mainpage(request):
+    query = request.GET.get('q')
     products = Product.objects.all()
 
-    # for test ##################
-    # print(">>> محصولات موجود در دیتابیس:")
-    # for p in products:
-    #     print(f"ID={p.id} | Name={p.name} | Brand={p.brand} | Price={p.price}")
-    ##################################
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(name_en__icontains=query) |
+            Q(brand__icontains=query) |
+            Q(brand_en__icontains=query)
+        )
 
+    return render(request, 'mainpage/mainpage.html', {'products': products})
+
+def search(request):
+    query = request.GET.get('q')
+    products = Product.objects.all()
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(name_en__icontains=query) |
+            Q(brand__icontains=query) |
+            Q(brand_en__icontains=query)
+        )
     return render(request, 'mainpage/mainpage.html', {'products': products})
 
 def product_detail(request, pk):
