@@ -44,7 +44,7 @@ header {
 
 .header_container {
     width: 100%;
-    max-width: 1360px;
+    max-width: 1380px;
     padding: 0 20px;
     display: flex;
     justify-content: space-between;
@@ -136,6 +136,7 @@ header div button:active {
     display: none;
     position: fixed;
     inset: 0;
+    z-index: 0;
 }
 
 #user_box {
@@ -208,7 +209,7 @@ nav {
 
 nav div {
     margin: 0 auto;
-    max-width: 1360px;
+    max-width: 1380px;
     width: 100%;
     padding: 5px 10px 5px;
     border: 1px solid;
@@ -225,7 +226,7 @@ main {
 
 .container {
     width: 100%;
-    max-width: 1360px;
+    max-width: 1380px;
     padding: 0 20px;
     display: flex;
     flex-direction: column;
@@ -238,7 +239,6 @@ main {
     /* border: 1px solid; */
     padding: 5px 10px 5px;
     margin-bottom: 5px;
-    border-radius: 5px;
     padding: 10px 0;
 }
 
@@ -249,7 +249,7 @@ main {
 }
 
 .search_box {
-    width: 30%;
+    width: 40%;
     border: 1px solid rgb(150, 150, 150);
     padding: 0 2px 2px;
     border-radius: 18px;
@@ -279,6 +279,50 @@ main {
 
 .search_form button {
     padding: 0px 10px 5px;
+}
+
+.suggestions-box {
+    display: none;
+    position: absolute;
+    margin-top: 2px;
+    /* transform: translateX(5%); */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    width: 40%;
+    max-height: 800px;
+    overflow-y: auto;
+    z-index: 5;
+    direction: ltr;
+    text-align: right;
+    scrollbar-width: thin;
+    scrollbar-color: #ccc transparent;
+    transition: all 0s;
+}
+
+
+.suggestions-box::-webkit-scrollbar {
+    width: 4px;
+}
+.suggestions-box::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+.suggestions-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+.suggestions-box::-webkit-scrollbar-button {
+    display: none;
+}
+
+.suggestion-item {
+    padding: 8px;
+    cursor: pointer;
+    transition: all 100ms;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
 }
 
 .products-box {
@@ -312,7 +356,7 @@ aside {
 }
 
 .product_card {
-    min-width: 250px;
+    width: 250px;
     height: 300px;
     /* border: 1px solid rgb(185, 185, 185); */
     border: none;
@@ -393,7 +437,7 @@ aside {
     font-size: 12px;
 }
 
-@media only screen and (max-width: 1000px) {
+@media only screen and (max-width: 1200px) {
     .search_box {
         width: 40%;
     }
@@ -407,10 +451,15 @@ aside {
     }
 
     .search-bar {
-        width: 90%;
+        width: 100%;
+        padding: 0 10px;
     }
 
     .search_box {
+        width: 100%;
+    }
+
+    .suggestions-box {
         width: 100%;
     }
 

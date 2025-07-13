@@ -73,7 +73,7 @@ class Command(BaseCommand):
             'قابل استفاده زیر آرایش', 'فاقد پارابن', 'گیاهی', 'ضدحساسیت'
         ]
 
-        for i in range(100):
+        for i in range(1000):
             name_index = random.randint(0, len(names) - 1)
             brand_index = random.randint(0, len(brands) - 1)
             # skin_type_indices = random.sample(range(len(skin_type_choices)), k=random.randint(1, 3))

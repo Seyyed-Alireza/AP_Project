@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Comment
 from django.db.models import Q
+from django.http import JsonResponse
 
 
 def mainpage(request):
@@ -17,18 +18,75 @@ def mainpage(request):
 
     return render(request, 'mainpage/mainpage.html', {'products': products})
 
+#####################################################################
+
+from difflib import SequenceMatcher
+def similarity(a, b):
+    return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 def search(request):
-    query = request.GET.get('q')
+    full_query = request.GET.get('q')
+    query_words = full_query.lower().split()
     products = Product.objects.all()
+    results = []
+
+    brand_focus = True if 'برند' in query_words else False
+
+    for product in products:
+        score = 0
+        product_name = product.name.lower()
+        product_brand = product.brand.lower()
+
+        for word in query_words:
+            if word in product_name:
+                score += 5
+            if word in product_brand:
+                score += 10 if brand_focus else 3
+            
+            score += similarity(word, product_name) * 2
+            score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
+
+        if score > 3:
+            results.append((product, score))
+    results.sort(key=lambda x: x[1], reverse=True)
+    final_products = [r[0] for r in results]
+
+    print(len(final_products))
+    return render(request, 'mainpage/mainpage.html', {'products': final_products})
+
+#####################################################################
+
+def live_search(request):
+    query = request.GET.get('q', '')
+    results = []
+    seen = set()
 
     if query:
-        products = products.filter(
+        product_names = Product.objects.filter(
             Q(name__icontains=query) |
-            Q(name_en__icontains=query) |
+            Q(name_en__icontains=query)
+        ).values_list('name', flat=True).distinct()
+
+        brand_names = Product.objects.filter(
             Q(brand__icontains=query) |
             Q(brand_en__icontains=query)
-        )
-    return render(request, 'mainpage/mainpage.html', {'products': products})
+        ).values_list('brand', flat=True).distinct()
+
+        for name in product_names:
+            if name not in seen:
+                seen.add(name)
+                results.append({'type': 'product', 'name': name})
+
+        for brand in brand_names:
+            label = f"برند {brand}"
+            if label not in seen:
+                seen.add(label)
+                results.append({'type': 'brand', 'name': label})
+
+        results = results[:15]
+
+    return JsonResponse({'results': results})
+
+#######################################################################
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)

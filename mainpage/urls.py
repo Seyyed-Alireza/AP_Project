@@ -7,7 +7,8 @@ urlpatterns = [
     # path('accounts/login/', views.user_login, name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
-    path('', views.search, name='search')
+    path('search/', views.search, name='search'),
+    path('live-search/', views.live_search, name='live_search'),
 ]
 
 
