@@ -29,8 +29,11 @@ def search(request):
     products = Product.objects.all()
     results = []
 
-    brand_focus = True if 'برند' in query_words else False
-
+    brand_focus = False
+    if 'برند' in query_words:
+        brand_focus = True
+        query_words.pop(query_words.index('برند'))
+    print(query_words)
     for product in products:
         score = 0
         product_name = product.name.lower()
@@ -39,13 +42,13 @@ def search(request):
         for word in query_words:
             if word in product_name:
                 score += 5
-            if word in product_brand:
+            elif word in product_brand:
                 score += 10 if brand_focus else 3
-            
-            score += similarity(word, product_name) * 2
-            score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
+            else:
+                score += similarity(word, product_name) * 2
+                score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
 
-        if score > 3:
+        if score > 1:
             results.append((product, score))
     results.sort(key=lambda x: x[1], reverse=True)
     final_products = [r[0] for r in results]

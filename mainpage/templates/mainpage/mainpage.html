@@ -128,10 +128,12 @@
                 </g>
             </svg>
         </a>
-        
     </footer>
 
-
-    <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
+    {% if user.is_authenticated %}
+        <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
+    {% else %}
+        <script src="{% static 'mainpage/nologin.js' %}" charset="utf-8"></script>
+    {% endif %}
 </body>
 </html>
