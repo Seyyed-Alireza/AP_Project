@@ -69,19 +69,30 @@ def similarity(user, db):
         elif db[i] in close_letters:
             if user[i] in close_letters[db[i]]:
                 rate += 0.8 * each_letter
-    if len(user) != t_length and rate > 0.86:
-        rate /= (abs(len(user) - t_length) + 0.1)
+    if len(user) != t_length and rate > 0.8:
+        rate /= (abs(len(user) - t_length) ** 2 + 0.1)
+    else:
+        rate /= ((abs(len(user) - t_length) + 1) ** 3)
+    if rate < 60:
+        rate /= 2
     return rate / 100
+
+def bayesian_average(product, total_rating_average):
+    m = 50
+    return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
 
 def similar(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
 def search(request):
     full_query = request.GET.get('q').replace('\u200c', ' ')
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
+    total_rating_average = sum([product.rating for product in products]) / len(products)
     results = []
+    base_score = 5
     brands = [
         'سینره', 'نوتروژینا', 'لورآل', 'نیوآ', 'گارنیه',
         'لاروش پوزای', 'سی‌گل', 'داو', 'فلورمار', 'ثمین',
@@ -99,34 +110,51 @@ def search(request):
     print(query_words)
     for product in products:
         score = 0
+        # score += 5 * bayesian_average(product, total_rating_average)
         product_name = product.name.lower().replace('\u200c', ' ')
         product_brand = product.brand.lower().replace('\u200c', ' ')
 
+        base_score = 50
         for word in query_words:
             if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
-                score += 5
-                print('pdkwpe')
+                score += 10000
+                # print('pdkwpe')
             elif word in product_brand:
-                score += 15
+                score += 10000
             else:
+                base_score = 5
                 for p_word in product_name.split():
-                    score += similarity(p_word, product_name) * 2
-                brand_similarity = similar(word, product_brand)
-                print(brand_similarity)
+                    # if similarity(word, p_word) > 0.75:
+                    #     score += similarity(word, p_word) * 60
+                    # else:
+                    #     score += similarity(word, p_word) * 2
+                    score += 10000 ** similarity(word, p_word)
+                # brand_similarity = similar(word, product_brand)
+                # print(brand_similarity)
                 brand_similarity = similarity(word, product_brand)
-                print(brand_similarity)
-                score += 20 * brand_similarity ** 2
+                # print(brand_similarity)
+                # if brand_similarity > 0.8:
+                    # score += 20 * brand_similarity ** 2
+                score += 10000 ** brand_similarity
                 # score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
 
-        if score > 1:
-            results.append((product, score))
+
+        if score > base_score:
+            # results.append((product, score))
+            results.append((product, score * bayesian_average(product, total_rating_average)))
     results.sort(key=lambda x: x[1], reverse=True)
+
+    for i in range(10):
+        print(results[i])
+    print(results[42])
     final_products = [r[0] for r in results][:500]
 
-    print(len(final_products))
+    # print(len(final_products))
 
-    print(similar('نیوآ', 'نیوا'))
-    print(similarity('سی گل', 'سی گل'))
+    # print(similar('نیوآ', 'نیوا'))
+    print(similarity('ضدجوش', 'ضدآفتاب'))
+    print(similarity('ضداففاپب', 'اسنس مغذی'))
+    print(similarity('ضداففاپب', 'ادیپیرن'))
     return render(request, 'mainpage/mainpage.html', {'products': final_products})
 
 #####################################################################
@@ -195,13 +223,13 @@ def live_search(request):
 
         for word in query_words:
             if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
-                score += 5
+                score += 25
             elif word in product_brand:
-                score += 15
+                score += 35
             else:
-                for p_word in product_name.split():
-                    score += similarity(p_word, product_name) * 2
-                brand_similarity = similar(word, product_brand)
+                for p_word in product_name.split():   
+                    score += similarity(word, p_word) * 10
+                # brand_similarity = similar(word, product_brand)
                 brand_similarity = similarity(word, product_brand)
                 score += 20 * brand_similarity ** 2
                 # score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
@@ -223,12 +251,12 @@ def live_search(request):
     suggestions = []
     for product in final_products:
         suggestions.append({
-            'id': product.id,
+            # 'id': product.id,
             'name': product.name,
-            'brand': product.brand,
-            'price': product.price,
-            'image_url': product.image.url if product.image else '',
-            'url': product.get_absolute_url() if hasattr(product, 'get_absolute_url') else ''
+            # 'brand': product.brand,
+            # 'price': product.price,
+            # 'image_url': product.image.url if product.image else '',
+            # 'url': product.get_absolute_url() if hasattr(product, 'get_absolute_url') else ''
         })
 
     return JsonResponse({'results': suggestions})
