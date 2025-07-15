@@ -290,7 +290,7 @@ main {
     border: 1px solid #ccc;
     border-radius: 10px;
     width: 40%;
-    max-height: 800px;
+    max-height: 600px;
     overflow-y: auto;
     z-index: 5;
     direction: ltr;
