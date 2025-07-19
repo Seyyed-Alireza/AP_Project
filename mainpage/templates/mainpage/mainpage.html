@@ -86,10 +86,71 @@
             </section>
             <section class="products-box">
                 <aside>
-                    نوار کناری سایت
-                    <br>
-                    اگه لازم شد
+                    <h3 class="filter-title">فیلتر محصولات</h3>
+                    <form method="get" class="filter-form">
+                    
+                      <!-- 🔍 Search -->
+                      <div class="filter-group">
+                        <label>جستجو:</label>
+                        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="نام یا برند">
+                      </div>
+                  
+                      <!-- ✅ Category -->
+                      <div class="filter-group">
+                        <label>دسته‌بندی:</label>
+                        <select name="category">
+                          <option value="">همه</option>
+                          <option value="cleanser" {% if request.GET.category == 'cleanser' %}selected{% endif %}>پاک‌کننده</option>
+                          <option value="toner" {% if request.GET.category == 'toner' %}selected{% endif %}>تونر</option>
+                          <option value="serum" {% if request.GET.category == 'serum' %}selected{% endif %}>سرم</option>
+                          <option value="moisturizer" {% if request.GET.category == 'moisturizer' %}selected{% endif %}>مرطوب‌کننده</option>
+                          <option value="sunscreen" {% if request.GET.category == 'sunscreen' %}selected{% endif %}>ضدآفتاب</option>
+                        </select>
+                      </div>
+                  
+                      <!-- ✅ Skin Type -->
+                      <div class="filter-group">
+                        <label>نوع پوست:</label>
+                        <select name="skin_type">
+                          <option value="">همه</option>
+                          <option value="dry" {% if request.GET.skin_type == 'dry' %}selected{% endif %}>خشک</option>
+                          <option value="oily" {% if request.GET.skin_type == 'oily' %}selected{% endif %}>چرب</option>
+                          <option value="sensitive" {% if request.GET.skin_type == 'sensitive' %}selected{% endif %}>حساس</option>
+                          <option value="combination" {% if request.GET.skin_type == 'combination' %}selected{% endif %}>مختلط</option>
+                          <option value="normal" {% if request.GET.skin_type == 'normal' %}selected{% endif %}>نرمال</option>
+                        </select>
+                      </div>
+                  
+                      <!-- ✅ Concern -->
+                      <div class="filter-group">
+                        <label>مشکل پوستی:</label>
+                        <input type="text" name="concern" value="{{ request.GET.concern }}" placeholder="مثلا جوش">
+                      </div>
+                  
+                      <!-- ✅ Price -->
+                      <div class="filter-group price-group">
+                        <label>قیمت:</label>
+                        <input type="number" name="min_price" value="{{ request.GET.min_price }}" placeholder="حداقل">
+                        <input type="number" name="max_price" value="{{ request.GET.max_price }}" placeholder="حداکثر">
+                      </div>
+                  
+                      <!-- ✅ Sorting -->
+                      <div class="filter-group">
+                        <label>مرتب‌سازی:</label>
+                        <select name="sort_by">
+                          <option value="">پیش‌فرض</option>
+                          <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>قیمت کم به زیاد</option>
+                          <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>قیمت زیاد به کم</option>
+                          <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>بالاترین امتیاز</option>
+                          <option value="popularity" {% if request.GET.sort_by == 'popularity' %}selected{% endif %}>محبوبیت</option>
+                        </select>
+                      </div>
+                  
+                      <button type="submit" class="apply-button">اعمال فیلتر</button>
+                    </form>
                 </aside>
+
+
 
                 <div class="products">
                     {% for product in products %}

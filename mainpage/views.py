@@ -4,10 +4,14 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 
+from django.db.models import Q
+
 def mainpage(request):
-    query = request.GET.get('q')
+    # Start with all products
     products = Product.objects.all()
 
+    # ---- 🔍 Search ----
+    query = request.GET.get('q')
     if query:
         products = products.filter(
             Q(name__icontains=query) |
@@ -16,7 +20,41 @@ def mainpage(request):
             Q(brand_en__icontains=query)
         )
 
+    # ---- ✅ Filters ----
+    category = request.GET.get('category')
+    skin_type = request.GET.get('skin_type')
+    concern = request.GET.get('concern')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if category:
+        products = products.filter(category=category)
+
+    if skin_type:
+        products = products.filter(skin_types__icontains=skin_type)
+
+    if concern:
+        products = products.filter(concerns_targeted__icontains=concern)
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    # ---- 🔀 Sorting ----
+    sort_by = request.GET.get('sort_by')
+    if sort_by == 'price_low':
+        products = products.order_by('price')
+    elif sort_by == 'price_high':
+        products = products.order_by('-price')
+    elif sort_by == 'rating':
+        products = products.order_by('-rating')
+    elif sort_by == 'popularity':
+        products = products.order_by('-views')
+
     return render(request, 'mainpage/mainpage.html', {'products': products})
+
 
 #####################################################################
 
