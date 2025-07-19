@@ -4,31 +4,15 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 
-<<<<<<< HEAD
 def bayesian_average(product, total_rating_average):
     m = 50
     return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
 
-def mainpage(request):
-=======
-from django.db.models import Q
 
 def mainpage(request):
     # Start with all products
->>>>>>> cff05388b6d0d45544734473f1a1b5e8cf4766f6
     products = Product.objects.all()
-    results = []
-    total_rating_average = sum([product.rating for product in products]) / len(products)
-    max_view = max([product.views for product in products])
-    for product in products:
-        results.append((product, bayesian_average(product, total_rating_average) + (product.views / max_view) / 2))
 
-<<<<<<< HEAD
-    results.sort(key=lambda x: x[1], reverse=True)
-    final_products = [p[0] for p in results]
-    
-    return render(request, 'mainpage/mainpage.html', {'products': final_products})
-=======
     # ---- 🔍 Search ----
     query = request.GET.get('q')
     if query:
@@ -38,6 +22,16 @@ def mainpage(request):
             Q(brand__icontains=query) |
             Q(brand_en__icontains=query)
         )
+    # else:
+    #     results = []
+    #     total_rating_average = sum([product.rating for product in products]) / len(products)
+    #     max_view = max([product.views for product in products])
+    #     for product in products:
+    #         results.append((product, bayesian_average(product, total_rating_average) + (product.views / max_view) / 2))
+    #     results.sort(key=lambda x: x[1], reverse=True)
+    #     final_products = [p[0] for p in results]
+
+    #     return render(request, 'mainpage/mainpage.html', {'products': final_products, 'product_model': Product})
 
     # ---- ✅ Filters ----
     category = request.GET.get('category')
@@ -72,8 +66,15 @@ def mainpage(request):
     elif sort_by == 'popularity':
         products = products.order_by('-views')
 
-    return render(request, 'mainpage/mainpage.html', {'products': products})
->>>>>>> cff05388b6d0d45544734473f1a1b5e8cf4766f6
+    context = {
+        'products': products,
+        'product_model': Product,
+        'skin_type_se': skin_type,
+        'category_se': category,
+    }
+
+    return render(request, 'mainpage/mainpage.html', context)
+
 
 
 #####################################################################
@@ -144,6 +145,8 @@ def search(request):
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
+    if not full_query:
+        return render(request, 'mainpage/mainpage.html', {'products': products})
     total_rating_average = sum([product.rating for product in products]) / len(products)
     results = []
     base_score = 5
@@ -198,9 +201,9 @@ def search(request):
             results.append((product, score * bayesian_average(product, total_rating_average)))
     results.sort(key=lambda x: x[1], reverse=True)
 
-    for i in range(10):
-        print(results[i])
-    print(results[42])
+    # for i in range(10):
+    #     print(results[i])
+    # print(results[42])
     final_products = [r[0] for r in results][:500]
 
     # print(len(final_products))
