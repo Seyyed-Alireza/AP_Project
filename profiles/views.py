@@ -11,14 +11,8 @@ def profile_view(request):
     if cart_items:
         total_shoppingcart_price = sum([item.total_price() for item in cart_items])
     else:
-        total_shoppingcart_price = 0
-    if request.method == 'POST':
-        form = UserProfileForm(request.POST, request.FILES, instance=profile)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = UserProfileForm(instance=profile)
+        total_shoppingcart_price = 0   
+    form = UserProfileForm(instance=profile)
 
     context = {
         'form': form,

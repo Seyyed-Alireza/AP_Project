@@ -13,6 +13,7 @@
         <form method="post" novalidate>
             {% csrf_token %}
             {{ form.non_field_errors }}
+            <input type="hidden", name="next", value="{{ next }}">
 
             <div class="form-field">
                 <label for="{{ form.username.id_for_label }}">نام کاربری</label>

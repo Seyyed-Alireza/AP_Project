@@ -4,19 +4,22 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 
+def bayesian_average(product, total_rating_average):
+    m = 50
+    return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
+
 def mainpage(request):
-    query = request.GET.get('q')
     products = Product.objects.all()
+    results = []
+    total_rating_average = sum([product.rating for product in products]) / len(products)
+    max_view = max([product.views for product in products])
+    for product in products:
+        results.append((product, bayesian_average(product, total_rating_average) + (product.views / max_view) / 2))
 
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(name_en__icontains=query) |
-            Q(brand__icontains=query) |
-            Q(brand_en__icontains=query)
-        )
-
-    return render(request, 'mainpage/mainpage.html', {'products': products})
+    results.sort(key=lambda x: x[1], reverse=True)
+    final_products = [p[0] for p in results]
+    
+    return render(request, 'mainpage/mainpage.html', {'products': final_products})
 
 #####################################################################
 
@@ -77,10 +80,6 @@ def similarity(user, db):
         rate /= 2
     return rate / 100
 
-def bayesian_average(product, total_rating_average):
-    m = 50
-    return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
-
 def similar(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
@@ -120,7 +119,7 @@ def search(request):
                 score += 10000
                 # print('pdkwpe')
             elif word in product_brand:
-                score += 10000
+                score += 8000
             else:
                 base_score = 5
                 for p_word in product_name.split():
@@ -135,7 +134,7 @@ def search(request):
                 # print(brand_similarity)
                 # if brand_similarity > 0.8:
                     # score += 20 * brand_similarity ** 2
-                score += 10000 ** brand_similarity
+                score += 8000 ** brand_similarity
                 # score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
 
 

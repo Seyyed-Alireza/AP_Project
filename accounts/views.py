@@ -43,12 +43,15 @@ def user_login(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            product_url = request.POST.get('next') or request.GET.get('next')
+            if product_url:
+                return redirect(product_url)
             return redirect('mainpage') 
         else:
             return render(request, 'accounts/login.html', {'form': form})
     else:
         form = CustomAuthenticationForm()
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form, 'next': request.POST.get('next', '')})
 
 
 from django.contrib.auth.models import User
