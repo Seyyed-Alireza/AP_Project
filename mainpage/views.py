@@ -4,11 +4,18 @@ from django.db.models import Q
 from django.http import JsonResponse
 
 
+<<<<<<< HEAD
 def bayesian_average(product, total_rating_average):
     m = 50
     return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
 
 def mainpage(request):
+=======
+from django.db.models import Q
+
+def mainpage(request):
+    # Start with all products
+>>>>>>> cff05388b6d0d45544734473f1a1b5e8cf4766f6
     products = Product.objects.all()
     results = []
     total_rating_average = sum([product.rating for product in products]) / len(products)
@@ -16,10 +23,58 @@ def mainpage(request):
     for product in products:
         results.append((product, bayesian_average(product, total_rating_average) + (product.views / max_view) / 2))
 
+<<<<<<< HEAD
     results.sort(key=lambda x: x[1], reverse=True)
     final_products = [p[0] for p in results]
     
     return render(request, 'mainpage/mainpage.html', {'products': final_products})
+=======
+    # ---- 🔍 Search ----
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(name_en__icontains=query) |
+            Q(brand__icontains=query) |
+            Q(brand_en__icontains=query)
+        )
+
+    # ---- ✅ Filters ----
+    category = request.GET.get('category')
+    skin_type = request.GET.get('skin_type')
+    concern = request.GET.get('concern')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+
+    if category:
+        products = products.filter(category=category)
+
+    if skin_type:
+        products = products.filter(skin_types__icontains=skin_type)
+
+    if concern:
+        products = products.filter(concerns_targeted__icontains=concern)
+
+    if min_price:
+        products = products.filter(price__gte=min_price)
+
+    if max_price:
+        products = products.filter(price__lte=max_price)
+
+    # ---- 🔀 Sorting ----
+    sort_by = request.GET.get('sort_by')
+    if sort_by == 'price_low':
+        products = products.order_by('price')
+    elif sort_by == 'price_high':
+        products = products.order_by('-price')
+    elif sort_by == 'rating':
+        products = products.order_by('-rating')
+    elif sort_by == 'popularity':
+        products = products.order_by('-views')
+
+    return render(request, 'mainpage/mainpage.html', {'products': products})
+>>>>>>> cff05388b6d0d45544734473f1a1b5e8cf4766f6
+
 
 #####################################################################
 
