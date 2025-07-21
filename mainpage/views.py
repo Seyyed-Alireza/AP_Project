@@ -11,17 +11,9 @@ def bayesian_average(product, total_rating_average):
 
 def mainpage(request):
     # Start with all products
-    products = Product.objects.all()
 
     # ---- 🔍 Search ----
-    query = request.GET.get('q')
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(name_en__icontains=query) |
-            Q(brand__icontains=query) |
-            Q(brand_en__icontains=query)
-        )
+    products = search(request)
 
     # ---- ✅ Filters ----
     category = request.GET.get('category')
@@ -70,6 +62,7 @@ def mainpage(request):
 #####################################################################
 
 from difflib import SequenceMatcher
+from django.db.models import Case, When
 import re
 
 close_letters = {
@@ -130,22 +123,25 @@ def similar(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
 def search(request):
-    full_query = request.GET.get('q').replace('\u200c', ' ')
+    full_query = request.GET.get('q', '').replace('\u200c', ' ')
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
-    if not full_query:
-        return render(request, 'mainpage/mainpage.html', {'products': products})
     total_rating_average = sum([product.rating for product in products]) / len(products)
     results = []
     base_score = 5
-    brands = [
-        'سینره', 'نوتروژینا', 'لورآل', 'نیوآ', 'گارنیه',
-        'لاروش پوزای', 'سی‌گل', 'داو', 'فلورمار', 'ثمین',
-        'اون', 'بلومه', 'استی لادر', 'ادیپیرن', 'دکتر راشل',
-        'مَیبلین', 'بیودرما', 'اوردینری', 'کامان', 'الارو'
-    ]
+
+    if not full_query:
+        for product in products:
+            results.append((product.id, bayesian_average(product, total_rating_average)))
+        results.sort(key=lambda x: x[1], reverse=True)
+        selected_ids = [r[0] for r in results]
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
+        return Product.objects.filter(id__in=selected_ids).order_by(preserved)
+        final_products = [r[0] for r in results]
+        return final_products
+        return render(request, 'mainpage/mainpage.html', {'products': products})
 
     for product in products:
         score = 0
@@ -166,9 +162,14 @@ def search(request):
                 score += 8000 ** brand_similarity
 
         if score > base_score:
-            results.append((product, score * bayesian_average(product, total_rating_average)))
+            results.append((product.id, score * bayesian_average(product, total_rating_average)))
     results.sort(key=lambda x: x[1], reverse=True)
+    selected_ids = [r[0] for r in results]
+    preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
+    return Product.objects.filter(id__in=selected_ids).order_by(preserved)
     final_products = [r[0] for r in results][:500]
+
+    return final_products
 
     return render(request, 'mainpage/mainpage.html', {'products': final_products})
 
