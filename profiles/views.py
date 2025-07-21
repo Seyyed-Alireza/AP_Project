@@ -18,6 +18,7 @@ def profile_view(request):
         'form': form,
         'cart_items': cart_items,
         'total_shoppingcart_price': total_shoppingcart_price,
+        'quiz_completed': request.user.skinprofile.quiz_completed
     }
     return render(request, 'profiles/profile.html', context)
 

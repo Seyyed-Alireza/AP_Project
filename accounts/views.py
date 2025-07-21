@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.core.mail import send_mail
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from quiz.models import SkinProfile
 
 def register(request):
     if request.method == 'POST':
@@ -46,6 +47,9 @@ def user_login(request):
             product_url = request.POST.get('next') or request.GET.get('next')
             if product_url:
                 return redirect(product_url)
+            skin_profile, created = SkinProfile.objects.get_or_create(user=request.user)
+            if not skin_profile.quiz_skipped:
+                return redirect('quiz')
             return redirect('mainpage') 
         else:
             return render(request, 'accounts/login.html', {'form': form})
