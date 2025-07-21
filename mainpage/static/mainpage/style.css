@@ -631,22 +631,3 @@ aside {
 .price-group input {
     flex: 1;
 }
-
-.apply-button {
-    background-color: #03a7ff;
-    color: white;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-align: center;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-}
-
-.apply-button:hover {
-    background-color: #028fd9;
-}
-
-.apply-button:active {
-    transform: scale(0.97);
-}
