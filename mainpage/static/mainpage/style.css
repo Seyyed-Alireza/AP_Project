@@ -241,7 +241,7 @@ main {
     margin-bottom: 5px;
 }
 
-.search_form {
+.search-form {
     display: flex;
     justify-content: center;
     gap: 10px;
@@ -260,7 +260,7 @@ main {
     width: 32px;
 }
 
-.search_form div input {
+.search-form div input {
     border: none;
     border-radius: 5px;
     padding-right: 3px;
@@ -269,15 +269,15 @@ main {
     border-radius: 18px;
 }
 
-.search_form div:focus-within {
+.search-form div:focus-within {
     border: 1px solid rgb(0, 0, 0);
 }
 
-.search_form div input:focus {
+.search-form div input:focus {
     outline: none;
 }
 
-.search_form button {
+.search-form button {
     padding: 0px 10px 5px;
 }
 

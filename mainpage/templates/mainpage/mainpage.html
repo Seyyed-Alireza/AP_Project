@@ -72,7 +72,7 @@
     <main>
         <div class="container" id="container">
             <section class="search-bar">
-                <form class="search_form" method="get" action="{% url 'search' %}">
+                <form class="search-form" method="get">
                     <div id="search_js" class="search_box">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
@@ -189,6 +189,7 @@
         </a>
     </footer>
 
+    <script src="{% static 'mainpage/both.js' %}" charset="utf-8"></script>
     {% if user.is_authenticated %}
         <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
         <!-- <script src="{% static 'mainpage/nologin.js' %}" charset="utf-8"></script> -->
