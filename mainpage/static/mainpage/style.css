@@ -315,6 +315,20 @@ main {
     display: none;
 }
 
+select::-webkit-scrollbar {
+    width: 4px;
+}
+select::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 4px;
+}
+select::-webkit-scrollbar-track {
+    background: transparent;
+}
+select::-webkit-scrollbar-button {
+    display: none;
+}
+
 .suggestion-item {
     padding: 8px;
     cursor: pointer;
