@@ -22,16 +22,6 @@ def mainpage(request):
             Q(brand__icontains=query) |
             Q(brand_en__icontains=query)
         )
-    # else:
-    #     results = []
-    #     total_rating_average = sum([product.rating for product in products]) / len(products)
-    #     max_view = max([product.views for product in products])
-    #     for product in products:
-    #         results.append((product, bayesian_average(product, total_rating_average) + (product.views / max_view) / 2))
-    #     results.sort(key=lambda x: x[1], reverse=True)
-    #     final_products = [p[0] for p in results]
-
-    #     return render(request, 'mainpage/mainpage.html', {'products': final_products, 'product_model': Product})
 
     # ---- ✅ Filters ----
     category = request.GET.get('category')
@@ -157,17 +147,8 @@ def search(request):
         'مَیبلین', 'بیودرما', 'اوردینری', 'کامان', 'الارو'
     ]
 
-    brand_focus = False
-    # for i, word in enumerate(query_words):
-    #     if word in brands:
-    #         brand_focus = True
-    #         query_words.pop(i)
-    #     for brand in brands:
-    #         print(similarity(word, brand))
-    print(query_words)
     for product in products:
         score = 0
-        # score += 5 * bayesian_average(product, total_rating_average)
         product_name = product.name.lower().replace('\u200c', ' ')
         product_brand = product.brand.lower().replace('\u200c', ' ')
 
@@ -175,78 +156,23 @@ def search(request):
         for word in query_words:
             if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
                 score += 10000
-                # print('pdkwpe')
             elif word in product_brand:
                 score += 8000
             else:
                 base_score = 5
                 for p_word in product_name.split():
-                    # if similarity(word, p_word) > 0.75:
-                    #     score += similarity(word, p_word) * 60
-                    # else:
-                    #     score += similarity(word, p_word) * 2
                     score += 10000 ** similarity(word, p_word)
-                # brand_similarity = similar(word, product_brand)
-                # print(brand_similarity)
                 brand_similarity = similarity(word, product_brand)
-                # print(brand_similarity)
-                # if brand_similarity > 0.8:
-                    # score += 20 * brand_similarity ** 2
                 score += 8000 ** brand_similarity
-                # score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
-
 
         if score > base_score:
-            # results.append((product, score))
             results.append((product, score * bayesian_average(product, total_rating_average)))
     results.sort(key=lambda x: x[1], reverse=True)
-
-    # for i in range(10):
-    #     print(results[i])
-    # print(results[42])
     final_products = [r[0] for r in results][:500]
 
-    # print(len(final_products))
-
-    # print(similar('نیوآ', 'نیوا'))
-    print(similarity('ضدجوش', 'ضدآفتاب'))
-    print(similarity('ضداففاپب', 'اسنس مغذی'))
-    print(similarity('ضداففاپب', 'ادیپیرن'))
     return render(request, 'mainpage/mainpage.html', {'products': final_products})
 
 #####################################################################
-
-# def live_search(request):
-    full_query = request.GET.get('q')
-    query_words = full_query.lower().split()
-    results = []
-
-    if full_query:
-        product_names = Product.objects.filter(
-            Q(name__icontains=full_query) |
-            Q(name_en__icontains=full_query)
-        ).values_list('name', flat=True).distinct()
-
-        brand_names = Product.objects.filter(
-            Q(brand__icontains=full_query) |
-            Q(brand_en__icontains=full_query)
-        ).values_list('brand', flat=True).distinct()
-
-        for name in product_names:
-            if name not in seen:
-                seen.add(name)
-                results.append({'type': 'product', 'name': name})
-
-        for brand in brand_names:
-            label = f"برند {brand}"
-            if label not in seen:
-                seen.add(label)
-                results.append({'type': 'brand', 'name': label})
-
-        results = results[:15]
-
-    return JsonResponse({'results': results})
-
 
 from django.http import JsonResponse
 

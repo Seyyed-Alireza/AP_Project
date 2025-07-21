@@ -1,0 +1,11 @@
+body {
+    font-family: sans-serif; direction: rtl; padding: 20px;
+}
+
+.question {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block; margin: 5px 0;
+}

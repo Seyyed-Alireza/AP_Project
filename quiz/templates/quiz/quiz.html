@@ -1,0 +1,50 @@
+{% load utils %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تحلیل پوست شما</title>
+    <link rel="stylesheet" href="{% static 'quiz_form/style.css' %}">
+</head>
+<body>
+    <h2>👩‍⚕️ پرسشنامه تحلیل پوست</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for question in questions %}
+            <div class="question">
+                <strong>{{ question.order }}. {{ question.text }}</strong><br>
+
+                {% with key="question_"|addstr:question.id %}
+                    {% if question.type in "single age_range scale boolean range" %}
+                        {% for choice in question.choices.all %}
+                            <label>
+                                <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}"
+                                    {% if initial_answers|get_item:key == choice.id %}checked{% endif %}
+                                    required>
+                                {{ choice.text }}
+                            </label>
+                        {% endfor %}
+
+                    {% elif question.type == "multiple" %}
+                        {% for choice in question.choices.all %}
+                            <label>
+                                <input type="checkbox" name="question_{{ question.id }}" value="{{ choice.id }}"
+                                    {% if initial_answers|get_item:key and choice.id|stringformat:"s" in initial_answers|get_item:key|stringformat:"s" %}checked{% endif %}>
+                                {{ choice.text }}
+                            </label>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+        {% endfor %}
+
+        <button type="submit">ثبت پاسخ‌ها</button>
+        <button class="btn" type="button" onclick="window.location.href='{% url 'skip_quiz' %}'">بعداً انجام می‌دهم</button>
+        <!-- <a href="#" id="skip-btn">بعداً انجام می‌دهم</a> -->
+    </form>
+
+    <!-- <script src="{% static 'quiz_form/index.js' %}" charset="utf-8"></script> -->
+</body>
+</html>
