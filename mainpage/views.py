@@ -8,14 +8,7 @@ def bayesian_average(product, total_rating_average):
     m = 50
     return (product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average
 
-
-def mainpage(request):
-    # Start with all products
-
-    # ---- 🔍 Search ----
-    products = search(request)
-
-    # ---- ✅ Filters ----
+def filter(request, products):
     category = request.GET.get('category')
     skin_type = request.GET.get('skin_type')
     concern = request.GET.get('concern')
@@ -36,8 +29,8 @@ def mainpage(request):
 
     if max_price:
         products = products.filter(price__lte=max_price)
-
-    # ---- 🔀 Sorting ----
+    
+def sort(request, products):
     sort_by = request.GET.get('sort_by')
     if sort_by == 'price_low':
         products = products.order_by('price')
@@ -48,6 +41,20 @@ def mainpage(request):
     elif sort_by == 'popularity':
         products = products.order_by('-views')
 
+def mainpage(request):
+    # Start with all products
+
+    # ---- 🔍 Search ----
+    products = search(request)
+
+    # ---- ✅ Filters ----
+    filter(request, products)
+
+    # ---- 🔀 Sorting ----
+    sort(request, products)
+
+    skin_type = request.GET.get('skin_type')
+    category = request.GET.get('category')
     context = {
         'products': products,
         'product_model': Product,
@@ -122,10 +129,32 @@ def similarity(user, db):
 def similar(a, b):
     return SequenceMatcher(None, a.lower(), b.lower()).ratio()
 
-def search(request):
+from accounts.models import SearchHistory
+
+def save_search(user, query):
+    query = query.strip()
+    if not query:
+        return
+
+    existing = SearchHistory.objects.filter(user=user, query=query).first()
+    if existing:
+        existing.save()
+    else:
+        SearchHistory.objects.create(user=user, query=query)
+
+    recent = SearchHistory.objects.filter(user=user).order_by('-searched_at')
+    if recent.count() > 30:
+        for s in recent[30:]:
+            s.delete()
+
+
+def search(request, live=False):
     full_query = request.GET.get('q', '').replace('\u200c', ' ')
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
+    if not live:
+        print(full_query, '+++++++++++++++++++++++++++++++')
+        save_search(request.user, full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
     total_rating_average = sum([product.rating for product in products]) / len(products)
@@ -178,71 +207,23 @@ def search(request):
 from django.http import JsonResponse
 
 def live_search(request):
-    full_query = request.GET.get('q').replace('\u200c', ' ')
+    full_query = request.GET.get('q', '').replace('\u200c', ' ')
+    print(full_query, '------')
     if not full_query:
-        return JsonResponse({'results': []})
-    full_query = re.sub(r's+', ' ', full_query).strip()
-    full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
-    query_words = full_query.lower().split()
-    products = Product.objects.all()
-    results = []
-    brands = [
-        'سینره', 'نوتروژینا', 'لورآل', 'نیوآ', 'گارنیه',
-        'لاروش پوزای', 'سی‌گل', 'داو', 'فلورمار', 'ثمین',
-        'اون', 'بلومه', 'استی لادر', 'ادیپیرن', 'دکتر راشل',
-        'مَیبلین', 'بیودرما', 'اوردینری', 'کامان', 'الارو'
-    ]
-
-    brand_focus = False
-    # for i, word in enumerate(query_words):
-    #     if word in brands:
-    #         brand_focus = True
-    #         query_words.pop(i)
-    #     for brand in brands:
-    #         print(similarity(word, brand))
-    for product in products:
-        score = 0
-        product_name = product.name.lower().replace('\u200c', ' ')
-        product_brand = product.brand.lower().replace('\u200c', ' ')
-
-        for word in query_words:
-            if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
-                score += 25
-            elif word in product_brand:
-                score += 35
-            else:
-                for p_word in product_name.split():   
-                    score += similarity(word, p_word) * 10
-                # brand_similarity = similar(word, product_brand)
-                brand_similarity = similarity(word, product_brand)
-                score += 20 * brand_similarity ** 2
-                # score += similarity(word, product_brand) * (3.5 if brand_focus else 1.5)
-
-        if score > 1:
-            results.append((product, score))
-    results.sort(key=lambda x: x[1], reverse=True)
-    seen_names = set()
-    final_products = []
-    for product, score in results:
-        name = product.name.strip().lower()
-        if name not in seen_names:
-            seen_names.add(name)
-            final_products.append(product)
-        if len(final_products) >= 15:
-            break
-
-
-    suggestions = []
-    for product in final_products:
-        suggestions.append({
-            # 'id': product.id,
-            'name': product.name,
-            # 'brand': product.brand,
-            # 'price': product.price,
-            # 'image_url': product.image.url if product.image else '',
-            # 'url': product.get_absolute_url() if hasattr(product, 'get_absolute_url') else ''
-        })
-
+        search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')
+        print(search_history)
+        suggestions = [{'name': history.query} for history in search_history][:15]
+    else:
+        products = search(request, live=True)
+        print(products)
+        suggestions = []
+        for product in products:
+            if product.name not in suggestions:
+                suggestions.append(product.name)
+            if len(suggestions) > 15:
+                break
+        suggestions = list({'name': name} for name in suggestions)
+    print(suggestions)
     return JsonResponse({'results': suggestions})
 
 #######################################################################

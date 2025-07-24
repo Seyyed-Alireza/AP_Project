@@ -56,80 +56,149 @@ function setLeftSuggestion() {
     }
 }
 
+// document.addEventListener('DOMContentLoaded', function () {
+//     const input = document.getElementById('search-input');
+
+
+//     input.addEventListener('input', function () {
+//         const query = input.value.trim();
+//         if (query.length === 0) {
+//             suggestionsBox.innerHTML = '';
+//             suggestionsBox.style.display = 'none';
+//             pop.style.display = 'none'
+//             return;
+//         }
+
+//         fetch(`/live-search/?q=${encodeURIComponent(query)}`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 const results = data.results;
+//                 if (results.length > 0) {
+
+//                     // link suggestions to product
+//                     // suggestionsBox.innerHTML = results.map(p => 
+//                     //     `<div class="suggestion-item" onclick="location.href='/product/${p.id}/'">${p.name}</div>`
+//                     // ).join('');
+//                     // suggestionsBox.style.display = 'block';
+
+//                     suggestionsBox.innerHTML = results.map(p => 
+//                         `<div class="suggestion-item" data-name="${p.name}">${p.name}</div>`
+//                     ).join('');
+//                     suggestionsBox.style.display = 'block';
+//                     pop.style.display = 'block';
+//                     var searchjs = document.getElementById('search_js')
+//                     var btnw = document.querySelector("#container > section.search-bar > form > button")
+//                     searchjs.style.position = 'relative'
+//                     searchjs.style.zIndex = '5'
+//                     btnw.style.position = 'relative'
+//                     btnw.style.zIndex = '5'
+//                     setLeftSuggestion();
+                
+//                     document.querySelectorAll('.suggestion-item').forEach(item => {
+//                         item.addEventListener('click', function () {
+//                             input.value = this.getAttribute('data-name');
+//                             input.form.submit();
+//                         });
+//                     });
+//                 } else {
+//                     suggestionsBox.innerHTML = '<div class="suggestion-item">موردی یافت نشد</div>';
+//                     suggestionsBox.style.display = 'block';
+//                     pop.style.display = 'block';
+//                     var searchjs = document.getElementById('search_js')
+//                     var btnw = document.querySelector("#container > section.search-bar > form > button")
+//                     searchjs.style.position = 'relative'
+//                     searchjs.style.zIndex = '5'
+//                     btnw.style.position = 'relative'
+//                     btnw.style.zIndex = '5'
+//                     setLeftSuggestion();
+//                 }
+//             });
+//     });
+
+//     document.addEventListener('click', function (event) {
+//         if (!input.contains(event.target) && !suggestionsBox.contains(event.target)) {
+//             suggestionsBox.style.display = 'none';
+//             var searchjs = document.getElementById('search_js')
+//             var btnw = document.querySelector("#container > section.search-bar > form > button")
+//             searchjs.style.position = 'static'
+//             searchjs.style.zIndex = '0'
+//             btnw.style.position = 'static'
+//             btnw.style.zIndex = '0'
+//         }
+//     });
+// });
+
+
+// window.addEventListener("resize", function() {
+//     if (drop.style.display === "block") {
+//         setLeft();
+//     }
+//     if (suggestionsBox.style.display === "block") {
+//         setLeftSuggestion();
+//     }
+// });
+
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('search-input');
 
-
-    input.addEventListener('input', function () {
-        const query = input.value.trim();
-        if (query.length === 0) {
-            suggestionsBox.innerHTML = '';
-            suggestionsBox.style.display = 'none';
-            pop.style.display = 'none'
-            return;
-        }
-
+    function fetchAndDisplaySuggestions(query) {
         fetch(`/live-search/?q=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 const results = data.results;
                 if (results.length > 0) {
-
-                    // link suggestions to product
-                    // suggestionsBox.innerHTML = results.map(p => 
-                    //     `<div class="suggestion-item" onclick="location.href='/product/${p.id}/'">${p.name}</div>`
-                    // ).join('');
-                    // suggestionsBox.style.display = 'block';
-
-                    suggestionsBox.innerHTML = results.map(p => 
+                    suggestionsBox.innerHTML = results.map(p =>
                         `<div class="suggestion-item" data-name="${p.name}">${p.name}</div>`
                     ).join('');
-                    suggestionsBox.style.display = 'block';
-                    pop.style.display = 'block';
-                    var searchjs = document.getElementById('search_js')
-                    var btnw = document.querySelector("#container > section.search-bar > form > button")
-                    searchjs.style.position = 'relative'
-                    searchjs.style.zIndex = '5'
-                    btnw.style.position = 'relative'
-                    btnw.style.zIndex = '5'
-                    setLeftSuggestion();
-                
-                    document.querySelectorAll('.suggestion-item').forEach(item => {
-                        item.addEventListener('click', function () {
-                            input.value = this.getAttribute('data-name');
-                            input.form.submit();
-                        });
-                    });
                 } else {
                     suggestionsBox.innerHTML = '<div class="suggestion-item">موردی یافت نشد</div>';
-                    suggestionsBox.style.display = 'block';
-                    pop.style.display = 'block';
-                    var searchjs = document.getElementById('search_js')
-                    var btnw = document.querySelector("#container > section.search-bar > form > button")
-                    searchjs.style.position = 'relative'
-                    searchjs.style.zIndex = '5'
-                    btnw.style.position = 'relative'
-                    btnw.style.zIndex = '5'
-                    setLeftSuggestion();
                 }
-            });
-    });
 
+                suggestionsBox.style.display = 'block';
+                pop.style.display = 'block';
+                const searchjs = document.getElementById('search_js');
+                const btnw = document.querySelector("#container > section.search-bar > form > button");
+                searchjs.style.position = 'relative';
+                searchjs.style.zIndex = '5';
+                btnw.style.position = 'relative';
+                btnw.style.zIndex = '5';
+                setLeftSuggestion();
+
+                document.querySelectorAll('.suggestion-item').forEach(item => {
+                    item.addEventListener('click', function () {
+                        input.value = this.getAttribute('data-name');
+                        input.form.submit();
+                    });
+                });
+            });
+    }
+
+    function triggerSearch() {
+        const query = input.value.trim();
+        fetchAndDisplaySuggestions(query);
+    }
+
+    input.addEventListener('input', triggerSearch);
+
+    input.addEventListener('focus', triggerSearch);
+
+    input.addEventListener('click', triggerSearch);
+
+    // 🔒 بستن با کلیک بیرون
     document.addEventListener('click', function (event) {
         if (!input.contains(event.target) && !suggestionsBox.contains(event.target)) {
             suggestionsBox.style.display = 'none';
-            var searchjs = document.getElementById('search_js')
-            var btnw = document.querySelector("#container > section.search-bar > form > button")
-            searchjs.style.position = 'static'
-            searchjs.style.zIndex = '0'
-            btnw.style.position = 'static'
-            btnw.style.zIndex = '0'
+            const searchjs = document.getElementById('search_js');
+            const btnw = document.querySelector("#container > section.search-bar > form > button");
+            searchjs.style.position = 'static';
+            searchjs.style.zIndex = '0';
+            btnw.style.position = 'static';
+            btnw.style.zIndex = '0';
         }
     });
 });
 
-
-window.addEventListener("resize", function() {
+window.addEventListener("resize", function () {
     if (drop.style.display === "block") {
         setLeft();
     }

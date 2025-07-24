@@ -1,16 +1,6 @@
-import random
+x = set()
 
-names_en = [
-    'Moisturizing Cream', 'Sunscreen', 'Night Cream', 'Brightening Toner', 'Facial Cleansing Gel',
-    'Anti-Spot Cream', 'Charcoal Mask', 'Vitamin C Serum', 'Coffee Scrub', 'Eye Cream',
-    'Biphasic Makeup Remover', 'Hydrating Facial Mist', 'Lifting Cream', 'Retinol Serum',
-    'Rebuilding Ampoule', 'Anti-Acne Cream', 'Foam Cleanser', 'Light Hydrating Gel',
-    'Nourishing Essence', 'Gold Under-Eye Patch'
-]
+for _ in range(5):
+    x.add('alireza')
 
-indecies = random.sample(range(len(names_en)), k=random.randint(1, 3))
-
-print(indecies)
-
-names = [names_en[index] for index in indecies]
-print(names)
+print(x)
