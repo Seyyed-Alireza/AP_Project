@@ -39,9 +39,28 @@ class Answer(models.Model):
 
 
 class SkinProfile(models.Model):
+    
+    SKIN_TYPE_CHOICES = [
+        ('dry', 'خشک'),
+        ('oily', 'چرب'),
+        ('sensitive', 'حساس'),
+        ('combination', 'مختلط'),
+        ('normal', 'نرمال'),
+    ]
+
+    BUDGET_CHOICES = [
+        ('$', 'ارزان'),
+        ('$$', 'متوسط'),
+        ('$$$', 'گران'),
+    ]
+
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     quiz_completed = models.BooleanField(default=False)
+    completed_at = models.DateTimeField(null=True, blank=True)
     quiz_skipped = models.BooleanField(default=False)
+
+    skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
 
     acne = models.IntegerField(default=0)
     sensitivity = models.IntegerField(default=0)
@@ -52,5 +71,11 @@ class SkinProfile(models.Model):
     hydration = models.IntegerField(default=0)
     elasticity = models.IntegerField(default=0)
 
+    preferences = models.JSONField(default=list)
+
+    budget_range = models.CharField(max_length=3, choices=BUDGET_CHOICES, blank=True, null=True)
     def __str__(self):
         return f"{self.user.username} - پوست"
+
+# class SkinProfileEdit(models.Model):
+#     skin_profile = models.ForeignKey(SkinProfile, on_delete=models.CASCADE)

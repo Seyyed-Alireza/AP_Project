@@ -56,6 +56,7 @@ class Product(models.Model):
     rating = models.FloatField(default=0.0)
     image = models.ImageField(upload_to='product_images/', default='product_images/default.png')
     views = models.PositiveIntegerField(default=0, verbose_name="تعداد بازدید")
+    likes = models.PositiveIntegerField(default=0)
     tags = models.JSONField()
     sales_count = models.PositiveIntegerField(default=0, verbose_name="تعداد فروش")
     created_at = models.DateTimeField(auto_now_add=True)

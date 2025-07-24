@@ -167,10 +167,7 @@ def search(request, live=False):
         selected_ids = [r[0] for r in results]
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         return Product.objects.filter(id__in=selected_ids).order_by(preserved)
-        final_products = [r[0] for r in results]
-        return final_products
-        return render(request, 'mainpage/mainpage.html', {'products': products})
-
+     
     for product in products:
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')
@@ -223,9 +220,12 @@ def live_search(request):
 
 #######################################################################
 
+from accounts.models import ProductSearchHistory
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     product.views += 1
+    if request.user.is_authenticated:
+        ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type=ProductSearchHistory.INTERACTION_TYPES[0][0])
     product.save(update_fields=['views'])
 
     comments = product.comments.all().order_by('-created_at')
