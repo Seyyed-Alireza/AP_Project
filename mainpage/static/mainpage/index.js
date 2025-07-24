@@ -140,6 +140,7 @@ function setLeftSuggestion() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('search-input');
+    let debounceTimer = null;
 
     function fetchAndDisplaySuggestions(query) {
         fetch(`/live-search/?q=${encodeURIComponent(query)}`)
@@ -175,16 +176,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function triggerSearch() {
         const query = input.value.trim();
-        fetchAndDisplaySuggestions(query);
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetchAndDisplaySuggestions(query);
+        }, 500)
     }
 
     input.addEventListener('input', triggerSearch);
-
     input.addEventListener('focus', triggerSearch);
-
     input.addEventListener('click', triggerSearch);
 
-    // 🔒 بستن با کلیک بیرون
     document.addEventListener('click', function (event) {
         if (!input.contains(event.target) && !suggestionsBox.contains(event.target)) {
             suggestionsBox.style.display = 'none';

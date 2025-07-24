@@ -152,8 +152,7 @@ def search(request, live=False):
     full_query = request.GET.get('q', '').replace('\u200c', ' ')
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
-    if not live:
-        print(full_query, '+++++++++++++++++++++++++++++++')
+    if not live and request.user.is_authenticated:
         save_search(request.user, full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
@@ -208,14 +207,11 @@ from django.http import JsonResponse
 
 def live_search(request):
     full_query = request.GET.get('q', '').replace('\u200c', ' ')
-    print(full_query, '------')
-    if not full_query:
+    if not full_query and request.user.is_authenticated:
         search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')
-        print(search_history)
         suggestions = [{'name': history.query} for history in search_history][:15]
     else:
         products = search(request, live=True)
-        print(products)
         suggestions = []
         for product in products:
             if product.name not in suggestions:
@@ -223,7 +219,6 @@ def live_search(request):
             if len(suggestions) > 15:
                 break
         suggestions = list({'name': name} for name in suggestions)
-    print(suggestions)
     return JsonResponse({'results': suggestions})
 
 #######################################################################

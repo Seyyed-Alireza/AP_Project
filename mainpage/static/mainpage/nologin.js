@@ -18,14 +18,15 @@ function setLeftSuggestion() {
 
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('search-input');
+    let debounceTimer = null;
 
-    function fetchSuggestions(query) {
+    function fetchAndDisplaySuggestions(query) {
         fetch(`/live-search/?q=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
                 const results = data.results;
                 if (results.length > 0) {
-                    suggestionsBox.innerHTML = results.map(p => 
+                    suggestionsBox.innerHTML = results.map(p =>
                         `<div class="suggestion-item" data-name="${p.name}">${p.name}</div>`
                     ).join('');
                 } else {
@@ -34,9 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 suggestionsBox.style.display = 'block';
                 pop.style.display = 'block';
-
-                var searchjs = document.getElementById('search_js');
-                var btnw = document.querySelector("#container > section.search-bar > form > button");
+                const searchjs = document.getElementById('search_js');
+                const btnw = document.querySelector("#container > section.search-bar > form > button");
                 searchjs.style.position = 'relative';
                 searchjs.style.zIndex = '5';
                 btnw.style.position = 'relative';
@@ -52,19 +52,26 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    function handleSearchTrigger() {
+    function triggerSearch() {
         const query = input.value.trim();
-        fetchSuggestions(query);
+        if (debounceTimer) {
+            clearTimeout(debounceTimer);
+        }
+
+        debounceTimer = setTimeout(() => {
+            fetchAndDisplaySuggestions(query);
+        }, 500)
     }
 
-    input.addEventListener('input', handleSearchTrigger);
-    input.addEventListener('focus', handleSearchTrigger);
+    input.addEventListener('input', triggerSearch);
+    input.addEventListener('focus', triggerSearch);
+    input.addEventListener('click', triggerSearch);
 
     document.addEventListener('click', function (event) {
         if (!input.contains(event.target) && !suggestionsBox.contains(event.target)) {
             suggestionsBox.style.display = 'none';
-            var searchjs = document.getElementById('search_js');
-            var btnw = document.querySelector("#container > section.search-bar > form > button");
+            const searchjs = document.getElementById('search_js');
+            const btnw = document.querySelector("#container > section.search-bar > form > button");
             searchjs.style.position = 'static';
             searchjs.style.zIndex = '0';
             btnw.style.position = 'static';
@@ -73,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-window.addEventListener("resize", function() {
+window.addEventListener("resize", function () {
     if (suggestionsBox.style.display === "block") {
         setLeftSuggestion();
     }

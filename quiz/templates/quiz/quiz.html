@@ -41,7 +41,11 @@
         {% endfor %}
 
         <button type="submit">ثبت پاسخ‌ها</button>
-        <button class="btn" type="button" onclick="window.location.href='{% url 'skip_quiz' %}'">بعداً انجام می‌دهم</button>
+        <form method="post" action="{% url 'skip_quiz' %}">
+            {% csrf_token %}
+            <button class="btn" type="submit">بعداً انجام می‌دهم</button>
+        </form>
+
         <!-- <a href="#" id="skip-btn">بعداً انجام می‌دهم</a> -->
     </form>
 
