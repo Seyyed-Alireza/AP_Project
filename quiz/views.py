@@ -115,9 +115,9 @@ def skip_quiz(request):
         return JsonResponse({'success': True})
     return JsonResponse({'success': False}, status=100)
 
-def skip_quiz(request):
-    if request.method == "POST":
-        profile = get_object_or_404(SkinProfile, user=request.user)
-        profile.quiz_skipped = True
-        profile.save()
-    return redirect('mainpage')
+# def skip_quiz(request):
+#     if request.method == "POST":
+#         profile = get_object_or_404(SkinProfile, user=request.user)
+#         profile.quiz_skipped = True
+#         profile.save()
+#     return redirect('mainpage')
