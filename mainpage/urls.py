@@ -9,7 +9,5 @@ urlpatterns = [
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('search/', views.search, name='search'),
     path('live-search/', views.live_search, name='live_search'),
+    path('like/<int:product_id>/', views.like_product, name='like_product'),
 ]
-
-
-# path('accounts/login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),

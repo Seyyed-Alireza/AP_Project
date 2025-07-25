@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from .forms import QuizForm
 from django.contrib.auth.decorators import login_required
 from .models import Choice, SkinProfile, Question, Answer
+from django.utils import timezone
 
 @login_required
 def skin_quiz_view(request):
@@ -23,11 +24,19 @@ def skin_quiz_view(request):
             'hydration': 0,
             'elasticity': 0,
         }
+    
+        skin_profile = request.user.skinprofile
+        if questions[0]:
+            qid = f"question_{questions[0].id}"
+            raw_value = request.POST.get(qid)
+            choice = Choice.objects.get(id=int(raw_value))
+            skin_profile.skin_type = choice.effects['skin_type']
+            print(choice.effects['skin_type'])
+            # print(choice)
 
-        for question in questions:
+        for question in questions[1:]:
             qid = f"question_{question.id}"
             raw_value = request.POST.getlist(qid) if question.type == "multiple" else request.POST.get(qid)
-
             if not raw_value:
                 continue
 
@@ -58,7 +67,6 @@ def skin_quiz_view(request):
                     elif isinstance(value, str):
                         total_effects[key] = value
 
-        skin_profile = request.user.skinprofile
         skin_profile.acne = total_effects.get("acne", 0)
         skin_profile.sensitivity = total_effects.get("sensitivity", 0)
         skin_profile.dryness = total_effects.get("dryness", 0)
@@ -67,11 +75,10 @@ def skin_quiz_view(request):
         skin_profile.age_range = total_effects.get('age_range', None)
         skin_profile.quiz_skipped = True
         skin_profile.quiz_completed = True
-
-        if hasattr(skin_profile, 'hydration'):
-            skin_profile.hydration = total_effects.get("hydration", 0)
-        if hasattr(skin_profile, 'elasticity'):
-            skin_profile.elasticity = total_effects.get("elasticity", 0)
+        if not skin_profile.completed_at:
+            skin_profile.completed_at = timezone.now()
+        skin_profile.hydration = total_effects.get("hydration", 0)
+        skin_profile.elasticity = total_effects.get("elasticity", 0)
 
         skin_profile.save()
         return redirect('profile')

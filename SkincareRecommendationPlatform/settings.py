@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'accounts',
     'profiles',
     'quiz',
+    'routine',
 ]
 
 MIDDLEWARE = [

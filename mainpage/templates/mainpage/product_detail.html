@@ -72,13 +72,47 @@
                 <img src="{{ product.image.url }}" class="product_image">
                 <div class="image_underline"></div>
                 <div class="product_details">
+                    <div class="interactions-mobile">
+                        <span class="product_rating">
+                            <span class="star">&#9733;</span>
+                            <span style="margin-right: -5px;"><span class="hide_text">امتیاز</span> {{ product.rating|persian_numbers }} <span class="hide_text">براساس نظر {{ product.sales_count|intcomma|persian_numbers }} خریدار</span></span>
+                            <span style="opacity: 0.4;">|</span>              
+                            <svg width="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            {{ product.views|intcomma|persian_numbers }} 
+                            <span class="hide_text">بازدید</span>
+                            <span style="opacity: 0.4;">|</span>
+                            <svg class="heart-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                            </svg>
+                            <span id="like-count" data-raw="{{ product.likes }}">{{ product.likes|intcomma|persian_numbers }}</span>
+                            <span class="hide_text" >علاقه‌مندی</span>
+                        </span>
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'like_product' product.id %}">
+                                {% csrf_token %}
+                                <button id="like" class="hide_button" data-product-id="{{ product.id }}">
+                                    <svg class="like-ico {% if liked %}active{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                        <path d="M7.493 18.5c-.425 0-.82-.236-.975-.632A7.48 7.48 0 0 1 6 15.125c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75A.75.75 0 0 1 15 2a2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23h-.777ZM2.331 10.727a11.969 11.969 0 0 0-.831 4.398 12 12 0 0 0 .52 3.507C2.28 19.482 3.105 20 3.994 20H4.9c.445 0 .72-.498.523-.898a8.963 8.963 0 0 1-.924-3.977c0-1.708.476-3.305 1.302-4.666.245-.403-.028-.959-.5-.959H4.25c-.832 0-1.612.453-1.918 1.227Z" />
+                                    </svg>
+                                </button>
+                            </form>
+                        {% else %}
+                            <span>           
+                                <svg class="like-ico" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                    <path d="M7.493 18.5c-.425 0-.82-.236-.975-.632A7.48 7.48 0 0 1 6 15.125c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75A.75.75 0 0 1 15 2a2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23h-.777ZM2.331 10.727a11.969 11.969 0 0 0-.831 4.398 12 12 0 0 0 .52 3.507C2.28 19.482 3.105 20 3.994 20H4.9c.445 0 .72-.498.523-.898a8.963 8.963 0 0 1-.924-3.977c0-1.708.476-3.305 1.302-4.666.245-.403-.028-.959-.5-.959H4.25c-.832 0-1.612.453-1.918 1.227Z" />
+                                </svg>
+                            </span>
+                        {% endif %}
+                    </div>
                     <h3>مشخصات محصول</h3>
                     <p class="product_name">نام: {{ product.name }}</p>
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma|persian_numbers }} تومان</p>
-                    <p class="product_rating"><span class="star">&#9733;</span> {{ product.rating|persian_numbers }} امتیاز</p>
+                    
                     <!-- <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p> -->
-                    <p class="product_comments_number">امتیاز براساس نظر {{ product.sales_count|intcomma|persian_numbers }} خریدار</p>
 
                 </div>
             </div>
