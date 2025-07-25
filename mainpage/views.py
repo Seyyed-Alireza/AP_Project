@@ -192,12 +192,7 @@ def search(request, live=False):
     selected_ids = [r[0] for r in results]
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)
-    final_products = [r[0] for r in results][:500]
-
-    return final_products
-
-    return render(request, 'mainpage/mainpage.html', {'products': final_products})
-
+    
 #####################################################################
 
 from django.http import JsonResponse
@@ -223,19 +218,22 @@ def live_search(request):
 from accounts.models import ProductSearchHistory
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
-    product.views += 1
-    if request.user.is_authenticated:
-        ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type=ProductSearchHistory.INTERACTION_TYPES[0][0])
+    user = request.user
+    if user.is_authenticated and not ProductSearchHistory.objects.filter(user=user, product=product, interaction_type='view').exists():
+        ProductSearchHistory.objects.create(user=user, product=product, interaction_type='view')
+        product.views += 1
+    elif not user.is_authenticated:
+        product.views += 1
     product.save(update_fields=['views'])
 
     comments = product.comments.all().order_by('-created_at')
 
     before_commented = False
-    if request.user.is_authenticated:
-        before_commented = product.comments.filter(user=request.user).exists()
+    if user.is_authenticated:
+        before_commented = product.comments.filter(user=user).exists()
 
     if request.method == 'POST':
-        if not request.user.is_authenticated:
+        if not user.is_authenticated:
             return redirect('login')
 
         text = request.POST.get('text')
@@ -244,16 +242,36 @@ def product_detail(request, pk):
         if text and rating and rating.isdigit() and 1 <= int(rating) <= 5:
             Comment.objects.create(
                 product=product,
-                user=request.user,
+                user=user,
                 text=text,
                 rating=int(rating)
             )
             return redirect('product_detail', pk=pk)
 
-
+    liked = None
+    if user.is_authenticated and ProductSearchHistory.objects.filter(user=request.user, product=product, interaction_type='like').exists():
+        liked = True
+    else:
+        liked = False
     return render(request, 'mainpage/product_detail.html', {
         'product': product,
         'comments': comments,
-        'commented_before': before_commented
+        'commented_before': before_commented,
+        'liked': liked
     })
 
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def like_product(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, id=product_id)
+        like, created = ProductSearchHistory.objects.get_or_create(user=request.user, product=product, interaction_type=ProductSearchHistory.INTERACTION_TYPES[1][0])
+        if not created:
+            like.delete()
+            product.likes = max(0, product.likes - 1)
+        else:
+            product.likes += 1
+        product.save(update_fields=['likes'])
+        return JsonResponse({'success': True, 'likes': product.likes})
+    return JsonResponse({'success': False}, status=400)

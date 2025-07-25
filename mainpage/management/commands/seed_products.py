@@ -96,6 +96,7 @@ class Command(BaseCommand):
             rating = round(random.uniform(2.0, 5.0), 1)
             image = 'product_images/default.jpg'
             views = random.randint(10, 3000000)
+            likes = random.randint(0, 300000)
             tags = random.sample(sample_tags, k=random.randint(2, 4))
             sales_count = random.randint(0, 1000)
             description = 'لورم ایپسوم، متن ساختگی برای معرفی محصول با ویژگی‌های خاص برای انواع پوست‌ها.'
@@ -114,6 +115,7 @@ class Command(BaseCommand):
                 rating=rating,
                 image=image,
                 views=views,
+                likes=likes,
                 tags=tags,
                 sales_count=sales_count,
                 description=description,

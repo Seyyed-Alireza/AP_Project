@@ -17,6 +17,7 @@ class ProductSearchHistory(models.Model):
         ('like', 'Like'),
         ('wishlist', 'Wishlist'),
         ('cart', 'Cart'),
+        ('purchase', 'Purchase'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='browsing_histories')

@@ -40,9 +40,12 @@ def profile_edit(request):
 
     return render(request, 'profiles/profile_edit.html', {'form': form})    
 
+from accounts.models import ProductSearchHistory
 @login_required
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
+    if not ProductSearchHistory.objects.filter(user=request.user, product=product, interaction_type='cart').exists():
+        ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type='cart')
     cart_item, created = ShoppingCartItem.objects.get_or_create(
         user=request.user,
         product=product,
@@ -65,12 +68,22 @@ def decrease_cart_item(request, product_id):
             cart_item.save()
         else:
             cart_item.delete()
+            try:
+                interaction = ProductSearchHistory.objects.get(user=request.user, product=product, interaction_type='cart')
+                interaction.delete()
+            except:
+                pass
     return redirect('profile')
 
 @login_required
 def remove_cart_item(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     ShoppingCartItem.objects.filter(user=request.user, product=product).delete()
+    try:
+        interaction = ProductSearchHistory.objects.get(user=request.user, product=product, interaction_type='cart')
+        interaction.delete()
+    except:
+        pass
     return redirect('profile')
 
 @login_required
@@ -79,10 +92,10 @@ def buy_products(request):
         cart_items = ShoppingCartItem.objects.filter(user=request.user)
 
         for item in cart_items:
-            prduct = item.product
-            prduct.sales_count += item.quantity
-            prduct.save()
+            product = item.product
+            product.sales_count += item.quantity
+            ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type='purchase')
+            product.save()
         cart_items.delete()
 
-        # می‌تونی اینجا پیام موفقیت یا فاکتور هم بسازی
         return redirect('profile')
