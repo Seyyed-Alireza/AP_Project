@@ -17,24 +17,6 @@
     color: black;
 }
 
-a {
-    text-decoration: none;
-}
-
-a.mainpage-button {
-    font-size: 16px;
-    background-color: #03a7ff;
-    box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    border: none;
-    color: white;
-    font-size: 18px;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: all 200ms;
-}
-
 h1 {
     font-size: 2rem;
 }
@@ -189,6 +171,7 @@ label {
 form {
     width: 100%;
     border-radius: 8px;
+    padding-top: 10px;
 }
 
 button {
@@ -273,10 +256,6 @@ button:active {
 .cart_buttons {
     display: flex;
     justify-content: space-between;
-}
-
-form {
-    padding: 0 10px;
 }
 
 .cart_button {

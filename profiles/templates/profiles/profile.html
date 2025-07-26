@@ -113,6 +113,8 @@
             ویرایش اطلاعات
         </button>
 
+        <button onclick="window.location.href='{% url 'mainpage' %}'">بازگشت به صفحه اصلی</button>
+
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="signout">
@@ -122,8 +124,6 @@
                 خروج از حساب کاربری
             </button>
         </form>
-
-        <a class="mainpage-button" href="http://127.0.0.1:8000/"> بازگشت به صفحه اصلی</a>
         
     </div>
 </body>
