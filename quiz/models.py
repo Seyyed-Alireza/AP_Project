@@ -67,11 +67,35 @@ class SkinProfile(models.Model):
     dryness = models.IntegerField(default=0)
     oiliness = models.IntegerField(default=0)
     redness = models.IntegerField(default=0)
-    age_range = models.CharField(max_length=20, null=True, blank=True)
     hydration = models.IntegerField(default=0)
     elasticity = models.IntegerField(default=0)
 
-    preferences = models.JSONField(default=list)
+    def get_skin_scores(self):
+        return [
+            ('acne', self.acne),
+            ('sensitivity', self.sensitivity),
+            ('dryness', self.dryness),
+            ('oiliness', self.oiliness),
+            ('redness', self.redness),
+            ('hydration', self.hydration),
+            ('elasticity', self.elasticity),
+        ]
+
+
+    def set_skin_scores(self, values):
+        (
+            self.acne,
+            self.sensitivity,
+            self.dryness,
+            self.oiliness,
+            self.redness,
+            self.hydration,
+            self.elasticity,
+        ) = values
+
+    age_range = models.CharField(max_length=20, null=True, blank=True)
+
+    preferences = models.JSONField(default=list, blank=True)
 
     budget_range = models.CharField(max_length=3, choices=BUDGET_CHOICES, blank=True, null=True)
     def __str__(self):
