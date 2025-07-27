@@ -164,9 +164,106 @@ label {
     padding: 5px 10px;
 }
 
+.routine_box {
+    padding: 0 20px;
+    align-self: flex-start;
+    width: 100%;
+}
 
+.step_header {
+    font-size: 20px;
+}
 
+.step_products {
+    padding: 16px 16px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 10px;
+}
 
+.step_product_underline {
+    display: block;
+    width: 100%;
+    border-bottom: 1px solid rgb(150, 150, 150);
+    margin-bottom: 8px;
+}
+
+.routine_card {
+    width: 250px;
+    height: 300px;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 12px rgba(97, 95, 225, 0.5);
+    transition: all 200ms;
+}
+
+.routine_card:hover {
+    box-shadow: 0 0 15px rgba(97, 95, 255, 1);
+    transform: scale(1.03);
+    cursor: pointer;
+}
+
+.routine_card_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 50%;
+}
+
+.routine_card_image, .routine_card_name, .routine_card_brand, .routine_card_price, .routine_card_view-and-rate {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    padding: 0 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.routine_card_image_div {
+    height: 50%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.routine_card_image {
+    height: 100%;
+    width: auto;
+}
+
+.routine_card_name, .routine_card_brand, .routine_card_price {
+    height: 20%;
+    justify-content: flex-start;
+}
+
+.routine_card_view-and-rate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 15%;
+    margin-bottom: 0px;
+}
+
+.rate {
+    direction: ltr;
+    font-size: 12px;
+}
+
+.fa-star,
+.fa-star-half-stroke {
+    color: gold;
+    font-size: 12px;
+}
+
+a {
+    text-decoration: none;
+}
 
 form {
     width: 100%;

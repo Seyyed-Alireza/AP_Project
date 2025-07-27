@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm
 from .models import ShoppingCartItem
 from mainpage.models import Product
+from routine.views import find_step_products
+from quiz.models import SkinProfile
+from routine.models import RoutinePlan
 
 @login_required
 def profile_view(request):
@@ -11,10 +14,14 @@ def profile_view(request):
     if cart_items:
         total_shoppingcart_price = sum([item.total_price() for item in cart_items])
     else:
-        total_shoppingcart_price = 0   
+        total_shoppingcart_price = 0
     form = UserProfileForm(instance=profile)
+    steps = None
+    if RoutinePlan.objects.filter(user=request.user).exists():
+        steps = find_step_products(request)
 
     context = {
+        'steps': steps,
         'form': form,
         'cart_items': cart_items,
         'total_shoppingcart_price': total_shoppingcart_price,

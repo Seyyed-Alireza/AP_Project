@@ -280,11 +280,11 @@ def search(request, live=False):
                 if not concern_similar and not ingredient_similar and not name_similar and not brand_similar:
                     type_counter = 0
                     type_similarity = 0
-                    if word in product.skin_types:
+                    if word in product.get_skin_types_fa():
                         type_similarity = SKIN_TYPE_BASE_SCORE
                         type_counter = 1
                     else:
-                        for skin_type in product.skin_types:
+                        for skin_type in product.get_skin_types_fa():
                             st = similarity(word, skin_type)
                             if st > 0.9:
                                 type_similarity = SKIN_TYPE_BASE_SCORE

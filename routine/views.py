@@ -6,33 +6,42 @@ from .models import RoutinePlan
 from django.contrib.auth.decorators import login_required
 
 search_queries = {
-    'oiliness': 'چربی زیاد چرب'
+    'oiliness': 'چربی زیاد چرب',
+    'sensitivity': 'حساس حساسیت'
 }
 
 @login_required
 def routine_generator(request):
     skin_scores = request.user.skinprofile.get_skin_scores()
     skin_scores.sort(key=lambda x: x[1], reverse=True)
+    steps = []
     if skin_scores[0][0] == 'oiliness':
-        product = search(search_queries[skin_scores[0][0]])[0]
-        print(product.skin_types)
-        print(product.rating)
-        print(product.sales_count)
-        print(product.concerns_targeted)
-    steps = {}
+        steps.append({'order': 1, 'step_name': 'کاهش چربی', 'search_query': search_queries['oiliness']})
+        product = routine_search(search_queries[skin_scores[0][0]])[0]
+    if skin_scores[1][0] == 'sensitivity':
+        steps.append({'order': 2, 'step_name': 'کاهش حساسیت', 'search_query': search_queries['sensitivity']})
 
     if not RoutinePlan.objects.filter(user=request.user).exists():
-        RoutinePlan.objects.create(user=request.user)
+        RoutinePlan.objects.create(user=request.user, steps=steps)
     else:
         RoutinePlan.objects.filter(user=request.user).delete()
-        RoutinePlan.objects.create(user=request.user)
-    print(skin_scores)
+        RoutinePlan.objects.create(user=request.user, steps=steps)
+    # print(skin_scores)
 
     return redirect('profile')
 
+def find_step_products(request):
+    routine_plan = get_object_or_404(RoutinePlan, user=request.user)
+    results = []
+    for step in routine_plan.steps:
+        step_products = routine_search(step['search_query'])
+        results.append([step['step_name'], step_products])
+
+    return results
+
 import re
 from django.db.models import Case, When
-def search(full_query):
+def routine_search(full_query):
     full_query = full_query.replace('\u200c', ' ')
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
@@ -53,14 +62,13 @@ def search(full_query):
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
     INGREDIENT_BASE_SCORE = 8000
-    CONCERN_BASE_SCORE = 10000
-    SKIN_TYPE_BASE_SCORE = 10000
+    CONCERN_BASE_SCORE = 11000
+    SKIN_TYPE_BASE_SCORE = 12000
     RATING_BASE_SCORE = 5000
     for product in products:
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')
         product_brand = product.brand.lower().replace('\u200c', ' ')
-
         base_score = 50
         for word in query_words:
             if similarity('پوست', word) >= 0.95:
@@ -71,6 +79,8 @@ def search(full_query):
                 score += BRAND_BASE_SCORE
             elif word in product.concerns_targeted:
                 score += CONCERN_BASE_SCORE
+            elif word in product.skin_types:
+                score += SKIN_TYPE_BASE_SCORE
             else:
                 base_score = 5
                 name_similarity = 0
@@ -147,11 +157,11 @@ def search(full_query):
                 if not concern_similar and not ingredient_similar and not name_similar and not brand_similar:
                     type_counter = 0
                     type_similarity = 0
-                    if word in product.skin_types:
+                    if word in product.get_skin_types_fa():
                         type_similarity = SKIN_TYPE_BASE_SCORE
                         type_counter = 1
                     else:
-                        for skin_type in product.skin_types:
+                        for skin_type in product.get_skin_types_fa():
                             st = similarity(word, skin_type)
                             if st > 0.9:
                                 type_similarity = SKIN_TYPE_BASE_SCORE
@@ -191,7 +201,7 @@ def search(full_query):
         if score > base_score + 1:
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
     results.sort(key=lambda x: x[1], reverse=True)
-    results = [results[0]]
+    results = results[:10]
     selected_ids = [r[0] for r in results]
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)
