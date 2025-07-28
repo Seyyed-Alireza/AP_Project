@@ -205,7 +205,7 @@ class Command(BaseCommand):
             ]
         },
         
-        
+    
         {
             "order": 16,
             "type": "single",
@@ -263,7 +263,7 @@ class Command(BaseCommand):
             "max": 10,
             "effects": {"dryness": "value"}
         },
-        
+    
         # Sub Questions
         {
             "order": 21,
@@ -518,11 +518,72 @@ class Command(BaseCommand):
             ]
         }
 
+# -------------------------- Elasticity Questions --------------------------#
 
-
-
+        # Main question
+        {
+            "order": 44,
+            "type": "range",
+            "text": "کشسانی یا انعطاف‌پذیری پوستتان را چقدر ارزیابی می‌کنید؟ (۰ = کاملاً شل و افتاده، ۱۰ = سفت و کشسان)\n(اگر به این سوال پاسخ دادید، نیازی به پاسخ دادن به ۵ سوال بعدی نیست)",
+            "min": 0,
+            "max": 10,
+            "effects": {"elasticity": "value"}
+        },
         
+        # Sub question
+        {
+            "order": 45,
+            "type": "single",
+            "text": "آیا پوست صورتتان افتادگی یا شلی دارد؟",
+            "choices": [
+                ("بله، به وضوح قابل مشاهده است", {"elasticity": -2}),
+                ("کمی، در نواحی خاصی", {"elasticity": -1}),
+                ("خیر، پوست سفتی دارم", {"elasticity": 1})
+            ]
+        },
+        {
+            "order": 46,
+            "type": "single",
+            "text": "آیا هنگام لبخند یا حرکت صورت، خطوط پوستی دیرتر به حالت عادی برمی‌گردند؟",
+            "choices": [
+                ("بله، کاملاً مشهود است", {"elasticity": -2}),
+                ("کمی، اما زیاد محسوس نیست", {"elasticity": -1}),
+                ("خیر، پوست سریع برمی‌گردد", {"elasticity": 1})
+            ]
+        },
+        {
+            "order": 47,
+            "type": "single",
+            "text": "آیا پوستتان قابلیت بازگشت سریع به حالت اولیه بعد از کشش را دارد؟",
+            "choices": [
+                ("خیر، خیلی کند بازمی‌گردد", {"elasticity": -2}),
+                ("نسبتاً کند", {"elasticity": -1}),
+                ("بله، سریع و قابل‌قبول", {"elasticity": 1})
+            ]
+        },
+        {
+            "order": 48,
+            "type": "single",
+            "text": "آیا از محصولات ضد پیری یا افزایش‌دهنده کشسانی استفاده می‌کنید؟",
+            "choices": [
+                ("خیر", {"elasticity": 0}),
+                ("به‌ندرت", {"elasticity": 1}),
+                ("مرتب استفاده می‌کنم", {"elasticity": 2})
+            ]
+        },
+        {
+            "order": 49,
+            "type": "single",
+            "text": "سن تقریبی شما چقدر است؟",
+            "choices": [
+                ("زیر ۲۵ سال", {"elasticity": 2}),
+                ("۲۵ تا ۳۵ سال", {"elasticity": 1}),
+                ("۳۵ تا ۵۰ سال", {"elasticity": 0}),
+                ("بیشتر از ۵۰ سال", {"elasticity": -1})
+            ]
+        },
     ]
+
     
     def handle(self, *args, **options):
         self.stdout.write("Adding questions to database...")
@@ -557,4 +618,4 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS(f"Question {order} added."))
 
-        self.stdout.write(self.style.SUCCESS("All 20 questions added successfully."))
+        self.stdout.write(self.style.SUCCESS("All questions added successfully."))
