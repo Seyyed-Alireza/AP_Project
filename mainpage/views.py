@@ -160,6 +160,7 @@ def save_search(user, query):
         for s in recent[30:]:
             s.delete()
 
+from quiz.models import SkinProfile
 
 def search(request, live=False):
     full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -173,9 +174,22 @@ def search(request, live=False):
     results = []
     base_score = 5
 
+    user = request.user
     if not full_query:
         for product in products:
-            results.append((product.id, bayesian_average(product, total_rating_average)))
+            concern_similar = False
+            if user.skinprofile.quiz_completed and not concern_similar:
+                skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                for skin_score in skin_scores:
+                    if skin_score[1] > 10:
+                        for concern_targeted in product.concerns_targeted:
+                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                concern_similar = True
+                                break
+                        if concern_similar:
+                            break
+            if concern_similar:
+                results.append((product.id, bayesian_average(product, total_rating_average)))
         results.sort(key=lambda x: x[1], reverse=True)
         selected_ids = [r[0] for r in results]
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
@@ -187,6 +201,7 @@ def search(request, live=False):
     CONCERN_BASE_SCORE = 10000
     SKIN_TYPE_BASE_SCORE = 10000
     RATING_BASE_SCORE = 5000
+
     for product in products:
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')
@@ -196,13 +211,47 @@ def search(request, live=False):
         for word in query_words:
             if similarity('پوست', word) >= 0.95:
                 continue
-            if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
+            name_similar = False
+            brand_similar = False
+            ingredient_similar = False
+            type_similar = False
+            concern_similar = False
+
+            if product_name in full_query or word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
+                name_similar = True
                 score += NAME_BASE_SCORE
-            elif word in product_brand.split():
+            
+            if product_brand in full_query or word in product_brand.split():
+                brand_similar = True
                 score += BRAND_BASE_SCORE
-            elif word in product.concerns_targeted:
-                score += CONCERN_BASE_SCORE
-            else:
+
+            for skin_type in product.skin_types:
+                if skin_type in full_query or word in skin_type:
+                    type_similar = True
+                    score += SKIN_TYPE_BASE_SCORE
+                    break
+            # if user.skinprofile.quiz_completed and not type_similar:
+                # if 
+                
+
+            for concern_targeted in product.concerns_targeted:
+                if concern_targeted in full_query or word in concern_targeted:
+                    concern_similar = True
+                    score += CONCERN_BASE_SCORE
+                    break
+            if user.skinprofile.quiz_completed and not concern_similar:
+                skin_scores = SkinProfile.get_skin_scores_for_search()
+                for skin_score in skin_scores:
+                    if skin_score[1] > 10:
+                        for concern_targeted in product.concerns_targeted:
+                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                concern_similar = True
+                                score += CONCERN_BASE_SCORE
+                                break
+                        if concern_similar:
+                            break
+
+            if not any([name_similar, brand_similar, concern_similar, type_similar, ingredient_similar]):
                 base_score = 5
                 name_similarity = 0
                 name_counter = 0
@@ -220,34 +269,8 @@ def search(request, live=False):
                 brand_similarity = BRAND_BASE_SCORE ** similarity(word, product_brand)
                 brand_similar = True if brand_similarity > 0.85 * BRAND_BASE_SCORE else False
                 # score += brand_similarity
-                if not name_similar and not brand_similar:
-                    ingredient_counter = 0
-                    ingredient_similarity = 0
-                    found = False
-                    for ingredient in product.ingredients:
-                        if word in ingredient.split():
-                            ingredient_similarity = INGREDIENT_BASE_SCORE
-                            ingredient_counter = 1
-                            break
-                        for p_ingredient in ingredient.split():
-                            i = similarity(word, p_ingredient)
-                            if i > 0.9:
-                                ingredient_similarity = INGREDIENT_BASE_SCORE
-                                ingredient_counter = 1
-                                found = True
-                                break
-                            ingredient_similarity += INGREDIENT_BASE_SCORE ** i
-                            ingredient_counter += 1
-                        if found:
-                            break
-                    ingredient_similarity /= ingredient_counter
-                    # score += ingredient_similarity
-                    ingredient_similar = True if ingredient_similarity > 0.85 * INGREDIENT_BASE_SCORE else False
-                else:
-                    ingredient_similar = False
-                    ingredient_similarity = 0
 
-                if not ingredient_similar and not name_similar and not brand_similar:
+                if not concern_similar and not name_similar and not brand_similar:
                     concern_counter = 0
                     concern_similarity = 0
                     found = False
@@ -299,6 +322,33 @@ def search(request, live=False):
                 else:
                     type_similar = False
                     type_similarity = 0
+
+                if not name_similar and not brand_similar:
+                    ingredient_counter = 0
+                    ingredient_similarity = 0
+                    found = False
+                    for ingredient in product.ingredients:
+                        if word in ingredient.split():
+                            ingredient_similarity = INGREDIENT_BASE_SCORE
+                            ingredient_counter = 1
+                            break
+                        for p_ingredient in ingredient.split():
+                            i = similarity(word, p_ingredient)
+                            if i > 0.9:
+                                ingredient_similarity = INGREDIENT_BASE_SCORE
+                                ingredient_counter = 1
+                                found = True
+                                break
+                            ingredient_similarity += INGREDIENT_BASE_SCORE ** i
+                            ingredient_counter += 1
+                        if found:
+                            break
+                    ingredient_similarity /= ingredient_counter
+                    # score += ingredient_similarity
+                    ingredient_similar = True if ingredient_similarity > 0.85 * INGREDIENT_BASE_SCORE else False
+                else:
+                    ingredient_similar = False
+                    ingredient_similarity = 0
 
                 if type_similar:
                     score += type_similarity

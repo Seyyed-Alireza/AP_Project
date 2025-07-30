@@ -61,6 +61,7 @@ class SkinProfile(models.Model):
     quiz_skipped = models.BooleanField(default=False)
 
     skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
+    
 
     acne = models.IntegerField(default=0)
     sensitivity = models.IntegerField(default=0)
@@ -78,6 +79,18 @@ class SkinProfile(models.Model):
             ('oiliness', self.oiliness),
             ('redness', self.redness),
             ('hydration', self.hydration),
+            ('elasticity', self.elasticity),
+        ]
+
+
+    def get_skin_scores_for_search(self):
+        return [
+            ('آکنه', self.acne),
+            ('حساس', self.sensitivity),
+            ('خشکی', self.dryness),
+            ('چربی زیاد', self.oiliness),
+            ('قرمزی', self.redness),
+            ('آبرسان', self.hydration),
             ('elasticity', self.elasticity),
         ]
 
