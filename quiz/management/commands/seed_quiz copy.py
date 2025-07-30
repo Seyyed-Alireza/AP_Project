@@ -343,17 +343,14 @@ class Command(BaseCommand):
 
         # Main question
         {
-            "order": 38,
+            "order": 31,
             "type": "range",
             "text": "میزان رطوبت پوست شما را چگونه ارزیابی می‌کنید؟ (۰ = بسیار خشک، ۱۰ = بسیار مرطوب)\n(اگر به این سوال پاسخ دادید، نیازی به پاسخ دادن به ۵ سوال بعدی نیست)",
-            "min": 0,
-            "max": 10,
-            "effects": {"hydration": "value"}
+            "range_effect_map": {str(i): {"hydration": i} for i in range(0, 11)}
         },
-        
-        # Sub question
+
         {
-            "order": 39,
+            "order": 32,
             "type": "single",
             "text": "پس از شست‌وشوی صورت، چه احساسی روی پوستتان دارید؟",
             "choices": [
@@ -362,8 +359,9 @@ class Command(BaseCommand):
                 ("نرمال یا مرطوب", {"hydration": 1})
             ]
         },
+
         {
-            "order": 40,
+            "order": 33,
             "type": "single",
             "text": "آیا پوستتان پوسته‌پوسته می‌شود یا ترک می‌خورد؟",
             "choices": [
@@ -372,8 +370,9 @@ class Command(BaseCommand):
                 ("خیر، اصلاً", {"hydration": 1})
             ]
         },
+
         {
-            "order": 41,
+            "order": 34,
             "type": "single",
             "text": "آیا احساس کشیدگی یا سوزش در پوستتان وجود دارد؟",
             "choices": [
@@ -382,8 +381,9 @@ class Command(BaseCommand):
                 ("نه، معمولاً خیر", {"hydration": 1})
             ]
         },
+
         {
-            "order": 42,
+            "order": 35,
             "type": "single",
             "text": "آیا از مرطوب‌کننده استفاده می‌کنید؟ اگر بله، چند بار در روز؟",
             "choices": [
@@ -392,8 +392,9 @@ class Command(BaseCommand):
                 ("بیش از یک بار در روز", {"hydration": 2})
             ]
         },
+
         {
-            "order": 43,
+            "order": 36,
             "type": "single",
             "text": "آیا در طول روز نیاز دارید که چندین بار از مرطوب‌کننده یا آب‌پاش استفاده کنید؟",
             "choices": [
@@ -401,23 +402,23 @@ class Command(BaseCommand):
                 ("فقط یک بار", {"hydration": -1}),
                 ("نه، نیازی نیست", {"hydration": 1})
             ]
-        }
+        },
 
 # -------------------------- Elasticity Questions --------------------------#
 
         # Main question
         {
-            "order": 44,
+            "order": 37,
             "type": "range",
-            "text": "کشسانی یا انعطاف‌پذیری پوستتان را چقدر ارزیابی می‌کنید؟ (۰ = کاملاً شل و افتاده، ۱۰ = سفت و کشسان)\n(اگر به این سوال پاسخ دادید، نیازی به پاسخ دادن به ۵ سوال بعدی نیست)",
+            "text": "کشسانی یا انعطاف‌پذیری پوستتان را چقدر ارزیابی می‌کنید؟ (۰ = کاملاً شل و افتاده، ۱۰ = سفت و کشسان)\n(اگر به این سؤال پاسخ دهید، نیازی به پاسخ دادن به ۵ سؤال بعدی نیست)",
             "min": 0,
             "max": 10,
-            "effects": {"elasticity": "value"}
+            "range_effect_map": {str(i): {"elasticity": i} for i in range(0, 11)},
         },
-        
-        # Sub question
+
+        # Sub-question
         {
-            "order": 45,
+            "order": 38,
             "type": "single",
             "text": "آیا پوست صورتتان افتادگی یا شلی دارد؟",
             "choices": [
@@ -426,8 +427,9 @@ class Command(BaseCommand):
                 ("خیر، پوست سفتی دارم", {"elasticity": 1})
             ]
         },
+
         {
-            "order": 46,
+            "order": 39,
             "type": "single",
             "text": "آیا هنگام لبخند یا حرکت صورت، خطوط پوستی دیرتر به حالت عادی برمی‌گردند؟",
             "choices": [
@@ -436,8 +438,9 @@ class Command(BaseCommand):
                 ("خیر، پوست سریع برمی‌گردد", {"elasticity": 1})
             ]
         },
+
         {
-            "order": 47,
+            "order": 40,
             "type": "single",
             "text": "آیا پوستتان قابلیت بازگشت سریع به حالت اولیه بعد از کشش را دارد؟",
             "choices": [
@@ -446,8 +449,9 @@ class Command(BaseCommand):
                 ("بله، سریع و قابل‌قبول", {"elasticity": 1})
             ]
         },
+
         {
-            "order": 48,
+            "order": 41,
             "type": "single",
             "text": "آیا از محصولات ضد پیری یا افزایش‌دهنده کشسانی استفاده می‌کنید؟",
             "choices": [
@@ -456,8 +460,9 @@ class Command(BaseCommand):
                 ("مرتب استفاده می‌کنم", {"elasticity": 2})
             ]
         },
+
         {
-            "order": 49,
+            "order": 42,
             "type": "single",
             "text": "سن تقریبی شما چقدر است؟",
             "choices": [
