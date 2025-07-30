@@ -7,22 +7,6 @@ class Command(BaseCommand):
     quiz_data = [
 
         {
-            # Main question 1 about SkinType
-            "order": 1,
-            "type": "single",
-            "text": "نوع پوست خود را چگونه ارزیابی می‌کنید؟ (در صورت پاسخ به این سؤال، نیازی به پاسخ به سوالات ۲ تا ۷ نیست)",
-            "choices": [
-                ("پوست خشک", {"skin_type": "dry"}),
-                ("پوست چرب", {"skin_type": "oily"}),
-                ("پوست نرمال", {"skin_type": "normal"}),
-                ("پوست مختلط (ترکیبی)", {"skin_type": "combination"}),
-                ("پوست حساس", {"skin_type": "sensitive"}),
-                ("نمی‌دانم", {}), # -> Active next 5 questions
-            ],
-        },
-
-
-        {
             # Sub Question 1.1
             "order": 2,
             "type": "scale",

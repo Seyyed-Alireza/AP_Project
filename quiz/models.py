@@ -62,13 +62,13 @@ class SkinProfile(models.Model):
 
     skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
 
-    acne = models.IntegerField(default=0)
-    sensitivity = models.IntegerField(default=0)
-    dryness = models.IntegerField(default=0)
-    oiliness = models.IntegerField(default=0)
-    redness = models.IntegerField(default=0)
-    hydration = models.IntegerField(default=0)
-    elasticity = models.IntegerField(default=0)
+    acne = models.IntegerField(default=0) # 0 to 10
+    sensitivity = models.IntegerField(default=5) # 0 to 10
+    dryness = models.IntegerField(default=0) # 0 to 10
+    oiliness = models.IntegerField(default=0) # 0 to 10
+    redness = models.IntegerField(default=0) # 0 to 10
+    hydration = models.IntegerField(default=5) # 0 to 10
+    elasticity = models.IntegerField(default=5) # 0 to 10
 
     def get_skin_scores(self):
         return [
