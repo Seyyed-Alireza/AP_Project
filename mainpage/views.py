@@ -177,7 +177,7 @@ def get_similar_users(current_skin_types):
     for profile in all_profiles:
         if any(st in profile.skin_type for st in current_skin_types):
             similar_users.append(profile.user)
-            if len(similar_users) >= 50:
+            if len(similar_users) >= 20:
                 break
     return similar_users
 
@@ -207,12 +207,19 @@ def search(request, live=False):
     user = request.user
     similar_users = get_similar_users(user.skinprofile.skin_type)
     if not full_query:
+        purchases = ProductSearchHistory.objects.filter(
+            user__in=similar_users,
+            interaction_type='purchase'
+        ).values_list('user_id', 'product_id')
+        purchases = set(purchases)
+
         if user.skinprofile.quiz_completed:
             for product in products:
                 score = 0
                 for similar_user in similar_users:
-                    if ProductSearchHistory.objects.filter(user=similar_user, product=product, interaction_type='purchase').exists():
-                        score += 10000000
+                    if (similar_user.id, product.id) in purchases:
+                        score += 1000000
+
                 concern_similar = False
                 type_similar = False
                 skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
