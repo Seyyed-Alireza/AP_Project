@@ -8,14 +8,7 @@ class RoutinePlan(models.Model):
     PLAN_NAMES = [
         ('full', 'Full Routine'),
         ('hydration', 'Hydration Plan'),
-        ('acne', 'Anti-Acne Routine'),
-        ('brightening', 'Brightening Plan'),
-        ('anti_aging', 'Anti-Aging Routine'),
-        ('sensitive', 'Sensitive Skin Routine'),
-        ('minimal', 'Minimal Routine'),
-        ('oily', 'Oily Skin Plan'),
-        ('morning', 'Morning Routine'),
-        ('night', 'Night Routine'),
+        ('mini', 'Minimalist Plan')
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='routine_plans')

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
+from quiz.models import SkinProfile
 
 class Product(models.Model):
 
@@ -41,6 +42,8 @@ class Product(models.Model):
     SAMPLE_CONCERNS = [
         'جوانسازی', 'لک صورت', 'آکنه', 'خشکی پوست', 'چربی زیاد', 'التهاب', 'خط خنده', 'قرمزی', 'کدری', 'تیرگی دور چشم'
     ]
+
+    # SAMPLE_CONCERNS = SkinProfile.SKIN_FEATURES
 
 
     name = models.CharField(max_length=100, verbose_name="نام")

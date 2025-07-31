@@ -37,7 +37,7 @@ class Answer(models.Model):
     def __str__(self):
         return f"{self.user.username} - پاسخ به سوال {self.question.order}"
 
-
+from multiselectfield import MultiSelectField
 class SkinProfile(models.Model):
     
     SKIN_TYPE_CHOICES = [
@@ -60,8 +60,17 @@ class SkinProfile(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)
     quiz_skipped = models.BooleanField(default=False)
 
-    skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
+    skin_type = MultiSelectField(choices=SKIN_TYPE_CHOICES, max_length=50)
     
+    SKIN_FEATURES = [
+        ('acne', 'آکنه'),
+        ('sensitivity', 'حساسیت'),
+        ('dryness', 'خشکی'),
+        ('oiliness', 'چربی'),
+        ('redness', 'قرمزی'),
+        ('hydration', 'آبرسانی'),
+        ('elasticity', 'کشسانی'),
+    ]
 
     acne = models.IntegerField(default=0)
     sensitivity = models.IntegerField(default=0)
@@ -113,6 +122,3 @@ class SkinProfile(models.Model):
     budget_range = models.CharField(max_length=3, choices=BUDGET_CHOICES, blank=True, null=True)
     def __str__(self):
         return f"{self.user.username} - پوست"
-
-# class SkinProfileEdit(models.Model):
-#     skin_profile = models.ForeignKey(SkinProfile, on_delete=models.CASCADE)
