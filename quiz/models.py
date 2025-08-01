@@ -92,6 +92,23 @@ class SkinProfile(models.Model):
             self.hydration,
             self.elasticity,
         ) = values
+        
+    def auto_detect_skin_type(self):
+
+        oil = self.oiliness
+        dry = self.dryness
+        sensitive = self.sensitivity
+        if oil >= 7 and dry <= 3:
+            self.skin_type = 'oily'
+        elif dry >= 7 and oil <= 3:
+            self.skin_type = 'dry'
+        elif oil >= 5 and dry >= 5:
+            self.skin_type = 'combination'
+        elif sensitive >= 7:
+            self.skin_type = 'sensitive'
+        else:
+            self.skin_type = 'normal'
+
 
     age_range = models.CharField(max_length=20, null=True, blank=True)
 

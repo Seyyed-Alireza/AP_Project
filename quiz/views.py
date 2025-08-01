@@ -26,18 +26,18 @@ def skin_quiz_view(request):
         }
     
         skin_profile = request.user.skinprofile
-        if questions[0]:
-            qid = f"question_{questions[0].id}"
-            raw_value = request.POST.get(qid)
-            try:
-                choice = Choice.objects.get(id=int(raw_value))
-                skin_profile.skin_type = choice.effects['skin_type']
-                print(choice.effects['skin_type'])
-            except:
-                pass
+        # if questions[0]:
+        #     qid = f"question_{questions[0].id}"
+        #     raw_value = request.POST.get(qid)
+        #     try:
+        #         choice = Choice.objects.get(id=int(raw_value))
+        #         skin_profile.skin_type = choice.effects['skin_type']
+        #         print(choice.effects['skin_type'])
+        #     except:
+        #         pass
             # print(choice)
 
-        for question in questions[1:]:
+        for question in questions:
             qid = f"question_{question.id}"
             raw_value = request.POST.getlist(qid) if question.type == "multiple" else request.POST.get(qid)
             if not raw_value:
@@ -70,16 +70,19 @@ def skin_quiz_view(request):
                     elif isinstance(value, str):
                         total_effects[key] = value
 
-        # skin_profile.acne = total_effects.get("acne", 0)
-        # skin_profile.sensitivity = total_effects.get("sensitivity", 0)
-        # skin_profile.dryness = total_effects.get("dryness", 0)
-        # skin_profile.oiliness = total_effects.get("oiliness", 0)
-        # skin_profile.redness = total_effects.get("redness", 0)
-        # skin_profile.age_range = total_effects.get('age_range', None)
-        # skin_profile.quiz_skipped = True
-        # skin_profile.quiz_completed = True
-        # skin_profile.hydration = total_effects.get("hydration", 0)
-        # skin_profile.elasticity = total_effects.get("elasticity", 0)
+        skin_profile.acne = total_effects.get("acne", 0)
+        skin_profile.sensitivity = total_effects.get("sensitivity", 0)
+        skin_profile.dryness = total_effects.get("dryness", 0)
+        skin_profile.oiliness = total_effects.get("oiliness", 0)
+        skin_profile.redness = total_effects.get("redness", 0)
+        skin_profile.age_range = total_effects.get('age_range', None)
+        skin_profile.quiz_skipped = False
+        skin_profile.quiz_completed = True
+        skin_profile.hydration = total_effects.get("hydration", 0)
+        skin_profile.elasticity = total_effects.get("elasticity", 0)
+        
+        skin_profile.auto_detect_skin_type()
+        
         if not skin_profile.completed_at:
             skin_profile.completed_at = timezone.now()
 
