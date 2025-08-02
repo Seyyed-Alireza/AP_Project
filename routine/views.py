@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from quiz.models import SkinProfile
 from mainpage.views import bayesian_average, similarity
 from mainpage.models import Product
 from .models import RoutinePlan
 from django.contrib.auth.decorators import login_required
+from mainpage.views import search
 
 search_queries = {
-    'oiliness': 'چربی زیاد چرب داو',
+    'oiliness': 'چربی زیاد چرب',
     'sensitivity': 'حساس حساسیت'
 }
 
@@ -32,7 +32,7 @@ def find_step_products(request):
     routine_plan = get_object_or_404(RoutinePlan, user=request.user)
     results = []
     for step in routine_plan.steps:
-        step_products = routine_search(step['search_query'])
+        step_products = search(request, search_query=step['search_query'], routine=True)
         results.append([step['step_name'], step_products])
 
     return results

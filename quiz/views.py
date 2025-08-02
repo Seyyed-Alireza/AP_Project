@@ -32,7 +32,7 @@ def skin_quiz_view(request):
             if questions[i].type == 'range':
                 unknown_id = f'unknown_{questions[i].id}'
                 if unknown_id in request.POST:
-                    answer = Answer.objects.create(user=request.user, question=questions[i])
+                    answer = Answer.objects.create(user=request.user, question=questions[i], value=0)
                     answer.do_not_now = True
                     answer.save()
                     i += 1

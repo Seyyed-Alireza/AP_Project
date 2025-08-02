@@ -18,7 +18,7 @@ def profile_view(request):
     form = UserProfileForm(instance=profile)
     steps = None
     if RoutinePlan.objects.filter(user=request.user).exists():
-        steps = find_step_products(request)
+        steps = find_step_products(request.user.skinprofile)
 
     context = {
         'steps': steps,

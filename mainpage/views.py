@@ -186,12 +186,15 @@ def get_similar_users(current_skin_types):
 from quiz.models import SkinProfile
 from accounts.models import ProductSearchHistory
 
-def search(request, live=False):
-    full_query = request.GET.get('q', '').replace('\u200c', ' ')
+def search(request, live=False, routine=False, search_query=None):
+    if not routine:
+        full_query = request.GET.get('q', '').replace('\u200c', ' ')
+        if not live and request.user.is_authenticated:
+            save_search(request.user, full_query)
+    else:
+        full_query = search_query
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
-    if not live and request.user.is_authenticated:
-        save_search(request.user, full_query)
     query_words = full_query.lower().split()
     products = Product.objects.all()
     total_rating_average = sum([product.rating for product in products]) / len(products)
@@ -205,7 +208,13 @@ def search(request, live=False):
     base_score = 5
 
     user = request.user
-    similar_users = get_similar_users(user.skinprofile.skin_type)
+    user_in = False
+    if user.is_authenticated and hasattr(user, 'skinprofile'):
+        similar_users = get_similar_users(user.skinprofile.skin_type)
+        user_in = True
+    else:
+        similar_users = []
+
     if not full_query:
         purchases = ProductSearchHistory.objects.filter(
             user__in=similar_users,
@@ -213,33 +222,36 @@ def search(request, live=False):
         ).values_list('user_id', 'product_id')
         purchases = set(purchases)
 
-        if user.skinprofile.quiz_completed:
-            for product in products:
-                score = 0
-                for similar_user in similar_users:
-                    if (similar_user.id, product.id) in purchases:
-                        score += 1000000
+        if user_in:
+            if user.skinprofile.quiz_completed:
+                for product in products:
+                    score = 0
+                    for similar_user in similar_users:
+                        if (similar_user.id, product.id) in purchases:
+                            score += 1000000
 
-                concern_similar = False
-                type_similar = False
-                skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
-                for skin_score in skin_scores:
-                    if skin_score[1] > 10:
-                        for concern_targeted in product.concerns_targeted:
-                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
-                                concern_similar = True
-                                score += CONCERN_BASE_SCORE
+                    concern_similar = False
+                    type_similar = False
+                    skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                    for skin_score in skin_scores:
+                        if skin_score[1] > 10:
+                            for concern_targeted in product.concerns_targeted:
+                                if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                    concern_similar = True
+                                    score += CONCERN_BASE_SCORE
+                                    break
+                            if concern_similar:
                                 break
-                        if concern_similar:
+                    for s_t in user.skinprofile.skin_type:
+                        if s_t in product.skin_types:
+                            type_similar = True
+                            score += SKIN_TYPE_BASE_SCORE
                             break
-                for s_t in user.skinprofile.skin_type:
-                    if s_t in product.skin_types:
-                        type_similar = True
-                        score += SKIN_TYPE_BASE_SCORE
-                        break
-                results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+                    results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+            else:
+                results = [(product.id, bayesian_average(product, total_rating_average)) for product in products]
         else:
-            results.append((product.id, bayesian_average(product, total_rating_average)) for product in products)
+            results = [(product.id, bayesian_average(product, total_rating_average)) for product in products]
         results.sort(key=lambda x: x[1], reverse=True)
         selected_ids = [r[0] for r in results]
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
@@ -273,29 +285,31 @@ def search(request, live=False):
                     type_similar = True
                     score += SKIN_TYPE_BASE_SCORE
                     break
-            if user.skinprofile.quiz_completed and not type_similar:
-                for s_t in user.skinprofile.skin_type:
-                    if s_t in product.skin_types:
-                        type_similar = True
-                        score += SKIN_TYPE_BASE_SCORE
-                        break
+            if user_in:
+                if user.skinprofile.quiz_completed and not type_similar:
+                    for s_t in user.skinprofile.skin_type:
+                        if s_t in product.skin_types:
+                            type_similar = True
+                            score += SKIN_TYPE_BASE_SCORE
+                            break
 
             for concern_targeted in product.concerns_targeted:
                 if concern_targeted in full_query or word in concern_targeted:
                     concern_similar = True
                     score += CONCERN_BASE_SCORE
                     break
-            if user.skinprofile.quiz_completed and not concern_similar:
-                skin_scores = SkinProfile.get_skin_scores_for_search()
-                for skin_score in skin_scores:
-                    if skin_score[1] > 10:
-                        for concern_targeted in product.concerns_targeted:
-                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
-                                concern_similar = True
-                                score += CONCERN_BASE_SCORE
+            if user_in:
+                if user.skinprofile.quiz_completed and not concern_similar:
+                    skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                    for skin_score in skin_scores:
+                        if skin_score[1] > 10:
+                            for concern_targeted in product.concerns_targeted:
+                                if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                    concern_similar = True
+                                    score += CONCERN_BASE_SCORE
+                                    break
+                            if concern_similar:
                                 break
-                        if concern_similar:
-                            break
 
             if not any([name_similar, brand_similar, concern_similar, type_similar, ingredient_similar]):
                 base_score = 5
@@ -340,8 +354,6 @@ def search(request, live=False):
                     concern_similar = True if concern_similarity > 0.85 * CONCERN_BASE_SCORE else False
                     # score += concern_similarity
                     # score += max(name_similarity, brand_similarity, ingredient_similarity, concern_similarity)
-                    if product.price == 4584908:
-                        print(concern_similarity, '----------')
                 else:
                     concern_similar = False
                     concern_similarity = 0
@@ -421,8 +433,8 @@ def search(request, live=False):
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
             
     results.sort(key=lambda x: x[1], reverse=True)
-    print(results[0][1])
-    print(results[1][1])
+    if routine:
+        results = results[:10]
     selected_ids = [r[0] for r in results]
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)
