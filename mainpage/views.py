@@ -29,6 +29,8 @@ def filter(request, products):
 
     if max_price:
         products = products.filter(price__lte=max_price)
+
+    return products
     
 def sort(request, products):
     sort_by = request.GET.get('sort_by')
@@ -40,6 +42,7 @@ def sort(request, products):
         products = products.order_by('-rating')
     elif sort_by == 'popularity':
         products = products.order_by('-views')
+    return products
 
 def mainpage(request):
     # Start with all products
@@ -48,10 +51,10 @@ def mainpage(request):
     products = search(request)
 
     # ---- ✅ Filters ----
-    filter(request, products)
+    products = filter(request, products)
 
     # ---- 🔀 Sorting ----
-    sort(request, products)
+    products = sort(request, products)
 
     skin_type = request.GET.get('skin_type')
     category = request.GET.get('category')
@@ -160,6 +163,28 @@ def save_search(user, query):
         for s in recent[30:]:
             s.delete()
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def get_similar_users(current_skin_types):
+    if isinstance(current_skin_types, str):
+        current_skin_types = [current_skin_types]
+
+    all_profiles = SkinProfile.objects.select_related('user').filter(skin_type__isnull=False)
+
+    similar_users = []
+    for profile in all_profiles:
+        if any(st in profile.skin_type for st in current_skin_types):
+            similar_users.append(profile.user)
+            if len(similar_users) >= 20:
+                break
+    return similar_users
+
+    
+
+from quiz.models import SkinProfile
+from accounts.models import ProductSearchHistory
 
 def search(request, live=False):
     full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -170,23 +195,56 @@ def search(request, live=False):
     query_words = full_query.lower().split()
     products = Product.objects.all()
     total_rating_average = sum([product.rating for product in products]) / len(products)
-    results = []
-    base_score = 5
-
-    if not full_query:
-        for product in products:
-            results.append((product.id, bayesian_average(product, total_rating_average)))
-        results.sort(key=lambda x: x[1], reverse=True)
-        selected_ids = [r[0] for r in results]
-        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
-        return Product.objects.filter(id__in=selected_ids).order_by(preserved)
-
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
     INGREDIENT_BASE_SCORE = 8000
     CONCERN_BASE_SCORE = 10000
     SKIN_TYPE_BASE_SCORE = 10000
     RATING_BASE_SCORE = 5000
+    results = []
+    base_score = 5
+
+    user = request.user
+    similar_users = get_similar_users(user.skinprofile.skin_type)
+    if not full_query:
+        purchases = ProductSearchHistory.objects.filter(
+            user__in=similar_users,
+            interaction_type='purchase'
+        ).values_list('user_id', 'product_id')
+        purchases = set(purchases)
+
+        if user.skinprofile.quiz_completed:
+            for product in products:
+                score = 0
+                for similar_user in similar_users:
+                    if (similar_user.id, product.id) in purchases:
+                        score += 1000000
+
+                concern_similar = False
+                type_similar = False
+                skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                for skin_score in skin_scores:
+                    if skin_score[1] > 10:
+                        for concern_targeted in product.concerns_targeted:
+                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                concern_similar = True
+                                score += CONCERN_BASE_SCORE
+                                break
+                        if concern_similar:
+                            break
+                for s_t in user.skinprofile.skin_type:
+                    if s_t in product.skin_types:
+                        type_similar = True
+                        score += SKIN_TYPE_BASE_SCORE
+                        break
+                results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+        else:
+            results.append((product.id, bayesian_average(product, total_rating_average)) for product in products)
+        results.sort(key=lambda x: x[1], reverse=True)
+        selected_ids = [r[0] for r in results]
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
+        return Product.objects.filter(id__in=selected_ids).order_by(preserved)
+
     for product in products:
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')
@@ -196,13 +254,50 @@ def search(request, live=False):
         for word in query_words:
             if similarity('پوست', word) >= 0.95:
                 continue
-            if word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
+            name_similar = False
+            brand_similar = False
+            ingredient_similar = False
+            type_similar = False
+            concern_similar = False
+
+            if product_name in full_query or word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
+                name_similar = True
                 score += NAME_BASE_SCORE
-            elif word in product_brand.split():
+            
+            if product_brand in full_query or word in product_brand.split():
+                brand_similar = True
                 score += BRAND_BASE_SCORE
-            elif word in product.concerns_targeted:
-                score += CONCERN_BASE_SCORE
-            else:
+
+            for skin_type in product.skin_types:
+                if skin_type in full_query or word in skin_type:
+                    type_similar = True
+                    score += SKIN_TYPE_BASE_SCORE
+                    break
+            if user.skinprofile.quiz_completed and not type_similar:
+                for s_t in user.skinprofile.skin_type:
+                    if s_t in product.skin_types:
+                        type_similar = True
+                        score += SKIN_TYPE_BASE_SCORE
+                        break
+
+            for concern_targeted in product.concerns_targeted:
+                if concern_targeted in full_query or word in concern_targeted:
+                    concern_similar = True
+                    score += CONCERN_BASE_SCORE
+                    break
+            if user.skinprofile.quiz_completed and not concern_similar:
+                skin_scores = SkinProfile.get_skin_scores_for_search()
+                for skin_score in skin_scores:
+                    if skin_score[1] > 10:
+                        for concern_targeted in product.concerns_targeted:
+                            if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                concern_similar = True
+                                score += CONCERN_BASE_SCORE
+                                break
+                        if concern_similar:
+                            break
+
+            if not any([name_similar, brand_similar, concern_similar, type_similar, ingredient_similar]):
                 base_score = 5
                 name_similarity = 0
                 name_counter = 0
@@ -220,34 +315,8 @@ def search(request, live=False):
                 brand_similarity = BRAND_BASE_SCORE ** similarity(word, product_brand)
                 brand_similar = True if brand_similarity > 0.85 * BRAND_BASE_SCORE else False
                 # score += brand_similarity
-                if not name_similar and not brand_similar:
-                    ingredient_counter = 0
-                    ingredient_similarity = 0
-                    found = False
-                    for ingredient in product.ingredients:
-                        if word in ingredient.split():
-                            ingredient_similarity = INGREDIENT_BASE_SCORE
-                            ingredient_counter = 1
-                            break
-                        for p_ingredient in ingredient.split():
-                            i = similarity(word, p_ingredient)
-                            if i > 0.9:
-                                ingredient_similarity = INGREDIENT_BASE_SCORE
-                                ingredient_counter = 1
-                                found = True
-                                break
-                            ingredient_similarity += INGREDIENT_BASE_SCORE ** i
-                            ingredient_counter += 1
-                        if found:
-                            break
-                    ingredient_similarity /= ingredient_counter
-                    # score += ingredient_similarity
-                    ingredient_similar = True if ingredient_similarity > 0.85 * INGREDIENT_BASE_SCORE else False
-                else:
-                    ingredient_similar = False
-                    ingredient_similarity = 0
 
-                if not ingredient_similar and not name_similar and not brand_similar:
+                if not concern_similar and not name_similar and not brand_similar:
                     concern_counter = 0
                     concern_similarity = 0
                     found = False
@@ -300,6 +369,33 @@ def search(request, live=False):
                     type_similar = False
                     type_similarity = 0
 
+                if not name_similar and not brand_similar and not type_similar and not concern_similar:
+                    ingredient_counter = 0
+                    ingredient_similarity = 0
+                    found = False
+                    for ingredient in product.ingredients:
+                        if word in ingredient.split():
+                            ingredient_similarity = INGREDIENT_BASE_SCORE
+                            ingredient_counter = 1
+                            break
+                        for p_ingredient in ingredient.split():
+                            i = similarity(word, p_ingredient)
+                            if i > 0.9:
+                                ingredient_similarity = INGREDIENT_BASE_SCORE
+                                ingredient_counter = 1
+                                found = True
+                                break
+                            ingredient_similarity += INGREDIENT_BASE_SCORE ** i
+                            ingredient_counter += 1
+                        if found:
+                            break
+                    ingredient_similarity /= ingredient_counter
+                    # score += ingredient_similarity
+                    ingredient_similar = True if ingredient_similarity > 0.85 * INGREDIENT_BASE_SCORE else False
+                else:
+                    ingredient_similar = False
+                    ingredient_similarity = 0
+
                 if type_similar:
                     score += type_similarity
                 else:
@@ -322,16 +418,9 @@ def search(request, live=False):
 
 
         if score > base_score + 1:
-            if product.price == 4584908:
-                print(product.name, score, bayesian_average(product, total_rating_average), 4584908)
-            if product.price == 2373538:
-                print(product.name, score, bayesian_average(product,total_rating_average))
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
-            # results.append((product.id, score))
-            # results.append((product, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+            
     results.sort(key=lambda x: x[1], reverse=True)
-    # print(product, bayesian_average(results[0][0], total_rating_average))
-    # print(product, bayesian_average(results[1][0], total_rating_average))
     print(results[0][1])
     print(results[1][1])
     selected_ids = [r[0] for r in results]

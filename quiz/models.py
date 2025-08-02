@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from multiselectfield import MultiSelectField
 class SkinProfile(models.Model):
     
     SKIN_TYPE_CHOICES = [
@@ -23,7 +23,17 @@ class SkinProfile(models.Model):
     completed_at = models.DateTimeField(null=True, blank=True)
     quiz_skipped = models.BooleanField(default=False)
 
-    skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
+    skin_type = MultiSelectField(choices=SKIN_TYPE_CHOICES, max_length=50)
+    
+    SKIN_FEATURES = [
+        ('acne', 'آکنه'),
+        ('sensitivity', 'حساسیت'),
+        ('dryness', 'خشکی'),
+        ('oiliness', 'چربی'),
+        ('redness', 'قرمزی'),
+        ('hydration', 'آبرسانی'),
+        ('elasticity', 'کشسانی'),
+    ]
 
     SKIN_PROPERTIES = [
         ('acne', 'Acne'),
@@ -51,6 +61,18 @@ class SkinProfile(models.Model):
             ('oiliness', self.oiliness),
             ('redness', self.redness),
             ('hydration', self.hydration),
+            ('elasticity', self.elasticity),
+        ]
+
+
+    def get_skin_scores_for_search(self):
+        return [
+            ('آکنه', self.acne),
+            ('حساس', self.sensitivity),
+            ('خشکی', self.dryness),
+            ('چربی زیاد', self.oiliness),
+            ('قرمزی', self.redness),
+            ('آبرسان', self.hydration),
             ('elasticity', self.elasticity),
         ]
 
@@ -91,8 +113,6 @@ class SkinProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} - پوست"
 
-# class SkinProfileEdit(models.Model):
-#     skin_profile = models.ForeignKey(SkinProfile, on_delete=models.CASCADE)
 class Question(models.Model):
     TEXT_CHOICES = [
         ('single', 'تک‌گزینه‌ای (Radio button)'),
