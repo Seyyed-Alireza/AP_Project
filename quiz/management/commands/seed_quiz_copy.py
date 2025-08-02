@@ -202,7 +202,7 @@ class Command(BaseCommand):
                 ("کمی خشکی گاه‌به‌گاه", {"dryness": 1}),
                 ("احساس نرمی یا چربی", {"dryness": -1})
             ]
-        }
+        },
 
 # -------------------------- Oilness Questions --------------------------#
 
@@ -471,7 +471,7 @@ class Command(BaseCommand):
                 ("۳۵ تا ۵۰ سال", {"elasticity": 0}),
                 ("بیشتر از ۵۰ سال", {"elasticity": -1})
             ]
-        },
+        }
     ]
 
     

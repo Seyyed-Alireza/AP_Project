@@ -45,7 +45,7 @@ def skin_quiz_view(request):
 
             answer = Answer.objects.create(user=request.user, question=question)
             choices = []
-            if question.type in ['single', 'age_range', 'scale', 'boolean', 'range']:
+            if question.type in ['single', 'age_range', 'scale', 'boolean']:
                 try:
                     choice = Choice.objects.get(id=int(raw_value))
                     choices = [choice]
@@ -53,6 +53,16 @@ def skin_quiz_view(request):
                 except:
                     choices = Choice.objects.filter(question=question, text__iexact=str(raw_value))
                     answer.value = str(raw_value)
+            elif question.type == 'range':
+                qid = f"question_{questions[0].id}"
+                raw_value = request.POST.get(qid)
+                try:
+                    choice = Choice.objects.get(id=int(raw_value))
+                    # skin_profile.skin_type = choice.effects['skin_type']
+                    # print(choice.effects['skin_type'])
+                except:
+                    pass
+                print(choice)
             elif question.type == 'multiple':
                 try:
                     ids = list(map(int, raw_value))
