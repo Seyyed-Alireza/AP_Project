@@ -192,7 +192,6 @@
     <script src="{% static 'mainpage/both.js' %}" charset="utf-8"></script>
     {% if user.is_authenticated %}
         <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
-        <!-- <script src="{% static 'mainpage/nologin.js' %}" charset="utf-8"></script> -->
     {% else %}
         <script src="{% static 'mainpage/nologin.js' %}" charset="utf-8"></script>
     {% endif %}

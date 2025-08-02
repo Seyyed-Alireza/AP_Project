@@ -1,12 +1,13 @@
 {% load utils %}
 {% load static %}
+{% load persian_filters %}
 
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <title>تحلیل پوست شما</title>
-    <link rel="stylesheet" href="{% static 'quiz_form/style.css' %}">
+    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
 </head>
 <body>
     <h2>👩‍⚕️ پرسشنامه تحلیل پوست</h2>
@@ -17,7 +18,7 @@
                 <strong>{{ question.order }}. {{ question.text }}</strong><br>
 
                 {% with key="question_"|addstr:question.id %}
-                    {% if question.type in "single age_range scale boolean range" %}
+                    {% if question.type == "single" %}
                         {% for choice in question.choices.all %}
                             <label>
                                 <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}"
@@ -25,6 +26,24 @@
                                 {{ choice.text }}
                             </label>
                         {% endfor %}
+
+                    {% elif question.type == "range" %}
+                        <div class="range-question">
+                            <span id="span_output_{{ question.id }}">
+                                <output name="rating_output" id="rating_output_{{ question.id }}">
+                                    {{ initial_answers|range_value:key|default:5|persian_numbers }}
+                                </output> از {{ 10|persian_numbers }}
+                            </span>
+                            <input type="range" min="0" max="10"
+                            value="{{ initial_answers|range_value:key }}"
+                            id="rating_input_{{ question.id }}" oninput="updateRatingOutput({{ question.id }})" name="question_{{ question.id }}">
+                            <div>
+                                <input id="know_{{ question.id }}" type="checkbox" name="unknown_{{ question.id }}" onchange="rangeDisable({{ question.id }})"
+                                {% if initial_answers|range_checked:key %}checked{% endif %}
+                                >
+                                <label for="know_{{ question.id }}" class="know-checkbox">نمی‌دانم</label>
+                            </div>
+                            </div>
 
                     {% elif question.type == "multiple" %}
                         {% for choice in question.choices.all %}
@@ -40,14 +59,13 @@
         {% endfor %}
 
         <button type="submit">ثبت پاسخ‌ها</button>
-        <form method="post" action="{% url 'skip_quiz' %}">
-            {% csrf_token %}
-            <button class="btn" type="submit">بعداً انجام می‌دهم</button>
-        </form>
 
-        <!-- <a href="#" id="skip-btn">بعداً انجام می‌دهم</a> -->
+    </form>
+    <form method="post" action="{% url 'skip_quiz' %}">
+        {% csrf_token %}
+        <button class="btn" type="submit">بعداً انجام می‌دهم</button>
     </form>
 
-    <!-- <script src="{% static 'quiz_form/index.js' %}" charset="utf-8"></script> -->
+    <script src="{% static 'quiz/index.js' %}" charset="utf-8"></script>
 </body>
 </html>

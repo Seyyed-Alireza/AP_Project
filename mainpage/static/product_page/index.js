@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-// لایک AJAX
+// AJAX for like
 const likeButton = document.getElementById('like');
 if (likeButton) {
     likeButton.addEventListener('click', function (event) {

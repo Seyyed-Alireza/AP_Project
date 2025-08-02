@@ -1,43 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class Question(models.Model):
-    TEXT_CHOICES = [
-        ('single', 'تک‌گزینه‌ای (Radio button)'),
-        ('multiple', 'چندگزینه‌ای (Checkbox)'),
-        ('range', 'مقدار عددی (Slider)'),
-        ('age_range', 'محدوده سنی (Dropdown)'),
-        ('scale', 'مقیاس 1 تا 5 (Likert scale)'),
-        ('boolean', 'بله / خیر (Yes/No)'),
-    ]
-
-    text = models.TextField()
-    order = models.PositiveIntegerField()
-    type = models.CharField(max_length=20, choices=TEXT_CHOICES, default='single')
-
-    def __str__(self):
-        return f"{self.order}. {self.text}"
-
-
-class Choice(models.Model):
-    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
-    text = models.CharField(max_length=200)
-    effects = models.JSONField(blank=True, null=True)
-
-    def __str__(self):
-        return self.text
-
-
-class Answer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    selected_choices = models.ManyToManyField(Choice, blank=True)
-    value = models.CharField(max_length=100, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.user.username} - پاسخ به سوال {self.question.order}"
-
-
 class SkinProfile(models.Model):
     
     SKIN_TYPE_CHOICES = [
@@ -62,13 +25,23 @@ class SkinProfile(models.Model):
 
     skin_type = models.CharField(max_length=20, choices=SKIN_TYPE_CHOICES, default=SKIN_TYPE_CHOICES[-1][0])
 
-    acne = models.IntegerField(default=0) # 0 to 10
-    sensitivity = models.IntegerField(default=5) # 0 to 10
-    dryness = models.IntegerField(default=0) # 0 to 10
-    oiliness = models.IntegerField(default=0) # 0 to 10
-    redness = models.IntegerField(default=0) # 0 to 10
-    hydration = models.IntegerField(default=5) # 0 to 10
-    elasticity = models.IntegerField(default=5) # 0 to 10
+    SKIN_PROPERTIES = [
+        ('acne', 'Acne'),
+        ('sensivity', 'Sensivity'),
+        ('dryness', 'Dryness'),
+        ('oiliness', 'Oiliness'),
+        ('redness', 'Redness'),
+        ('hydration', 'Hydration'),
+        ('elasticity', 'Elasticity')
+    ]
+
+    acne = models.IntegerField(default=0)
+    sensitivity = models.IntegerField(default=0)
+    dryness = models.IntegerField(default=0)
+    oiliness = models.IntegerField(default=0)
+    redness = models.IntegerField(default=0)
+    hydration = models.IntegerField(default=0)
+    elasticity = models.IntegerField(default=0)
 
     def get_skin_scores(self):
         return [
@@ -120,3 +93,39 @@ class SkinProfile(models.Model):
 
 # class SkinProfileEdit(models.Model):
 #     skin_profile = models.ForeignKey(SkinProfile, on_delete=models.CASCADE)
+class Question(models.Model):
+    TEXT_CHOICES = [
+        ('single', 'تک‌گزینه‌ای (Radio button)'),
+        ('multiple', 'چندگزینه‌ای (Checkbox)'),
+        ('range', 'مقدار عددی (Slider)'),
+        ('age_range', 'محدوده سنی (Dropdown)'),
+        ('scale', 'مقیاس 1 تا 5 (Likert scale)'),
+        ('boolean', 'بله / خیر (Yes/No)'),
+    ]
+
+    text = models.TextField()
+    order = models.PositiveIntegerField()
+    type = models.CharField(max_length=20, choices=TEXT_CHOICES, default='single')
+    subject = models.CharField(max_length=20, choices=SkinProfile.SKIN_PROPERTIES, blank=True)
+
+    def __str__(self):
+        return f"{self.order}. {self.text}"
+    
+class Choice(models.Model):
+    question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
+    text = models.CharField(max_length=200)
+    effects = models.JSONField(blank=True, null=True)
+
+    def __str__(self):
+        return self.text
+
+
+class Answer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_choices = models.ManyToManyField(Choice, blank=True)
+    value = models.CharField(max_length=100, blank=True, null=True)
+    do_not_now = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} - پاسخ به سوال {self.question.order}"
