@@ -25,7 +25,6 @@ def routine_generator(request):
     else:
         RoutinePlan.objects.filter(user=request.user).delete()
         RoutinePlan.objects.create(user=request.user, steps=steps)
-    # print(skin_scores)
 
     return redirect('profile')
 
