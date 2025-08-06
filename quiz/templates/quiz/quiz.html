@@ -63,6 +63,7 @@
     </form>
     <form method="post" action="{% url 'skip_quiz' %}">
         {% csrf_token %}
+        <input type="hidden" name="from_profile" value="{{ from_profile }}">
         <button class="btn" type="submit">بعداً انجام می‌دهم</button>
     </form>
 

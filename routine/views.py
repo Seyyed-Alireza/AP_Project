@@ -15,6 +15,7 @@ def routine_generator(request):
     skin_scores = request.user.skinprofile.get_skin_scores()
     skin_scores.sort(key=lambda x: x[1], reverse=True)
     steps = []
+    print(skin_scores)
     if skin_scores[0][0] == 'oiliness':
         steps.append({'order': 1, 'step_name': 'کاهش چربی', 'search_query': search_queries['oiliness']})
     if skin_scores[1][0] == 'sensitivity':

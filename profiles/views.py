@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm
 from .models import ShoppingCartItem
 from mainpage.models import Product
-from routine.views import find_step_products
-from quiz.models import SkinProfile
+from routine.views import find_step_products, routine_generator
 from routine.models import RoutinePlan
+from quiz.models import SkinProfile
 
 @login_required
 def profile_view(request):
@@ -18,6 +18,9 @@ def profile_view(request):
     form = UserProfileForm(instance=profile)
     steps = None
     if RoutinePlan.objects.filter(user=request.user).exists():
+        steps = find_step_products(request.user.skinprofile)
+    elif SkinProfile.objects.get(user=request.user).quiz_completed:
+        routine_generator(request)
         steps = find_step_products(request.user.skinprofile)
 
     context = {

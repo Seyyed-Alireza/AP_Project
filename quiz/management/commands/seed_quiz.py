@@ -82,7 +82,7 @@ class Command(BaseCommand):
             "type": "range",
             "text": "پوست شما چقدر حساس است؟ (۰ = اصلاً حساس نیست، ۱۰ = خیلی حساس)\n(در صورت پاسخ به این سوال، نیازی به پاسخ‌دادن به ۵ سوال بعدی نیست)",
             "range_effect_map": {str(i): {"sensitivity": i} for i in range(0, 11)},
-            'subject': 'sensivity'
+            'subject': 'sensitivity'
         },
 
         {

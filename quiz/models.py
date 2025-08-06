@@ -37,7 +37,7 @@ class SkinProfile(models.Model):
 
     SKIN_PROPERTIES = [
         ('acne', 'Acne'),
-        ('sensivity', 'Sensivity'),
+        ('sensitivity', 'Sensitivity'),
         ('dryness', 'Dryness'),
         ('oiliness', 'Oiliness'),
         ('redness', 'Redness'),
@@ -113,6 +113,10 @@ class SkinProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} - پوست"
 
+
+class Quiz(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creatd_at = models.DateTimeField(auto_now_add=True)
 class Question(models.Model):
     TEXT_CHOICES = [
         ('single', 'تک‌گزینه‌ای (Radio button)'),
@@ -142,6 +146,7 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     selected_choices = models.ManyToManyField(Choice, blank=True)
     value = models.CharField(max_length=100, blank=True, null=True)
@@ -149,3 +154,4 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - پاسخ به سوال {self.question.order}"
+
