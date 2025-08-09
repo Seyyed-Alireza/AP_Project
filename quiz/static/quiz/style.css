@@ -19,9 +19,17 @@
     transition: all 200ms;
 }
 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
 h2 {
     font-size: 1.5rem;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.625rem;
+    margin-bottom: 2.5rem;
 }
 
 body {
@@ -30,6 +38,15 @@ body {
 
 .question {
     margin-bottom: 25px;
+    padding: 10px 8px 5px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgb(136, 84, 255);
+}
+
+.q-text {
+    text-align: justify;
+    font-size: 1.1rem;
 }
 
 label {
@@ -53,4 +70,10 @@ label {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+@media only screen and (max-width: 576px) {
+    * {
+        font-size: 14px;
+    }
 }

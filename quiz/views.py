@@ -52,12 +52,11 @@ def skin_quiz_view(request, prof=False):
                     continue
                 raw_value = request.POST.get(qid)
                 answer = Answer.objects.create(user=request.user, question=questions[i])
-                print(i, int(raw_value))
                 answer.value = int(raw_value)
                 answer.save()
                 try:
                     normal = NORMAL_SKIN_VALUES[questions[i].subject]
-                    total_effects[questions[i].subject] = abs(int(raw_value) - normal)
+                    total_effects[questions[i].subject] = int(raw_value) - normal
                 except:
                     pass
                 

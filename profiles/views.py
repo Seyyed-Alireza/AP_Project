@@ -7,28 +7,49 @@ from routine.views import find_step_products, routine_generator
 from routine.models import RoutinePlan
 from quiz.models import SkinProfile
 
+PLAN_NAMES = {
+    'full': 'برنامه‌ی کامل (اگه سلامت پوستت خیلی برات مهمه)',
+    'hydration': '',
+    'minimalist': ''
+}
+
 @login_required
 def profile_view(request):
-    profile = request.user.userprofile
-    cart_items = ShoppingCartItem.objects.filter(user=request.user).select_related('product')
+    user = request.user
+    profile = user.userprofile
+    cart_items = ShoppingCartItem.objects.filter(user=user).select_related('product')
     if cart_items:
         total_shoppingcart_price = sum([item.total_price() for item in cart_items])
     else:
         total_shoppingcart_price = 0
-    form = UserProfileForm(instance=profile)
+    plans = []
     steps = None
-    if RoutinePlan.objects.filter(user=request.user).exists():
-        steps = find_step_products(request.user.skinprofile)
-    elif SkinProfile.objects.get(user=request.user).quiz_completed:
-        routine_generator(request)
-        steps = find_step_products(request.user.skinprofile)
+    # try:
+    #     routine_plans = RoutinePlan.objects.filter(user=user)
+    #     steps = None
+    #     for routine_plan in routine_plans:
+    #         steps = find_step_products(user=user, name=routine_plan.plan_name)
+    #         plans.append((routine_plan.plan_name, steps))
+    # except:
+    #     pass
+    routine_plans = RoutinePlan.objects.filter(user=user)
+    steps = None
+    for routine_plan in routine_plans:
+        steps = find_step_products(request, name=routine_plan.plan_name)
+        plans.append((PLAN_NAMES[routine_plan.plan_name], steps))
+
+    # if RoutinePlan.objects.filter(user=user).exists():
+    #     steps = find_step_products(user.skinprofile)
+    # elif SkinProfile.objects.get(user=user).quiz_completed:
+    #     routine_generator(request)
+    #     steps = find_step_products(user.skinprofile)
 
     context = {
-        'steps': steps,
-        'form': form,
+        # 'steps': steps,
+        'plans': plans,
         'cart_items': cart_items,
         'total_shoppingcart_price': total_shoppingcart_price,
-        'quiz_completed': request.user.skinprofile.quiz_completed
+        'quiz_completed': user.skinprofile.quiz_completed
     }
     return render(request, 'profiles/profile.html', context)
 

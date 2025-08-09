@@ -52,32 +52,39 @@
         </section>
 
         <section class="routine_box">
-            {% if steps %}
-                <p style="font-size: 24px; font-weight: bold;">مراحل روتین پوستی</p>
+            {% if plans %}
+                <p style="font-size: 26px; font-weight: bold; margin-bottom: 10px;">برنامه‌های پوستی شما</p>
             {% endif %}
-            {% for step in steps %}
-                <p class="step_header">{{ step.0 }}</p>
-                <div class="step_products">
-                    {% for product in step.1 %}
-                        <a href="{% url 'product_detail' product.pk %}" class="routine_card">
-                            <div class="routine_card_image_div">
-                                <img src="{{ product.image.url }}" alt="عمس محصول" class="routine_card_image">
-                            </div>
-                            <div class="routine_card_info">
-                                <p class="routine_card_name">{{ product.name }}</p>
-                                <p class="routine_card_brand">برند {{ product.brand }}</p>
-                                <p class="routine_card_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
-                                <div class="routine_card_view-and-rate">
-                                    <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
-                                    <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
-                                </div>
-                            </div>
-                        </a>
-                    {% empty %}
-                        <p>محصولی برای این منظور پیدا نشد</p>
-                    {% endfor %}
-                </div>
-                <div class="step_product_underline"></div>
+            {% for plan in plans %}
+                <p class="plan-name">{{ plan.0 }}</p>
+                {% for step in plan.1 %}
+                    <p class="step-header">{{ step.0 }}</p>
+                    {% for substep in step.1 %}
+                        <p class="substep-header">{{ substep.0 }}</p>
+                        <p class="step-description">{{ substep.2 }}</p>
+                        <div class="step_products">
+                            {% for product in substep.1 %}
+                                <a href="{% url 'product_detail' product.pk %}" class="routine_card">
+                                    <div class="routine_card_image_div">
+                                        <img src="{{ product.image.url }}" alt="عمس محصول" class="routine_card_image">
+                                    </div>
+                                    <div class="routine_card_info">
+                                        <p class="routine_card_name">{{ product.name }}</p>
+                                        <p class="routine_card_brand">برند {{ product.brand }}</p>
+                                        <p class="routine_card_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
+                                        <div class="routine_card_view-and-rate">
+                                            <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
+                                            <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <p>محصولی برای این منظور پیدا نشد</p>
+                            {% endfor %}
+                        </div>
+                        <div class="step_product_underline"></div>
+                    {% empty %}{% endfor %}
+                {% empty %}{% endfor %}
             {% empty %}
                 <p>برای آماده کردن روتین پوستی لطفاً پرسشنامه‌ای که مربوط به اطلاعات پوستی هست را کامل کنید</p>
             {% endfor %}

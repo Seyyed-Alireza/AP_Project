@@ -88,44 +88,25 @@ class SkinProfile(models.Model):
             self.elasticity,
         ) = values
         
-    # def auto_detect_skin_type(self):
-        # oil = self.oiliness
-        # dry = self.dryness
-        # sensitive = self.sensitivity
-        # if oil >= 7 and dry <= 3:
-        #     self.skin_type = 'oily'
-        # elif dry >= 7 and oil <= 3:
-        #     self.skin_type = 'dry'
-        # elif oil >= 5 and dry >= 5:
-        #     self.skin_type = 'combination'
-        # elif sensitive >= 7:
-        #     self.skin_type = 'sensitive'
-        # else:
-        #     self.skin_type = 'normal'
     def auto_detect_skin_type(self):
         skin_types = []
 
-        # حساس
-        if self.sensitivity >= 4 or self.redness >= 4:
+        if self.sensitivity >= 3 or self.redness >= 4:
             skin_types.append("sensitive")
 
-        # خشک
-        if self.dryness >= 4 and self.oiliness <= 2:
+        if self.dryness >= 3 and self.oiliness <= 3:
             skin_types.append("dry")
 
-        # چرب
-        if self.oiliness >= 4 and self.dryness <= 2:
+        if self.oiliness >= 3 and self.dryness <= 2:
             skin_types.append("oily")
 
-        # مختلط
         if (
             self.oiliness >= 3
-            and self.dryness >= 3
+            and self.dryness >= 2
             and abs(self.oiliness - self.dryness) <= 2
         ):
             skin_types.append("combination")
 
-        # نرمال
         if not skin_types:
             skin_types.append("normal")
         

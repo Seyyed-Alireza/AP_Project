@@ -170,8 +170,21 @@ label {
     width: 100%;
 }
 
-.step_header {
+.plan-name {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.step-header {
+    font-size: 24px;
+}
+
+.substep-header {
     font-size: 20px;
+}
+
+.step-description {
+    text-align: justify;
 }
 
 .step_products {

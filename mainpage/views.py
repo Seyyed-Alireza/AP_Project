@@ -181,7 +181,11 @@ def get_similar_users(current_skin_types):
                 break
     return similar_users
 
-    
+def is_subset(list1, list2):
+    return all(item in list2 for item in list1)
+
+def both_subset(list1, list2):
+    return set(list1).issubset(set(list2)) or set(list2).issubset(set(list1))
 
 from quiz.models import SkinProfile
 from accounts.models import ProductSearchHistory
@@ -204,6 +208,7 @@ def search(request, live=False, routine=False, search_query=None):
     CONCERN_BASE_SCORE = 10000
     SKIN_TYPE_BASE_SCORE = 10000
     RATING_BASE_SCORE = 5000
+    SIMILAR_PURCHASE_BASE_SCORE = 1000000
     results = []
     base_score = 5
 
@@ -228,15 +233,14 @@ def search(request, live=False, routine=False, search_query=None):
                     score = 0
                     for similar_user in similar_users:
                         if (similar_user.id, product.id) in purchases:
-                            score += 1000000
-
+                            score += SIMILAR_PURCHASE_BASE_SCORE
                     concern_similar = False
                     type_similar = False
                     skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
                     for skin_score in skin_scores:
                         if skin_score[1] > 10:
                             for concern_targeted in product.concerns_targeted:
-                                if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                if both_subset(skin_score[0].split(), concern_targeted.split()):
                                     concern_similar = True
                                     score += CONCERN_BASE_SCORE
                                     break
@@ -281,7 +285,7 @@ def search(request, live=False, routine=False, search_query=None):
                 score += BRAND_BASE_SCORE
 
             for skin_type in product.skin_types:
-                if skin_type in full_query or word in skin_type:
+                if both_subset(skin_type.split(), full_query.split()):
                     type_similar = True
                     score += SKIN_TYPE_BASE_SCORE
                     break
@@ -294,7 +298,7 @@ def search(request, live=False, routine=False, search_query=None):
                             break
 
             for concern_targeted in product.concerns_targeted:
-                if concern_targeted in full_query or word in concern_targeted:
+                if both_subset(concern_targeted.split(), full_query.split()):
                     concern_similar = True
                     score += CONCERN_BASE_SCORE
                     break
@@ -304,7 +308,7 @@ def search(request, live=False, routine=False, search_query=None):
                     for skin_score in skin_scores:
                         if skin_score[1] > 10:
                             for concern_targeted in product.concerns_targeted:
-                                if skin_score[0] in concern_targeted or concern_targeted in skin_score[0]:
+                                if both_subset(skin_score[0].split() in concern_targeted.split()):
                                     concern_similar = True
                                     score += CONCERN_BASE_SCORE
                                     break
