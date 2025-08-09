@@ -96,16 +96,16 @@ def skin_quiz_view(request, prof=False):
                         total_effects[key] = value
             i += 1
 
-        skin_profile.acne = total_effects.get("acne", 0)
-        skin_profile.sensitivity = total_effects.get("sensitivity", 0)
-        skin_profile.dryness = total_effects.get("dryness", 0)
-        skin_profile.oiliness = total_effects.get("oiliness", 0)
-        skin_profile.redness = total_effects.get("redness", 0)
+        skin_profile.acne = total_effects.get("acne", 0) - NORMAL_SKIN_VALUES['acne']
+        skin_profile.sensitivity = total_effects.get("sensitivity", 0) - NORMAL_SKIN_VALUES['sensitivity']
+        skin_profile.dryness = total_effects.get("dryness", 0) - NORMAL_SKIN_VALUES['dryness']
+        skin_profile.oiliness = total_effects.get("oiliness", 0) - NORMAL_SKIN_VALUES['oiliness']
+        skin_profile.redness = total_effects.get("redness", 0) - NORMAL_SKIN_VALUES['redness']
         skin_profile.age_range = total_effects.get('age_range', None)
-        skin_profile.quiz_skipped = False
+        skin_profile.quiz_skipped = True
         skin_profile.quiz_completed = True
-        skin_profile.hydration = total_effects.get("hydration", 0)
-        skin_profile.elasticity = total_effects.get("elasticity", 0)
+        skin_profile.hydration = total_effects.get("hydration", 0) - NORMAL_SKIN_VALUES['hydration']
+        skin_profile.elasticity = total_effects.get("elasticity", 0) - NORMAL_SKIN_VALUES['elasticity']
         
         skin_profile.auto_detect_skin_type()
         
