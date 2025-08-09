@@ -266,6 +266,8 @@ def generate_full_plan(request):
     return routine
 
 import time
+from django.core.cache import cache
+
 def find_step_products(request, name):
     start = time.time()
     routine_plan = get_object_or_404(RoutinePlan, user=request.user, plan_name=name)
@@ -273,7 +275,7 @@ def find_step_products(request, name):
     for step in routine_plan.steps:
         subs = []
         for substep in step['steps']:
-            sub_step_products = search(request, search_query=substep['search_query'], routine=True)
+            # sub_step_products = search(request, search_query=substep['search_query'], routine=True)
             sub_step_products = routine_search(request, search_query=substep['search_query'])
             subs.append([substep['step_name'], sub_step_products, substep['description']])
         results.append([step['step_name'], subs])
@@ -307,15 +309,27 @@ def both_subset(list1, list2):
 
 import re
 from django.db.models import Case, When
+import hashlib
+from django.db.models import Avg
 
 @login_required
 def routine_search(request, search_query=None):
+
     full_query = search_query
-    full_query = re.sub(r's+', ' ', full_query).strip()
+    full_query = re.sub(r'\s+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
+    user = request.user
+    raw_key = f'{user.id}:{full_query}'
+    cache_key = 'routine_search' + hashlib.md5(raw_key.encode()).hexdigest()
+
+    cached_ids = cache.get(cache_key)
+    if cached_ids:
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
+        return Product.objects.filter(id__in=cached_ids).order_by(preserved)
+
     query_words = full_query.lower().split()
     products = Product.objects.all()
-    total_rating_average = sum([product.rating for product in products]) / len(products)
+    total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
     INGREDIENT_BASE_SCORE = 8000
@@ -326,7 +340,6 @@ def routine_search(request, search_query=None):
     results = []
     base_score = 5
 
-    user = request.user
     # user_in = False
     # if user.is_authenticated and hasattr(user, 'skinprofile'):
     #     similar_users = get_similar_users(user.skinprofile.skin_type)
@@ -508,7 +521,7 @@ def routine_search(request, search_query=None):
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
             
     results.sort(key=lambda x: x[1], reverse=True)
-    results = results[:10]
-    selected_ids = [r[0] for r in results]
+    selected_ids = [r[0] for r in results[:10]]
+    cache.set(cache_key, selected_ids, timeout=86400)
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)

@@ -189,8 +189,13 @@ def both_subset(list1, list2):
 
 from quiz.models import SkinProfile
 from accounts.models import ProductSearchHistory
+from django.core.cache import cache
+import hashlib
+from django.db.models import Avg
+import time
 
 def search(request, live=False, routine=False, search_query=None):
+    start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
         if not live and request.user.is_authenticated:
@@ -199,9 +204,19 @@ def search(request, live=False, routine=False, search_query=None):
         full_query = search_query
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
+
+    raw_key = f"{request.user.id}:{full_query}"
+    cache_key = "routine_search:" + hashlib.md5(raw_key.encode()).hexdigest()
+
+    cached_ids = cache.get(cache_key)
+    if cached_ids:
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
+        print(time.time() - start)
+        return Product.objects.filter(id__in=cached_ids).order_by(preserved)
+    
     query_words = full_query.lower().split()
     products = Product.objects.all()
-    total_rating_average = sum([product.rating for product in products]) / len(products)
+    total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
     INGREDIENT_BASE_SCORE = 8000
@@ -440,7 +455,9 @@ def search(request, live=False, routine=False, search_query=None):
     if routine:
         results = results[:10]
     selected_ids = [r[0] for r in results]
+    cache.set(cache_key, selected_ids, timeout=86400)
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
+    print(time.time() - start)
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)
     
 #####################################################################
