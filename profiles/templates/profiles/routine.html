@@ -48,9 +48,8 @@
                                 <p>محصولی برای این منظور پیدا نشد</p>
                             {% endfor %}
                         {% if substep.1 %}
-                            <form class="more-products" action="{% url 'mainpage' %}" method="get" >
+                            <form class="more-products" action="{% url 'more_products' %}" method="get" >
                                 <input type="hidden" name="q" value="{{ substep.3 }}">
-                                <input type="hidden" name="more" value="true">
                                 <button type="submit">بیشتر</button>
                             </form>
                         {% endif %}

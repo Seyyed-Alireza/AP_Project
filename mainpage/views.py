@@ -58,17 +58,19 @@ def mainpage(request):
     # ---- 🔀 Sorting ----
     products = sort(request, products)
 
-    # ---- 🔍 Search ----
-    products = search(request, products)
-
     skin_type = request.GET.get('skin_type')
     category = request.GET.get('category')
     brand = request.GET.get('brand')
+    sort_by = request.GET.get('sort_by')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    filters = [brand, category, skin_type, min_price, max_price, sort_by]
+    for_cache = ''.join([str(x) for x in filters])
 
-    more = request.GET.get('more')
-    more = True if more else False
+    # ---- 🔍 Search ----
+    products = search(request, products, for_cache)
+
     context = {
-        'more': not more,
         'products': products,
         'product_model': Product,
         'skin_type_se': skin_type,
@@ -77,6 +79,40 @@ def mainpage(request):
     }
 
     return render(request, 'mainpage/mainpage.html', context)
+
+def more_products(request):
+    query_words = request.GET.get('q').split()
+    q_objects = Q()
+    for word in query_words:
+        q_objects |= Q(name__icontains=word)
+    products = Product.objects.filter(q_objects)
+
+    # ---- ✅ Filters ----
+    products = filter(request, products)
+
+    # ---- 🔀 Sorting ----
+    products = sort(request, products)
+
+    skin_type = request.GET.get('skin_type')
+    category = request.GET.get('category')
+    brand = request.GET.get('brand')
+    sort_by = request.GET.get('sort_by')
+    min_price = request.GET.get('min_price')
+    max_price = request.GET.get('max_price')
+    filters = [brand, category, skin_type, min_price, max_price, sort_by]
+    for_cache = ''.join([str(x) for x in filters])
+    products = search(request, products, for_cache)
+
+    context = {
+        'products': products,
+        'product_model': Product,
+        'skin_type_se': skin_type,
+        'category_se': category,
+        'brand_se': brand
+    }
+
+    return render(request, 'mainpage/more_products.html', context)
+
 
 
 from rest_framework import generics
@@ -205,7 +241,7 @@ import hashlib
 from django.db.models import Avg
 import time
 
-def search(request, products, live=False, routine=False, search_query=None):
+def search(request, products, for_cache, live=False, routine=False, search_query=None):
     start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -217,18 +253,25 @@ def search(request, products, live=False, routine=False, search_query=None):
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
 
     raw_key = f"{request.user.id}:{full_query}" if request.user.is_authenticated else f'{full_query}'
-    cache_key = "routine_search:" + hashlib.md5(raw_key.encode()).hexdigest()
+    raw_key += for_cache
+    cache_key = "search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
     if cached_ids:
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
         print(time.time() - start)
         return Product.objects.filter(id__in=cached_ids).order_by(preserved)
-    
     query_words = full_query.lower().split()
+
+    q_objects = Q()
+    for word in query_words:
+        q_objects |= Q(name__icontains=word)# | Q(brand__icontains=word) | Q(description__icontains=word)
+
+    products_backup = products
+    products.filter(q_objects)
     # products = Product.objects.all()
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
-    NAME_BASE_SCORE = 12000
+    NAME_BASE_SCORE = 15000
     BRAND_BASE_SCORE = 10000
     INGREDIENT_BASE_SCORE = 8000
     CONCERN_BASE_SCORE = 10000
@@ -314,20 +357,20 @@ def search(request, products, live=False, routine=False, search_query=None):
             for skin_type in product.skin_types:
                 if both_subset(skin_type.split(), full_query.split()):
                     type_similar = True
-                    score += SKIN_TYPE_BASE_SCORE
+                    score += SKIN_TYPE_BASE_SCORE if not name_similar else SKIN_TYPE_BASE_SCORE / 10
                     break
             if user_in:
                 if user.skinprofile.quiz_completed and not type_similar:
                     for s_t in user.skinprofile.skin_type:
                         if s_t in product.skin_types:
                             type_similar = True
-                            score += SKIN_TYPE_BASE_SCORE
+                            score += SKIN_TYPE_BASE_SCORE if not name_similar else SKIN_TYPE_BASE_SCORE / 10
                             break
 
             for concern_targeted in product.concerns_targeted:
                 if both_subset(concern_targeted.split(), full_query.split()):
                     concern_similar = True
-                    score += CONCERN_BASE_SCORE
+                    score += CONCERN_BASE_SCORE if not name_similar else CONCERN_BASE_SCORE / 10
                     break
             if user_in:
                 if user.skinprofile.quiz_completed and not concern_similar:
@@ -337,7 +380,7 @@ def search(request, products, live=False, routine=False, search_query=None):
                             for concern_targeted in product.concerns_targeted:
                                 if both_subset(skin_score[0].split() in concern_targeted.split()):
                                     concern_similar = True
-                                    score += CONCERN_BASE_SCORE
+                                    score += CONCERN_BASE_SCORE if not name_similar else CONCERN_BASE_SCORE / 10
                                     break
                             if concern_similar:
                                 break
@@ -352,6 +395,8 @@ def search(request, products, live=False, routine=False, search_query=None):
                         name_similarity = NAME_BASE_SCORE
                         name_counter = 1
                         break
+                    elif s < 30:
+                        score -= NAME_BASE_SCORE
                     name_similarity += NAME_BASE_SCORE ** similarity(word, p_word)
                     name_counter += 1
                 name_similarity /= name_counter
@@ -482,7 +527,11 @@ def live_search(request):
         search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')
         suggestions = [{'name': history.query} for history in search_history][:15]
     else:
-        products = search(request, live=True)
+        query_words = full_query.split()
+        q_objects = Q()
+        for word in query_words:
+            q_objects |= Q(name__icontains=word) | Q(brand__icontains=word)
+        products = search(request, live=True, for_cache='for_save', products=Product.objects.filter(q_objects))
         suggestions = []
         for product in products:
             if product.name not in suggestions:

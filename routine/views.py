@@ -236,7 +236,7 @@ def routine_generator(request):
         defaults={
             'user': request.user,
             'steps': steps,
-            'name': 'full'
+            'plan_name': 'full'
         }
     )
 
@@ -244,9 +244,6 @@ def routine_generator(request):
         routine.steps = steps
         routine.save()
 
-    # steps = []
-
-    # generate_full_plan(request)
     return redirect('profile')
 
 @login_required

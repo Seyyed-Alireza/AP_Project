@@ -1,0 +1,112 @@
+{% load humanize %}
+{% load static %}
+{% load persian_filters %}
+{% load star_rating %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بیشتر</title>
+
+    <link rel="stylesheet" href="{% static 'mainpage/style.css' %}?v=9">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+</head>
+<body>
+    <div class="container">
+        <section class="products-box">
+            <aside>
+                <h3 class="filter-title">فیلتر محصولات</h3>
+                <form method="get" class="filter-form">
+                
+                    <!-- 🔍 Search -->
+                    <input type="hidden" name="q" value="{{ request.GET.q }}">
+                    <div class="filter-group">
+                        <label>برند:</label>
+                        <select name="brand">
+                            <option value="">همه</option>
+                            {% for brand in product_model.BRANDS %}
+                            <option value="{{ brand }}" {% if brand_se == brand %}selected{% endif %}>{{ brand }}</option>
+                            {% empty %}
+                            {% endfor %}
+                        </select>
+                    </div>
+              
+                  <!-- ✅ Category -->
+                  <div class="filter-group">
+                    <label>دسته‌بندی:</label>
+                    <select name="category">
+                      <option value="">همه</option>
+                      {% for category in product_model.CATEGORY_CHOICES %}
+                      <option value="{{ category.0 }}" {% if category_se == category.0 %}selected{% endif %}>{{ category.1 }}</option>
+                      {% empty %}
+                      {% endfor %}
+                    </select>
+                  </div>
+              
+                  <!-- ✅ Skin Type -->
+                  <div class="filter-group">
+                    <label>نوع پوست:</label>
+                    <select name="skin_type">
+                      <option value="">همه</option>
+                      {% for skin_type in product_model.SKIN_TYPE_CHOICES %}
+                      <option value="{{ skin_type.0 }}" {% if skin_type_se == skin_type.0 %}selected{% endif %}>{{ skin_type.1 }}</option>
+                      {% empty %}
+                      {% endfor %}
+                    </select>
+                  </div>
+              
+                  <!-- ✅ Concern -->
+                  <div class="filter-group">
+                    <label>مشکل پوستی:</label>
+                    <input type="text" name="concern" value="{{ request.GET.concern }}" placeholder="مثلا جوش">
+                  </div>
+              
+                  <!-- ✅ Price -->
+                  <div class="filter-group price-group">
+                    <label>قیمت:</label>
+                    <input type="number" name="min_price" value="{{ request.GET.min_price }}" placeholder="حداقل">
+                    <input type="number" name="max_price" value="{{ request.GET.max_price }}" placeholder="حداکثر">
+                  </div>
+              
+                  <!-- ✅ Sorting -->
+                  <div class="filter-group">
+                    <label>مرتب‌سازی:</label>
+                    <select name="sort_by">
+                      <option value="">پیش‌فرض</option>
+                      <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>قیمت کم به زیاد</option>
+                      <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>قیمت زیاد به کم</option>
+                      <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>بالاترین امتیاز</option>
+                      <option value="popularity" {% if request.GET.sort_by == 'popularity' %}selected{% endif %}>محبوبیت</option>
+                    </select>
+                  </div>
+              
+                  <button type="submit" class="page_button">اعمال فیلتر</button>
+                </form>
+            </aside>
+
+            <div class="products">
+                {% for product in products %}
+                    <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                            <div class="product_image_div">
+                                <img src="{{ product.image.url }}" alt="عمس محصول" class="product_image">
+                            </div>
+                            <div class="product_info">
+                                <p class="product_name">{{ product.name }}</p>
+                                <p class="product_brand">برند {{ product.brand }}</p>
+                                <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
+                                <div class="product_view-and-rate">
+                                    <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
+                                    <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
+                                </div>
+                            </div>
+                    </a>
+                {% empty %}
+                    <p>محصولی برای نمایش وجود ندارد.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>
