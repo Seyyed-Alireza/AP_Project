@@ -94,16 +94,16 @@ class SkinProfile(models.Model):
         if self.sensitivity >= 3 or self.redness >= 4:
             skin_types.append("sensitive")
 
-        if self.dryness >= 3 and self.oiliness <= 3:
+        if self.dryness <= -2 and self.oiliness <= 3:
             skin_types.append("dry")
 
-        if self.oiliness >= 3 and self.dryness <= 2:
+        if self.oiliness >= 3 and self.dryness >= -1:
             skin_types.append("oily")
 
         if (
             self.oiliness >= 3
-            and self.dryness >= 2
-            and abs(self.oiliness - self.dryness) <= 2
+            and self.dryness <= -2
+            and abs(self.oiliness - abs(self.dryness)) <= 2
         ):
             skin_types.append("combination")
 

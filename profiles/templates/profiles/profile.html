@@ -28,37 +28,39 @@
         </section>
         <div class="prof_header_underline"></div>
 
-        <section class="date_joined">
-            <label for="#">تاریخ عضویت: </label>
-            <p>{{ user.date_joined|to_jalali|persian_numbers }}</p>
+        <section class="user-info">
+            <div class="date_joined">
+                <span class="user-info-header">تاریخ عضویت: </span>
+                <p>{{ user.date_joined|to_jalali|persian_numbers }}</p>
+            </div>
+
+            <div class="phone_number_box">
+                <span class="user-info-header">تلفن همراه:</span>
+                {% if user.userprofile.phone_number %}
+                    <p class="phone_number">{{ user.userprofile.phone_number|persian_numbers }}</p>
+                {% else %}
+                    <p>هنوز شماره تلفن همراه خود را وارد نکرده‌اید.</p>
+                {% endif %}
+            </div>
+
+            <div class="address_box">
+                <span class="user-info-header">آدرس کاربر</span>
+                {% if user.userprofile.address %}
+                    <p class="address">{{ user.userprofile.address }}</p>
+                {% else %}
+                    <p>هنوز آدرس خود را وارد نکرده‌ابد.</p>
+                {% endif %}
+            </div>
         </section>
 
-        <section class="phone_number_box">
-            <label for="#">تلفن همراه:</label>
-            {% if user.userprofile.phone_number %}
-                <p class="phone_number">{{ user.userprofile.phone_number|persian_numbers }}</p>
-            {% else %}
-                <p>هنوز شماره تلفن همراه خود را وارد نکرده‌اید.</p>
-            {% endif %}
-        </section>
-
-        <section class="address_box">
-            <label for="#">آدرس کاربر</label>
-            {% if user.userprofile.address %}
-                <p class="address">{{ user.userprofile.address }}</p>
-            {% else %}
-                <p>هنوز آدرس خود را وارد نکرده‌ابد.</p>
-            {% endif %}
-        </section>
-
-        <section class="routine_box">
+        <!-- <section class="routine_box">
             {% if plans %}
-                <p style="font-size: 26px; font-weight: bold; margin-bottom: 10px;">برنامه‌های پوستی شما</p>
+                <p class="your-plan">برنامه‌های پوستی شما</p>
             {% endif %}
             {% for plan in plans %}
-                <p class="plan-name">{{ plan.0 }}</p>
+                <span class="plan-name">{{ plan.0 }}</span>
                 {% for step in plan.1 %}
-                    <p class="step-header">{{ step.0 }}</p>
+                    <p class="step-header"><span class="step-counter">مرحله {{ step.2|persian_numbers }}:</span> {{ step.0 }}</p>
                     {% for substep in step.1 %}
                         <p class="substep-header">{{ substep.0 }}</p>
                         <p class="step-description">{{ substep.2 }}</p>
@@ -88,7 +90,7 @@
             {% empty %}
                 <p>برای آماده کردن روتین پوستی لطفاً پرسشنامه‌ای که مربوط به اطلاعات پوستی هست را کامل کنید</p>
             {% endfor %}
-        </section>
+        </section> -->
 
         <section class="shopping_cart">
             <h2 class="shopping_cart_h2">
@@ -138,6 +140,8 @@
                 <span>سبد خرید شما خالی است.</span>
             {% endif %}
         </section>
+
+        <button onclick="window.location.href='{% url 'routine' %}'">روتین پوستی شما</button>
 
         <button class="btn" type="button" onclick="window.location.href='{% url 'quiz_from_prof' %}'">
             {% if not quiz_completed %}

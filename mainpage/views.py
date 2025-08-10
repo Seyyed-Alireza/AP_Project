@@ -9,11 +9,15 @@ def bayesian_average(product, total_rating_average):
     return ((product.sales_count / (product.sales_count + m)) * product.rating + (m / (product.sales_count + m)) * total_rating_average) / 5
 
 def filter(request, products):
+    brand = request.GET.get('brand')
     category = request.GET.get('category')
     skin_type = request.GET.get('skin_type')
     concern = request.GET.get('concern')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
+
+    if brand:
+        products = products.filter(brand=brand)
 
     if category:
         products = products.filter(category=category)
@@ -46,9 +50,7 @@ def sort(request, products):
 
 def mainpage(request):
     # Start with all products
-
-    # ---- 🔍 Search ----
-    products = search(request)
+    products = Product.objects.all()
 
     # ---- ✅ Filters ----
     products = filter(request, products)
@@ -56,13 +58,22 @@ def mainpage(request):
     # ---- 🔀 Sorting ----
     products = sort(request, products)
 
+    # ---- 🔍 Search ----
+    products = search(request, products)
+
     skin_type = request.GET.get('skin_type')
     category = request.GET.get('category')
+    brand = request.GET.get('brand')
+
+    more = request.GET.get('more')
+    more = True if more else False
     context = {
+        'more': not more,
         'products': products,
         'product_model': Product,
         'skin_type_se': skin_type,
         'category_se': category,
+        'brand_se': brand
     }
 
     return render(request, 'mainpage/mainpage.html', context)
@@ -194,7 +205,7 @@ import hashlib
 from django.db.models import Avg
 import time
 
-def search(request, live=False, routine=False, search_query=None):
+def search(request, products, live=False, routine=False, search_query=None):
     start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -205,7 +216,7 @@ def search(request, live=False, routine=False, search_query=None):
     full_query = re.sub(r's+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
 
-    raw_key = f"{request.user.id}:{full_query}"
+    raw_key = f"{request.user.id}:{full_query}" if request.user.is_authenticated else f'{full_query}'
     cache_key = "routine_search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
@@ -215,7 +226,7 @@ def search(request, live=False, routine=False, search_query=None):
         return Product.objects.filter(id__in=cached_ids).order_by(preserved)
     
     query_words = full_query.lower().split()
-    products = Product.objects.all()
+    # products = Product.objects.all()
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
@@ -273,6 +284,7 @@ def search(request, live=False, routine=False, search_query=None):
             results = [(product.id, bayesian_average(product, total_rating_average)) for product in products]
         results.sort(key=lambda x: x[1], reverse=True)
         selected_ids = [r[0] for r in results]
+        cache.set(cache_key, selected_ids, timeout=86400)
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         return Product.objects.filter(id__in=selected_ids).order_by(preserved)
 

@@ -1,0 +1,69 @@
+{% load static %}
+{% load humanize %}
+{% load persian_filters %}
+{% load persian_extras %}
+{% load prof_star_rating %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>روتین</title>
+
+    <link rel="stylesheet" href="{% static 'routine/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+</head>
+<body>
+    <div class="container">
+        <section class="routine_box">
+            {% if plans %}
+                <p class="your-plan">برنامه‌های پوستی شما</p>
+            {% endif %}
+            {% for plan in plans %}
+                <span class="plan-name">{{ plan.0 }}</span>
+                {% for step in plan.1 %}
+                    <p class="step-header"><span class="step-counter">مرحله {{ step.2|persian_numbers }}:</span> {{ step.0 }}</p>
+                    {% for substep in step.1 %}
+                        <p class="substep-header">{{ substep.0 }}</p>
+                        <p class="step-description">{{ substep.2 }}</p>
+                        <p class="step-suggestions">محصولات پیشنهادی:</p>
+                        <div class="step_products">
+                            {% for product in substep.1 %}
+                                <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                                    <div class="product_card_image_div">
+                                        <img src="{{ product.image.url }}" alt="عمس محصول" class="product_card_image">
+                                    </div>
+                                    <div class="product_card_info">
+                                        <p class="product_card_name">{{ product.name }}</p>
+                                        <p class="product_card_brand">برند {{ product.brand }}</p>
+                                        <p class="product_card_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
+                                        <div class="product_card_view-and-rate">
+                                            <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
+                                            <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            {% empty %}
+                                <p>محصولی برای این منظور پیدا نشد</p>
+                            {% endfor %}
+                        {% if substep.1 %}
+                            <form class="more-products" action="{% url 'mainpage' %}" method="get" >
+                                <input type="hidden" name="q" value="{{ substep.3 }}">
+                                <input type="hidden" name="more" value="true">
+                                <button type="submit">بیشتر</button>
+                            </form>
+                        {% endif %}
+                        </div>
+                        <div class="step_product_underline"></div>
+                    {% empty %}{% endfor %}
+                {% empty %}{% endfor %}
+            {% empty %}
+                <p>برای آماده کردن روتین پوستی لطفاً پرسشنامه‌ای که مربوط به اطلاعات پوستی هست را کامل کنید</p>
+            {% endfor %}
+        </section>
+
+        <button onclick="window.location.href='{% url 'profile' %}'">بازگشت به صفحه شخصی</button>
+    </div>
+</body>
+</html>

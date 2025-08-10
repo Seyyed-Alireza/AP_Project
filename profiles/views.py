@@ -6,6 +6,7 @@ from mainpage.models import Product
 from routine.views import find_step_products, routine_generator
 from routine.models import RoutinePlan
 from quiz.models import SkinProfile
+from django.urls import reverse
 
 PLAN_NAMES = {
     'full': 'برنامه‌ی کامل (اگه سلامت پوستت خیلی برات مهمه)',
@@ -33,7 +34,6 @@ def profile_view(request):
     # except:
     #     pass
     routine_plans = RoutinePlan.objects.filter(user=user)
-    steps = None
     for routine_plan in routine_plans:
         steps = find_step_products(request, name=routine_plan.plan_name)
         plans.append((PLAN_NAMES[routine_plan.plan_name], steps))
@@ -52,6 +52,29 @@ def profile_view(request):
         'quiz_completed': user.skinprofile.quiz_completed
     }
     return render(request, 'profiles/profile.html', context)
+
+def routine_view(request):
+    user = request.user
+    plans = []
+    steps = None
+    # try:
+    #     routine_plans = RoutinePlan.objects.filter(user=user)
+    #     steps = None
+    #     for routine_plan in routine_plans:
+    #         steps = find_step_products(user=user, name=routine_plan.plan_name)
+    #         plans.append((routine_plan.plan_name, steps))
+    # except:
+    #     pass
+    routine_plans = RoutinePlan.objects.filter(user=user)
+    for routine_plan in routine_plans:
+        steps = find_step_products(request, name=routine_plan.plan_name)
+        plans.append((PLAN_NAMES[routine_plan.plan_name], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/routine.html', context)
 
 @login_required
 def profile_edit(request):

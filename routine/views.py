@@ -18,13 +18,13 @@ SEARCH_QUERIES = {
 }
 
 STEP_NAMES = {
-    'oiliness': 'کاهش چربی',
-    'sensitivity': 'حساس حساسیت',
-    'acne': 'اکنه جوش',
-    'hydration': 'آبرسان آب‌رسان',
-    'dryness': 'خشکی خشک مرطوب',
-    'redness': 'قرمزی التهاب',
-    'elasticity': 'کشسان ارتجاعی'
+    'oiliness': 'کنترل چربی پوست',
+    'sensitivity': 'کاهش حساسیت',
+    'acne': 'درمان جوش و آکنه',
+    'hydration': 'آبرسانی عمیق',
+    'dryness': 'رفع خشکی پوست',
+    'redness': 'کاهش قرمزی و التهاب',
+    'elasticity': 'افزایش استحکام و کشسانی'
 }
 
 STEP_DESCRIPTIONS = {
@@ -80,16 +80,19 @@ PROBLEM_TO_STEPS = {
     "acne": {
         "تونر": {
             "search_query": "تونر آکنه",
+            'key_query': 'تونر',
             "why": "چربی پوست را متعادل کرده و منافذ را کوچک می‌کند.",
             "consequence": "بدون تونر، پوست چرب‌تر شده و احتمال جوش افزایش می‌یابد."
         },
         "سرم": {
             "search_query": "سرم ضدجوش و التیام پوست",
+            'key_query': 'سرم',
             "why": "التهاب را کاهش داده و به بهبود سریع‌تر جوش‌ها کمک می‌کند.",
             "consequence": "حذف سرم باعث طولانی شدن التهاب و جوش‌ها می‌شود."
         },
         "ضدآفتاب": {
             "search_query": "ضدآفتاب بدون چربی",
+            'key_query': 'ضدآفتاب',
             "why": "از پوست در برابر اشعه‌های مضر خورشید محافظت می‌کند و جای جوش را کاهش می‌دهد.",
             "consequence": "بدون ضدآفتاب، جای جوش‌ها پررنگ‌تر و ماندگارتر می‌شود."
         }
@@ -97,11 +100,13 @@ PROBLEM_TO_STEPS = {
     "oiliness": {
         "تونر": {
             "search_query": "تونر مات‌کننده کنترل چربی",
+            'key_query': 'تونر',
             "why": "باعث کاهش چربی و مات شدن پوست می‌شود.",
             "consequence": "بدون تونر، پوست براق و چرب باقی می‌ماند."
         },
         "سرم": {
             "search_query": "سرم آبرسان سبک",
+            'key_query': 'سرم',
             "why": "پوست را هیدراته می‌کند بدون اینکه چربی اضافه ایجاد کند.",
             "consequence": "حذف سرم باعث خشکی یا چربی نامتعادل پوست می‌شود."
         }
@@ -109,11 +114,13 @@ PROBLEM_TO_STEPS = {
     "dryness": {
         "سرم": {
             "search_query": "سرم هیالورونیک اسید آبرسان",
+            'key_query': 'سرم',
             "why": "رطوبت عمقی به پوست می‌رساند و خشکی را کاهش می‌دهد.",
             "consequence": "بدون سرم، خشکی پوست ادامه یافته و حساسیت بیشتر می‌شود."
         },
         "کرم": {
             "search_query": "کرم مرطوب‌کننده قوی",
+            'key_query': 'کرم',
             "why": "رطوبت را در پوست حفظ کرده و از خشک شدن جلوگیری می‌کند.",
             "consequence": "حذف کرم باعث پوسته‌پوسته شدن و خارش پوست می‌شود."
         }
@@ -121,11 +128,13 @@ PROBLEM_TO_STEPS = {
     "sensitivity": {
         "سرم": {
             "search_query": "سرم ترمیم‌کننده",
+            'key_query': 'سرم',
             "why": "التهاب را کاهش داده و سد محافظ پوست را تقویت می‌کند.",
             "consequence": "حذف سرم باعث آسیب‌پذیری بیشتر پوست می‌شود."
         },
         "کرم": {
             "search_query": "کرم مرطوب‌کننده ضدالتهاب",
+            'key_query': 'کرم',
             "why": "پوست را آرام کرده و از تحریک جلوگیری می‌کند.",
             "consequence": "بدون کرم، پوست مستعد حساسیت و قرمزی بیشتر است."
         }
@@ -133,11 +142,13 @@ PROBLEM_TO_STEPS = {
     "hydration": {
         "ماسک": {
             "search_query": "ماسک آبرسان شبانه",
+            'key_query': 'آبرسان',
             "why": "رطوبت عمقی را تأمین کرده و پوست را نرم و لطیف می‌کند.",
             "consequence": "حذف ماسک باعث خشکی و زبری پوست می‌شود."
         },
         "کرم": {
             "search_query": "کرم مرطوب‌کننده سبک",
+            'key_query': 'کرم',
             "why": "رطوبت پوست را حفظ کرده و مانع تبخیر آن می‌شود.",
             "consequence": "بدون کرم، پوست خشک و ترک‌خورده می‌شود."
         }
@@ -145,16 +156,19 @@ PROBLEM_TO_STEPS = {
     "elasticity": {
         "سرم": {
             "search_query": "سرم کلاژن‌ساز و لیفتینگ",
+            'key_query': 'سرم',
             "why": "تولید کلاژن را تحریک کرده و خاصیت ارتجاعی پوست را بهبود می‌بخشد.",
             "consequence": "بدون سرم، افتادگی و چین‌وچروک سریع‌تر ظاهر می‌شود."
         },
         "کرم": {
             "search_query": "کرم لیفتینگ پوست",
+            'key_query': 'کرم',
             "why": "پوست را سفت کرده و خطوط ریز را کاهش می‌دهد.",
             "consequence": "حذف کرم باعث شل شدن پوست و ظاهر پیرتر می‌شود."
         },
         "ضدآفتاب": {
             "search_query": "ضدآفتاب ضدپیری با SPF بالا",
+            'key_query': 'ضدآفتاب',
             "why": "از آسیب نور خورشید جلوگیری کرده و پیری زودرس را کاهش می‌دهد.",
             "consequence": "بدون ضدآفتاب، روند پیری پوست سریع‌تر می‌شود."
         }
@@ -162,11 +176,13 @@ PROBLEM_TO_STEPS = {
     "redness": {
         "سرم": {
             "search_query": "سرم تسکین‌دهنده التهاب و قرمزی",
+            'key_query': 'سرم',
             "why": "قرمزی و التهاب را کاهش می‌دهد و پوست را آرام می‌کند.",
             "consequence": "بدون سرم، قرمزی بیشتر و پوست تحریک‌پذیرتر می‌شود."
         },
         "کرم": {
             "search_query": "کرم مرطوب‌کننده ضدالتهاب",
+            'key_query': 'کرم',
             "why": "سد محافظ پوست را تقویت کرده و التهاب را کاهش می‌دهد.",
             "consequence": "حذف کرم باعث افزایش حساسیت و آسیب پوست می‌شود."
         }
@@ -239,24 +255,28 @@ def generate_full_plan(request):
     user_skin = request.user.skinprofile
 
     routine.append({
+        'order': 1,
         'step_name': 'پاک‌سازی',
         'steps': [{
             "step_name": "پاک‌‌کننده",
             "search_query": "پاکسازی تمیز",
+            # 'key_query': 'پاک',
             'description': STEP_DESCRIPTIONS["cleanser"]
         }]
     })
 
     skin_scores = request.user.skinprofile.get_skin_scores()
     skin_scores.sort(key=lambda x: abs(x[1]), reverse=True)
-    for skin_score in skin_scores[:3]:
+    for order, skin_score in enumerate(skin_scores[:3]):
         sub_steps = {}
+        sub_steps['order'] = order + 2
         sub_steps['step_name'] = STEP_NAMES[skin_score[0]]
         sub_steps["steps"] = []
         for sub_step_name, sub_step_info in PROBLEM_TO_STEPS[skin_score[0]].items():
             sub_step = {}
             sub_step['step_name'] = sub_step_name
             sub_step['search_query'] = sub_step_info['search_query']
+            # sub_step['key_query'] = sub_step_info['key_query']
             sub_step['description'] = ' '.join([sub_step_info['why'], sub_step_info['consequence']])
             sub_steps["steps"].append(sub_step)
         routine.append(sub_steps)
@@ -277,8 +297,8 @@ def find_step_products(request, name):
         for substep in step['steps']:
             # sub_step_products = search(request, search_query=substep['search_query'], routine=True)
             sub_step_products = routine_search(request, search_query=substep['search_query'])
-            subs.append([substep['step_name'], sub_step_products, substep['description']])
-        results.append([step['step_name'], subs])
+            subs.append([substep['step_name'], sub_step_products, substep['description'], substep['search_query']])
+        results.append([step['step_name'], subs, step['order']])
 
     print(time.time() - start)
     return results
@@ -310,11 +330,10 @@ def both_subset(list1, list2):
 import re
 from django.db.models import Case, When
 import hashlib
-from django.db.models import Avg
+from django.db.models import Avg, Q
 
 @login_required
-def routine_search(request, search_query=None):
-
+def routine_search(request, search_query):
     full_query = search_query
     full_query = re.sub(r'\s+', ' ', full_query).strip()
     full_query = re.sub(r'[^a-zA-Zآ-ی0-9۰-۹\s]', '', full_query)
@@ -328,7 +347,12 @@ def routine_search(request, search_query=None):
         return Product.objects.filter(id__in=cached_ids).order_by(preserved)
 
     query_words = full_query.lower().split()
-    products = Product.objects.all()
+    q_objects = Q()
+    for word in query_words:
+        q_objects |= Q(name__icontains=word)# | Q(brand__icontains=word) | Q(description__icontains=word)
+
+
+    products = Product.objects.filter(q_objects).distinct()
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
@@ -521,7 +545,7 @@ def routine_search(request, search_query=None):
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
             
     results.sort(key=lambda x: x[1], reverse=True)
-    selected_ids = [r[0] for r in results[:10]]
+    selected_ids = [r[0] for r in results[:5]]
     cache.set(cache_key, selected_ids, timeout=86400)
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)

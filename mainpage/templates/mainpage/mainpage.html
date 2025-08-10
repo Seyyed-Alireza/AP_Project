@@ -71,28 +71,36 @@
     </nav>
     <main>
         <div class="container" id="container">
-            <section class="search-bar">
-                <form class="search-form" method="get">
-                    <div id="search_js" class="search_box">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
+            {% if more %}
+                <section class="search-bar">
+                    <form class="search-form" method="get">
+                        <div id="search_js" class="search_box">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                            </svg>
 
-                        <input type="text" name="q" id="search-input" placeholder="جستجو" autocomplete="off" value="{{ request.GET.q }}">
-                    </div>
-                    <button class="page_button" type="submit">جستجو</button>
-                </form>
-                <div id="suggestions" class="suggestions-box"></div>
-            </section>
+                            <input type="text" name="q" id="search-input" placeholder="جستجو" autocomplete="off" value="{{ request.GET.q }}">
+                        </div>
+                        <button class="page_button" type="submit">جستجو</button>
+                    </form>
+                    <div id="suggestions" class="suggestions-box"></div>
+                </section>
+            {% endif %}
             <section class="products-box">
                 <aside>
                     <h3 class="filter-title">فیلتر محصولات</h3>
                     <form method="get" class="filter-form">
                     
                       <!-- 🔍 Search -->
-                      <div class="filter-group">
-                        <label>جستجو:</label>
-                        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="نام یا برند">
+                        <div class="filter-group">
+                            <label>برند:</label>
+                            <select name="brand">
+                                <option value="">همه</option>
+                                {% for brand in product_model.BRANDS %}
+                                <option value="{{ brand }}" {% if brand_se == brand %}selected{% endif %}>{{ brand }}</option>
+                                {% empty %}
+                                {% endfor %}
+                            </select>
                       </div>
                   
                       <!-- ✅ Category -->
