@@ -229,6 +229,7 @@ def routine_generator(request):
     # if 'oily' in user.skinprofile.skin_type:
     #     print('here')
 
+    # full
     steps = generate_full_plan(request)
     routine, created = RoutinePlan.objects.get_or_create(
         user=request.user,
@@ -244,12 +245,43 @@ def routine_generator(request):
         routine.steps = steps
         routine.save()
 
+    # hydration
+    steps = generate_hydration_plan(request)
+    routine, created = RoutinePlan.objects.get_or_create(
+        user=request.user,
+        plan_name='hydration',
+        defaults={
+            'user': request.user,
+            'steps': steps,
+            'plan_name': 'hydration'
+        }
+    )
+
+    if not created:
+        routine.steps = steps
+        routine.save()
+
+    # mini
+    steps = generate_mini_plan(request)
+    routine, created = RoutinePlan.objects.get_or_create(
+        user=request.user,
+        plan_name='mini',
+        defaults={
+            'user': request.user,
+            'steps': steps,
+            'plan_name': 'mini'
+        }
+    )
+
+    if not created:
+        routine.steps = steps
+        routine.save()
+
     return redirect('profile')
 
 @login_required
 def generate_full_plan(request):
     routine = []
-    user_skin = request.user.skinprofile
 
     routine.append({
         'order': 1,
@@ -277,10 +309,40 @@ def generate_full_plan(request):
             sub_step['description'] = ' '.join([sub_step_info['why'], sub_step_info['consequence']])
             sub_steps["steps"].append(sub_step)
         routine.append(sub_steps)
-    # print(routine)
-
 
     return routine
+
+def generate_hydration_plan(request):
+    routine = []
+    routine.append({
+        'order': 1,
+        'step_name': 'پاک‌سازی',
+        'steps': [{
+            "step_name": "پاک‌‌کننده",
+            "search_query": "پاکسازی تمیز",
+            # 'key_query': 'پاک',
+            'description': STEP_DESCRIPTIONS["cleanser"]
+        }]
+    })
+
+    return routine
+
+def generate_mini_plan(request):
+    routine = []
+    routine.append({
+        'order': 1,
+        'step_name': 'پاک‌سازی',
+        'steps': [{
+            "step_name": "پاک‌‌کننده",
+            "search_query": "پاکسازی تمیز",
+            # 'key_query': 'پاک',
+            'description': STEP_DESCRIPTIONS["cleanser"]
+        }]
+    })
+
+    return routine
+
+
 
 import time
 from django.core.cache import cache

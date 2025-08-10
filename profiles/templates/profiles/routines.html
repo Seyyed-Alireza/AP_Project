@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>روتین ها</title>
+
+    <style>
+        @font-face {
+            font-family: 'vazir';
+            src: url('/static/fonts/Vazir.ttf') format('truetype');
+            src: url('/static/fonts/Vazir.woff2') format('woff2');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: vazir;
+            font-size: 16px;
+            transition: all 200ms;
+            color: black;
+        }
+        
+        h1 {
+            font-size: 2rem;
+        }
+
+        body {
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        button {
+            background-color: #03a7ff;
+            box-shadow: 0px 0px 10px rgb(114, 47, 128);
+            border: none;
+            color: white;
+            font-size: 18px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 200ms;
+        }
+
+        button:hover {
+            background-color: rgb(0, 143, 214);
+            box-shadow: 0px 0px 20px rgb(187, 92, 206);
+        }
+
+        button:active {
+            transform: scale(0.95);
+            transition: all 100ms;
+        }
+        
+    </style>
+
+</head>
+<body>
+    <h1>برنامه های پوستی شما</h1>
+    {% if done %}
+        <button onclick="window.location.href='{% url 'full_routine' %}'">برنامه ی کامل</button>
+        <button onclick="window.location.href='{% url 'hydration_routine' %}'">برنامه ی  آبرسانی</button>
+        <button onclick="window.location.href='{% url 'mini_routine' %}'">برنامه ی کوتاه</button>
+    {% else %}
+        <p>لطفاً ابندا پرسشنامه را تکمیل کنید</p>
+    {% endif %}
+</body>
+</html>

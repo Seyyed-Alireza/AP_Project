@@ -10,8 +10,8 @@ from django.urls import reverse
 
 PLAN_NAMES = {
     'full': 'برنامه‌ی کامل (اگه سلامت پوستت خیلی برات مهمه)',
-    'hydration': '',
-    'minimalist': ''
+    'hydration': 'برنامه‌ی آبرسانی (اگه حس میکنی رطوبت پوستت کمه و نیاز به آبرسانی داره)',
+    'minimalist': 'یه مینی برنامه (اگه زیاد وقت نداری)'
 }
 
 @login_required
@@ -23,58 +23,53 @@ def profile_view(request):
         total_shoppingcart_price = sum([item.total_price() for item in cart_items])
     else:
         total_shoppingcart_price = 0
-    plans = []
-    steps = None
-    # try:
-    #     routine_plans = RoutinePlan.objects.filter(user=user)
-    #     steps = None
-    #     for routine_plan in routine_plans:
-    #         steps = find_step_products(user=user, name=routine_plan.plan_name)
-    #         plans.append((routine_plan.plan_name, steps))
-    # except:
-    #     pass
-    routine_plans = RoutinePlan.objects.filter(user=user)
-    for routine_plan in routine_plans:
-        steps = find_step_products(request, name=routine_plan.plan_name)
-        plans.append((PLAN_NAMES[routine_plan.plan_name], steps))
-
-    # if RoutinePlan.objects.filter(user=user).exists():
-    #     steps = find_step_products(user.skinprofile)
-    # elif SkinProfile.objects.get(user=user).quiz_completed:
-    #     routine_generator(request)
-    #     steps = find_step_products(user.skinprofile)
 
     context = {
-        # 'steps': steps,
-        'plans': plans,
         'cart_items': cart_items,
         'total_shoppingcart_price': total_shoppingcart_price,
         'quiz_completed': user.skinprofile.quiz_completed
     }
     return render(request, 'profiles/profile.html', context)
 
-def routine_view(request):
-    user = request.user
+def routines(request):
+    done = SkinProfile.objects.get(user=request.user).quiz_completed
+    return render(request, 'profiles/routines.html', context={'done': done})
+
+def full_routine_view(request):
     plans = []
     steps = None
-    # try:
-    #     routine_plans = RoutinePlan.objects.filter(user=user)
-    #     steps = None
-    #     for routine_plan in routine_plans:
-    #         steps = find_step_products(user=user, name=routine_plan.plan_name)
-    #         plans.append((routine_plan.plan_name, steps))
-    # except:
-    #     pass
-    routine_plans = RoutinePlan.objects.filter(user=user)
-    for routine_plan in routine_plans:
-        steps = find_step_products(request, name=routine_plan.plan_name)
-        plans.append((PLAN_NAMES[routine_plan.plan_name], steps))
+    steps = find_step_products(request, name='full')
+    plans.append((PLAN_NAMES['full'], steps))
     
     context = {
         'plans': plans,
     }
 
-    return render(request, 'profiles/routine.html', context)
+    return render(request, 'profiles/full_routine.html', context)
+
+def hydration_routine_view(request):
+    plans = []
+    steps = None
+    steps = find_step_products(request, name='hydration')
+    plans.append((PLAN_NAMES['hydration'], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/full_routine.html', context)
+
+def mini_routine_view(request):
+    plans = []
+    steps = None
+    steps = find_step_products(request, name='mini')
+    plans.append((PLAN_NAMES['minimalist'], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/full_routine.html', context)
 
 @login_required
 def profile_edit(request):

@@ -17,9 +17,6 @@
 <body>
     <div class="container">
         <section class="routine_box">
-            {% if plans %}
-                <p class="your-plan">برنامه‌های پوستی شما</p>
-            {% endif %}
             {% for plan in plans %}
                 <span class="plan-name">{{ plan.0 }}</span>
                 {% for step in plan.1 %}
