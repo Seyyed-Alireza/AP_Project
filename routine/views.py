@@ -312,7 +312,7 @@ def generate_full_plan(request):
 
     return routine
 
-def generate_hydration_plan(request):
+def generate_mini_plan(request):
     routine = []
     routine.append({
         'order': 1,
@@ -327,7 +327,44 @@ def generate_hydration_plan(request):
 
     return routine
 
-def generate_mini_plan(request):
+HYDRATION_STEP_DESCRIPTIONS = {
+    "cleaner" : "پاکسازی اولین و مهم‌ترین گام مراقبت پوسته. باعث حذف آلودگی، چربی اضافه و سلول‌های مرده میشه. اگر انجام نشه، منافذ بسته میشن و زمینه برای جوش، التهاب و کدر شدن پوست فراهم میشه.",
+
+    "hydrating_serum": {
+        "why": "آبرسانی لایه‌های عمقی پوست را تقویت کرده و خشکی را کاهش می‌دهد.",
+        "consequence": "عدم استفاده می‌تواند باعث ماندگاری خشکی و پوسته‌پوسته شدن شود."
+    },
+    "moisturizer": {
+        "why": "رطوبت پوست را قفل می‌کند و از تبخیر آب جلوگیری می‌کند.",
+        "consequence": "حذف آن باعث خشکی و ایجاد خطوط ریز روی پوست می‌شود."
+    },
+    "light_hydrating_gel": {
+        "why": "رطوبت لازم را بدون احساس سنگینی برای پوست چرب فراهم می‌کند.",
+        "consequence": "عدم استفاده می‌تواند باعث دهیدراته شدن و تحریک پوست شود."
+    },
+    "balancing_toner": {
+        "why": "چربی پوست را متعادل کرده و جذب محصولات بعدی را بهبود می‌بخشد.",
+        "consequence": "نبود آن ممکن است منجر به چربی بیش از حد یا خشکی ناگهانی پوست شود."
+    },
+    "sebum_control_serum": {
+        "why": "ترشح سبوم را کنترل کرده و جلوی براقیت و جوش‌های ناشی از چربی را می‌گیرد.",
+        "consequence": "عدم استفاده باعث افزایش براقیت و ایجاد آکنه می‌شود."
+    },
+    "serum_very_strong": {
+        "why": "رطوبت عمیق و فوری به پوست بسیار خشک می‌رساند.",
+        "consequence": "بدون آن، خشکی شدید ادامه پیدا کرده و ترک پوستی ایجاد می‌شود."
+    },
+    "moisturizer_extra_rich": {
+        "why": "غنی از مواد مغذی و چربی‌های مفید برای بازسازی پوست بسیار خشک است.",
+        "consequence": "حذف آن باعث ماندگاری خشکی و کاهش مقاومت پوست می‌شود."
+    },
+    "hydrating_night_mask": {
+        "why": "در طول شب پوست را به طور عمیق آبرسانی و بازسازی می‌کند.",
+        "consequence": "عدم استفاده باعث از دست رفتن فرصت ترمیم شبانه پوست می‌شود."
+    }
+}
+
+def generate_hydration_plan(request):
     routine = []
     routine.append({
         'order': 1,
@@ -335,10 +372,96 @@ def generate_mini_plan(request):
         'steps': [{
             "step_name": "پاک‌‌کننده",
             "search_query": "پاکسازی تمیز",
-            # 'key_query': 'پاک',
-            'description': STEP_DESCRIPTIONS["cleanser"]
+            'description': HYDRATION_STEP_DESCRIPTIONS["cleaner"]
         }]
     })
+
+    hydration = request.user.skinprofile.hydration
+    dryness = request.user.skinprofile.dryness
+
+    if hydration < -1 and dryness <= 1:
+        routine.extend([
+            {
+                'order': 2,
+                'step_name': 'سرم آبرسان',
+                'steps': [{
+                    "step_name": "سرم هیالورونیک اسید",
+                    "search_query": "سرم آبرسان قوی",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["hydrating_serum"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["hydrating_serum"]["consequence"] 
+                }]
+            },
+            {
+                'order': 3,
+                'step_name': 'مرطوب‌کننده',
+                'steps': [{
+                    "step_name": "کرم مرطوب‌کننده",
+                    "search_query": "مرطوب کننده پوست خشک",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["moisturizer"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["moisturizer"]["consequence"]
+                }]
+            }
+        ])
+
+    elif hydration > 1 and dryness > 0:
+        routine.extend([
+            {
+                'order': 2,
+                'step_name': 'ژل سبک آبرسان',
+                'steps': [{
+                    "step_name": "ژل آبرسان سبک",
+                    "search_query": "ژل آبرسان پوست چرب",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["light_hydrating_gel"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["light_hydrating_gel"]["consequence"]
+                }]
+            },
+            {
+                'order': 3,
+                'step_name': 'تونر متعادل‌کننده',
+                'steps': [{
+                    "step_name": "تونر متعادل‌کننده",
+                    "search_query": "تونر پوست چرب",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["balancing_toner"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["balancing_toner"]["consequence"]
+                }]
+            },
+            {
+                'order': 4,
+                'step_name': 'کنترل‌کننده سبوم',
+                'steps': [{
+                    "step_name": "سرم کنترل سبوم",
+                    "search_query": "کنترل چربی پوست",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["sebum_control_serum"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["sebum_control_serum"]["consequence"]
+                }]
+            }
+        ])
+
+    elif hydration < -4 or (hydration < -1 and dryness > 1):
+        routine.extend([
+            {
+                'order': 2,
+                'step_name': 'سرم آبرسان بسیار قوی',
+                'steps': [{
+                    "step_name": "سرم آبرسان بسیار قوی",
+                    "search_query": "سرم آبرسان قوی پوست خیلی خشک",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["serum_very_strong"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["serum_very_strong"]["consequence"]
+                }]
+            },
+            {
+                'order': 3,
+                'step_name': 'مرطوب‌کننده فوق غنی',
+                'steps': [{
+                    "step_name": "مرطوب‌کننده فوق غنی",
+                    "search_query": "مرطوب کننده پوست بسیار خشک",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["moisturizer_extra_rich"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["moisturizer_extra_rich"]["consequence"]
+                }]
+            },
+            {
+                'order': 4,
+                'step_name': 'ماسک شب آبرسان عمیق',
+                'steps': [{
+                    "step_name": "ماسک شب",
+                    "search_query": "ماسک شب آبرسان قوی",
+                    'description': HYDRATION_STEP_DESCRIPTIONS["hydrating_night_mask"]["why"] + ' ' + HYDRATION_STEP_DESCRIPTIONS["hydrating_night_mask"]["consequence"]
+                }]
+            }
+        ])
 
     return routine
 
