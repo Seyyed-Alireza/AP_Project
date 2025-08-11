@@ -325,6 +325,79 @@ def generate_mini_plan(request):
         }]
     })
 
+    skin_features = {
+        'acne': request.user.skinprofile.acne,
+        'sensitivity': request.user.skinprofile.sensitivity,
+        'dryness': request.user.skinprofile.dryness,
+        'oiliness': request.user.skinprofile.oiliness,
+        'redness': request.user.skinprofile.redness,
+    }
+    sorted_features = sorted(skin_features.items(), key=lambda x: x[1], reverse=True)
+
+    top_two = sorted_features[:2]
+    
+    # for_sure
+    top_two = [[x[0], 1] for x in top_two]
+
+    order = 2
+    for feature, intensity in top_two:
+        if feature == 'acne' and intensity > 0:
+            routine.append({
+                'order': order,
+                'step_name': 'مراقبت ضد جوش',
+                'steps': [{
+                    "step_name": "محصول ضد جوش",
+                    "search_query": "آکنه ضد جوش",
+                    'description': "این مرحله به کاهش التهاب و پیشگیری از بروز جوش کمک می‌کند."
+                }]
+            })
+            order += 1
+        elif feature == 'sensitivity' and intensity > 0:
+            routine.append({
+                'order': order,
+                'step_name': 'کاهش حساسیت',
+                'steps': [{
+                    "step_name": "محصول حساسیت‌زدا",
+                    "search_query": "حساس حساسیت ضدحساسیت",
+                    'description': "این مرحله سد محافظ پوست را تقویت کرده و التهاب را کاهش می‌دهد."
+                }]
+            })
+            order += 1
+        elif feature == 'dryness' and intensity > 0:
+            routine.append({
+                'order': order,
+                'step_name': 'آبرسانی',
+                'steps': [{
+                    "step_name": "محصول آبرسان",
+                    "search_query": "آبرسان",
+                    'description': "آبرسانی پوست برای جلوگیری از خشکی و ترک‌خوردگی آن بسیار مهم است."
+                }]
+            })
+            order += 1
+        elif feature == 'oiliness' and intensity > 0:
+            routine.append({
+                'order': order,
+                'step_name': 'کنترل چربی',
+                'steps': [{
+                    "step_name": "محصول کاهش چربی",
+                    "search_query": "چربی چرب کاهش",
+                    'description': "این مرحله به کنترل تولید چربی اضافه و جلوگیری از بروز جوش کمک می‌کند."
+                }]
+            })
+            order += 1
+        elif feature == 'redness' and intensity > 0:
+            routine.append({
+                'order': order,
+                'step_name': 'کاهش قرمزی',
+                'steps': [{
+                    "step_name": "محصول کاهش قرمزی پوست",
+                    "search_query": "قرمزی ضدقرمزی",
+                    'description': "کاهش التهاب و تسکین پوست قرمز و حساس هدف این مرحله است."
+                }]
+            })
+            order += 1
+
+
     return routine
 
 HYDRATION_STEP_DESCRIPTIONS = {
@@ -531,10 +604,14 @@ def routine_search(request, search_query):
     query_words = full_query.lower().split()
     q_objects = Q()
     for word in query_words:
-        q_objects |= Q(name__icontains=word)# | Q(brand__icontains=word) | Q(description__icontains=word)
+        q_objects |= Q(name__icontains=word) | Q(skin_types__icontains=word) | Q(concerns_targeted__icontains=word)
 
 
-    products = Product.objects.filter(q_objects).distinct()
+    products = Product.objects.filter(q_objects)
+    products = products.filter(q_objects)
+    if len(products) <= 20:
+        products = Product.objects.all()
+    print(products)
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
@@ -593,17 +670,17 @@ def routine_search(request, search_query):
             #         score += CONCERN_BASE_SCORE
             #         break
             # if user_in:
-                if user.skinprofile.quiz_completed and not concern_similar:
-                    skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
-                    for skin_score in skin_scores:
-                        if skin_score[1] > 10:
-                            for concern_targeted in product.concerns_targeted:
-                                if both_subset(skin_score[0].split() in concern_targeted.split()):
-                                    concern_similar = True
-                                    score += CONCERN_BASE_SCORE
-                                    break
-                            if concern_similar:
+            if user.skinprofile.quiz_completed and not concern_similar:
+                skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                for skin_score in skin_scores:
+                    if skin_score[1] > 10:
+                        for concern_targeted in product.concerns_targeted:
+                            if both_subset(skin_score[0].split() in concern_targeted.split()):
+                                concern_similar = True
+                                score += CONCERN_BASE_SCORE
                                 break
+                        if concern_similar:
+                            break
 
             # if not any([name_similar, brand_similar, concern_similar, type_similar, ingredient_similar]):
             #     base_score = 5

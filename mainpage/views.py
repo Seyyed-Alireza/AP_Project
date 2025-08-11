@@ -172,8 +172,10 @@ def similarity(user, db):
     t_length = len(db)
     each_letter = 100 / t_length
     rate = 0
+    user = user.replace('آ', 'ا')
+    db = db.replace('آ', 'ا')
     for i in range(min(len(user), len(db))):
-        if user[i] == db[i] or user[i] in ('ا', 'آ'):
+        if user[i] == db[i]:
             rate += each_letter
         elif db[i] in close_letters:
             if user[i] in close_letters[db[i]]:
@@ -268,15 +270,17 @@ def search(request, products, for_cache, live=False, routine=False, search_query
         q_objects |= Q(name__icontains=word)# | Q(brand__icontains=word) | Q(description__icontains=word)
 
     products_backup = products
-    products.filter(q_objects)
+    products = products.filter(q_objects)
+    if len(products) <= 20:
+        products = products_backup
     # products = Product.objects.all()
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 15000
-    BRAND_BASE_SCORE = 10000
-    INGREDIENT_BASE_SCORE = 8000
-    CONCERN_BASE_SCORE = 10000
-    SKIN_TYPE_BASE_SCORE = 10000
-    RATING_BASE_SCORE = 5000
+    BRAND_BASE_SCORE = 9000
+    INGREDIENT_BASE_SCORE = 4000
+    CONCERN_BASE_SCORE = 5000
+    SKIN_TYPE_BASE_SCORE = 5000
+    RATING_BASE_SCORE = 3000
     SIMILAR_PURCHASE_BASE_SCORE = 1000000
     results = []
     base_score = 5
@@ -349,13 +353,20 @@ def search(request, products, for_cache, live=False, routine=False, search_query
             if product_name in full_query or word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
                 name_similar = True
                 score += NAME_BASE_SCORE
+            else:
+                for p_word in product_name.split():
+                        s = similarity(word, p_word)
+                        if s > 0.85:
+                            name_similar = True
+                            score += NAME_BASE_SCORE
+                            break
             
             if product_brand in full_query or word in product_brand.split():
                 brand_similar = True
                 score += BRAND_BASE_SCORE
 
             for skin_type in product.skin_types:
-                if both_subset(skin_type.split(), full_query.split()):
+                if both_subset(skin_type.split(), [word]):
                     type_similar = True
                     score += SKIN_TYPE_BASE_SCORE if not name_similar else SKIN_TYPE_BASE_SCORE / 10
                     break
@@ -368,7 +379,7 @@ def search(request, products, for_cache, live=False, routine=False, search_query
                             break
 
             for concern_targeted in product.concerns_targeted:
-                if both_subset(concern_targeted.split(), full_query.split()):
+                if both_subset(concern_targeted.split(), [word]):
                     concern_similar = True
                     score += CONCERN_BASE_SCORE if not name_similar else CONCERN_BASE_SCORE / 10
                     break
