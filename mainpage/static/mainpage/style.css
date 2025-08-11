@@ -347,11 +347,11 @@ select::-webkit-scrollbar-button {
 }
 
 aside {
-    border: 1px solid;
+    border: 1px solid #ccc;
     border-radius: 5px;
     width: 300px;
-    height: 500px;
-    padding: 5px 10px 5px;
+    height: fit-content;
+    padding: 5px 10px 10px;
     margin: 20px 0px 5px;
 }
 
@@ -558,13 +558,13 @@ footer {
 }
 
 /* === Filter Sidebar === */
-aside {
+/* aside {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 15px;
     background-color: #f9f9f9;
     height: auto;
-}
+} */
 
 .filter-title {
     font-size: 18px;

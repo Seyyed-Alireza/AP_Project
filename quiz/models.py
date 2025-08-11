@@ -37,7 +37,7 @@ class SkinProfile(models.Model):
 
     SKIN_PROPERTIES = [
         ('acne', 'Acne'),
-        ('sensivity', 'Sensivity'),
+        ('sensitivity', 'Sensitivity'),
         ('dryness', 'Dryness'),
         ('oiliness', 'Oiliness'),
         ('redness', 'Redness'),
@@ -89,20 +89,34 @@ class SkinProfile(models.Model):
         ) = values
         
     def auto_detect_skin_type(self):
+        skin_types = []
 
-        oil = self.oiliness
-        dry = self.dryness
-        sensitive = self.sensitivity
-        if oil >= 7 and dry <= 3:
-            self.skin_type = 'oily'
-        elif dry >= 7 and oil <= 3:
-            self.skin_type = 'dry'
-        elif oil >= 5 and dry >= 5:
-            self.skin_type = 'combination'
-        elif sensitive >= 7:
-            self.skin_type = 'sensitive'
-        else:
-            self.skin_type = 'normal'
+        if self.sensitivity >= 3 or self.redness >= 4:
+            skin_types.append("sensitive")
+
+        if self.dryness <= -2 and self.oiliness <= 3:
+            skin_types.append("dry")
+
+        if self.oiliness >= 3 and self.dryness >= -1:
+            skin_types.append("oily")
+
+        if (
+            self.oiliness >= 3
+            and self.dryness <= -2
+            and abs(self.oiliness - abs(self.dryness)) <= 2
+        ):
+            skin_types.append("combination")
+
+        if not skin_types:
+            skin_types.append("normal")
+        
+        if "combination" in skin_types:
+            skin_types = [t for t in skin_types if t not in ["dry", "oily"]]
+
+        self.skin_type = skin_types
+        return skin_types
+
+
 
 
     age_range = models.CharField(max_length=20, null=True, blank=True)
@@ -113,6 +127,10 @@ class SkinProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} - پوست"
 
+
+class Quiz(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    creatd_at = models.DateTimeField(auto_now_add=True)
 class Question(models.Model):
     TEXT_CHOICES = [
         ('single', 'تک‌گزینه‌ای (Radio button)'),
@@ -142,6 +160,7 @@ class Choice(models.Model):
 
 class Answer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     selected_choices = models.ManyToManyField(Choice, blank=True)
     value = models.CharField(max_length=100, blank=True, null=True)
@@ -149,3 +168,4 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - پاسخ به سوال {self.question.order}"
+

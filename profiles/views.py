@@ -3,31 +3,73 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm
 from .models import ShoppingCartItem
 from mainpage.models import Product
-from routine.views import find_step_products
-from quiz.models import SkinProfile
+from routine.views import find_step_products, routine_generator
 from routine.models import RoutinePlan
+from quiz.models import SkinProfile
+from django.urls import reverse
+
+PLAN_NAMES = {
+    'full': 'برنامه‌ی کامل (اگه سلامت پوستت خیلی برات مهمه)',
+    'hydration': 'برنامه‌ی آبرسانی (اگه حس میکنی رطوبت پوستت کمه و نیاز به آبرسانی داره)',
+    'minimalist': 'یه مینی برنامه (اگه زیاد وقت نداری)'
+}
 
 @login_required
 def profile_view(request):
-    profile = request.user.userprofile
-    cart_items = ShoppingCartItem.objects.filter(user=request.user).select_related('product')
+    user = request.user
+    profile = user.userprofile
+    cart_items = ShoppingCartItem.objects.filter(user=user).select_related('product')
     if cart_items:
         total_shoppingcart_price = sum([item.total_price() for item in cart_items])
     else:
         total_shoppingcart_price = 0
-    form = UserProfileForm(instance=profile)
-    steps = None
-    if RoutinePlan.objects.filter(user=request.user).exists():
-        steps = find_step_products(request.user.skinprofile)
 
     context = {
-        'steps': steps,
-        'form': form,
         'cart_items': cart_items,
         'total_shoppingcart_price': total_shoppingcart_price,
-        'quiz_completed': request.user.skinprofile.quiz_completed
+        'quiz_completed': user.skinprofile.quiz_completed
     }
     return render(request, 'profiles/profile.html', context)
+
+def routines(request):
+    done = SkinProfile.objects.get(user=request.user).quiz_completed
+    return render(request, 'profiles/routines.html', context={'done': done})
+
+def full_routine_view(request):
+    plans = []
+    steps = None
+    steps = find_step_products(request, name='full')
+    plans.append((PLAN_NAMES['full'], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/full_routine.html', context)
+
+def hydration_routine_view(request):
+    plans = []
+    steps = None
+    steps = find_step_products(request, name='hydration')
+    plans.append((PLAN_NAMES['hydration'], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/full_routine.html', context)
+
+def mini_routine_view(request):
+    plans = []
+    steps = None
+    steps = find_step_products(request, name='mini')
+    plans.append((PLAN_NAMES['minimalist'], steps))
+    
+    context = {
+        'plans': plans,
+    }
+
+    return render(request, 'profiles/full_routine.html', context)
 
 @login_required
 def profile_edit(request):

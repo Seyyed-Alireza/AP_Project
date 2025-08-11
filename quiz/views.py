@@ -3,13 +3,26 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from .models import Choice, SkinProfile, Question, Answer
 from django.utils import timezone
+from routine.views import routine_generator
 
 @login_required
-def skin_quiz_view(request):
+def skin_quiz_view(request, prof=False):
     if request.user.skinprofile.quiz_skipped:
         return redirect('mainpage')
 
     questions = Question.objects.prefetch_related('choices').order_by('order')
+    prof = False if not prof else True
+
+    NORMAL_SKIN_VALUES = {
+        "acne": 0,
+        "sensitivity": 3,
+        "dryness": 5,
+        "oiliness": 4,
+        "redness": 1,
+        "hydration": 8,
+        "elasticity": 7,
+    }
+
 
     if request.method == 'POST':
         Answer.objects.filter(user=request.user).delete()
@@ -41,8 +54,11 @@ def skin_quiz_view(request):
                 answer = Answer.objects.create(user=request.user, question=questions[i])
                 answer.value = int(raw_value)
                 answer.save()
-                if questions[i].subject in total_effects: 
-                    total_effects[questions[i].subject] = int(raw_value)
+                try:
+                    normal = NORMAL_SKIN_VALUES[questions[i].subject]
+                    total_effects[questions[i].subject] = int(raw_value) - normal
+                except:
+                    pass
                 
                 i += 6
                 continue
@@ -80,23 +96,23 @@ def skin_quiz_view(request):
                         total_effects[key] = value
             i += 1
 
-        skin_profile.acne = total_effects.get("acne", 0)
-        skin_profile.sensitivity = total_effects.get("sensitivity", 0)
-        skin_profile.dryness = total_effects.get("dryness", 0)
-        skin_profile.oiliness = total_effects.get("oiliness", 0)
-        skin_profile.redness = total_effects.get("redness", 0)
+        skin_profile.acne = total_effects.get("acne", 0) - NORMAL_SKIN_VALUES['acne']
+        skin_profile.sensitivity = total_effects.get("sensitivity", 0) - NORMAL_SKIN_VALUES['sensitivity']
+        skin_profile.dryness = total_effects.get("dryness", 0) - NORMAL_SKIN_VALUES['dryness']
+        skin_profile.oiliness = total_effects.get("oiliness", 0) - NORMAL_SKIN_VALUES['oiliness']
+        skin_profile.redness = total_effects.get("redness", 0) - NORMAL_SKIN_VALUES['redness']
         skin_profile.age_range = total_effects.get('age_range', None)
-        skin_profile.quiz_skipped = False
+        skin_profile.quiz_skipped = True
         skin_profile.quiz_completed = True
-        skin_profile.hydration = total_effects.get("hydration", 0)
-        skin_profile.elasticity = total_effects.get("elasticity", 0)
+        skin_profile.hydration = total_effects.get("hydration", 0) - NORMAL_SKIN_VALUES['hydration']
+        skin_profile.elasticity = total_effects.get("elasticity", 0) - NORMAL_SKIN_VALUES['elasticity']
         
         skin_profile.auto_detect_skin_type()
         
-        if not skin_profile.completed_at:
-            skin_profile.completed_at = timezone.now()
+        skin_profile.completed_at = timezone.now()
 
         skin_profile.save()
+        routine_generator(request)
 
         return redirect('routine_generator')
     elif request.method == 'GET':
@@ -119,32 +135,34 @@ def skin_quiz_view(request):
 
         context = {
             'questions': questions,
-            'initial_answers': initial_answers
+            'initial_answers': initial_answers,
+            'from_profile': prof
         }
-        # print(initial_answers)
         return render(request, 'quiz/quiz.html', context)
 
 
-    return render(request, 'quiz/quiz.html', {'questions': questions})
+    return render(
+        request,
+        'quiz/quiz.html',
+        {'questions': questions, 'from_profile': prof}
+        )
 
 def from_prof(request):
     skin_prof = get_object_or_404(SkinProfile, user=request.user)
     skin_prof.quiz_skipped = False
     skin_prof.save()
-    return redirect('quiz')
+    return redirect('quiz_prof')
 
 def skip_quiz(request):
     if request.method == "POST":
         profile = get_object_or_404(SkinProfile, user=request.user)
         profile.quiz_skipped = True
         profile.save()
-        return redirect('mainpage')
+        from_profile = request.POST.get('from_profile')
+        return redirect('profile' if from_profile else 'mainpage')
         return JsonResponse({'success': True})
     return JsonResponse({'success': False}, status=100)
 
-# def skip_quiz(request):
-#     if request.method == "POST":
-#         profile = get_object_or_404(SkinProfile, user=request.user)
-#         profile.quiz_skipped = True
-#         profile.save()
-#     return redirect('mainpage')
+@login_required
+def skin_quiz_view_prof(request):
+    return skin_quiz_view(request, prof=True)

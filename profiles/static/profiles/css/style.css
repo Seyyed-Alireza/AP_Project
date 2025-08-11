@@ -92,7 +92,7 @@ h1 {
     }
 
     .prof_header {
-        padding: 15px 20px;
+        padding: 15px 10px;
     }
 
     .prof_pic_and_username {
@@ -135,15 +135,24 @@ h1 {
     box-shadow: 0 0 5px rgb(101, 99, 190);
 }
 
-label {
+.user-info {
+    width: 100%;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 26px;
+}
+
+.user-info-header {
+    font-size: 1.1rem;
     font-weight: bold;
-    display: block;
 }
 
 .phone_number_box, .address_box, .date_joined {
     display: inline;
     width: 100%;
-    padding: 10px 20px;
+    /* padding: 10px 20px; */
 }
 
 .phone_number_box, .date_joined {
@@ -170,8 +179,35 @@ label {
     width: 100%;
 }
 
-.step_header {
-    font-size: 20px;
+.your-plan {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.plan-name {
+    display: inline-block;
+    font-size: 1.625rem;
+    font-weight: bold;
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
+}
+
+.step-counter {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.step-header {
+    font-size: 1.5rem;
+}
+
+.substep-header {
+    font-size: 1.25rem;
+}
+
+.step-description {
+    text-align: justify;
 }
 
 .step_products {
@@ -268,10 +304,10 @@ a {
 form {
     width: 100%;
     border-radius: 8px;
-    padding-top: 10px;
 }
 
 button {
+    width: 300px;
     font-size: 16px;
     background-color: #03a7ff;
     box-shadow: 0px 0px 10px rgb(114, 47, 128);
@@ -281,7 +317,7 @@ button {
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 10px;
     transition: all 200ms;
 }
 
@@ -442,6 +478,22 @@ button:active {
         margin: 0;
     }
 
+    .your-plan {
+        font-size: 1.5rem;
+    }
+    
+    .plan-name {
+        font-size: 1.35rem;
+    }
+
+    .step-counter, .step-header {
+        font-size: 1.2rem;
+    }
+
+    .substep-header {
+        font-size: 1.1rem;
+    }
+
     .products {
         flex-direction: column;
     }
@@ -491,12 +543,17 @@ button:active {
         margin-top: 16px;
     }
 
+    button {
+        width: 280px;
+    }
+
 }
 
-.edit_info {
+.edit_info, .signout {
     display: flex;
     gap: 8px;
     align-items: center;
+    justify-content: center;
 }
 
 .edit_icon {
@@ -505,9 +562,6 @@ button:active {
 }
 
 .signout {
-    display: flex;
-    gap: 8px;
-    align-items: center;
     margin: 0 auto;
     margin-top: 10px;
 }

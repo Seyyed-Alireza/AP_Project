@@ -5,6 +5,22 @@ from quiz.models import SkinProfile
 
 class Product(models.Model):
 
+    NAMES = [
+        'کرم مرطوب‌کننده', 'ضدآفتاب', 'کرم شب', 'تونر روشن‌کننده', 'ژل شستشوی صورت',
+        'کرم ضدلک', 'ماسک زغالی', 'سرم ویتامین C', 'اسکراب قهوه', 'کرم دور چشم',
+        'پاک‌کننده آرایش دوفاز', 'میست صورت آبرسان', 'کرم لیفتینگ', 'سرم رتینول',
+        'آمپول بازسازی‌کننده', 'کرم ضدجوش', 'فوم پاک‌کننده', 'ژل آبرسان سبک',
+        'اسنس مغذی', 'پچ زیر چشم طلا'
+    ]
+
+    NAMES_EN = [
+        'Moisturizing Cream', 'Sunscreen', 'Night Cream', 'Brightening Toner', 'Facial Cleansing Gel',
+        'Anti-Spot Cream', 'Charcoal Mask', 'Vitamin C Serum', 'Coffee Scrub', 'Eye Cream',
+        'Biphasic Makeup Remover', 'Hydrating Facial Mist', 'Lifting Cream', 'Retinol Serum',
+        'Rebuilding Ampoule', 'Anti-Acne Cream', 'Foam Cleanser', 'Light Hydrating Gel',
+        'Nourishing Essence', 'Gold Under-Eye Patch'
+    ]
+
     BRANDS = [
         'سینره', 'نوتروژینا', 'لورآل', 'نیوآ', 'گارنیه',
         'لاروش پوزای', 'سی‌گل', 'داو', 'فلورمار', 'ثمین',
