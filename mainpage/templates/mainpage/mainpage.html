@@ -75,10 +75,6 @@
             لینک ها، مثلا کرم ها، ضدآفتاب، دردها و هر کوفت دیگه ای که دخترا به خودشون میزنن (میتونه هم نباشه)
         </div>
     </nav>
-    <form class="hidden-info">
-        <input type="hidden" name="q" value="{{ request.GET.q }}">
-        <input type="hidden" name="more" placeholder="{{ more }}" value="{{ more }}">
-    </form>
     <main>
         <div class="container" id="container">
             <section class="search-bar">
@@ -94,9 +90,14 @@
                 <div id="suggestions" class="suggestions-box"></div>
             </section>
             <section class="products-box">
-                <aside>
-                    <h3 class="filter-title">فیلتر محصولات</h3>
-                    <form method="get" class="filter-form">
+                <aside id="aside">
+                    <h3 class="filter-title" id="filter-toggle">
+                        فیلتر محصولات
+                        <svg version="1.1" class="has-solid " viewBox="0 0 36 36" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" focusable="false" role="img" width="28" height="28" fill="currentColor">
+                            <path class="clr-i-outline clr-i-outline-path-1" d="M33,4H3A1,1,0,0,0,2,5V6.67a1.79,1.79,0,0,0,.53,1.27L14,19.58v10.2l2,.76V19a1,1,0,0,0-.29-.71L4,6.59V6H32v.61L20.33,18.29A1,1,0,0,0,20,19l0,13.21L22,33V19.5L33.47,8A1.81,1.81,0,0,0,34,6.7V5A1,1,0,0,0,33,4Z"/><path class="clr-i-solid clr-i-solid-path-1" d="M22,33V19.5L33.47,8A1.81,1.81,0,0,0,34,6.7V5a1,1,0,0,0-1-1H3A1,1,0,0,0,2,5V6.67a1.79,1.79,0,0,0,.53,1.27L14,19.58v10.2Z" style="display:none"/><path d="M33.48,4h-31A.52.52,0,0,0,2,4.52V6.24a1.33,1.33,0,0,0,.39.95l12,12v10l7.25,3.61V19.17l12-12A1.35,1.35,0,0,0,34,6.26V4.52A.52.52,0,0,0,33.48,4Z" class="clr-i-solid clr-i-solid-path-1" style="display:none"/>
+                        </svg>
+                    </h3>
+                    <form method="get" class="filter-form" id="filter-menu">
                     
                       <!-- 🔍 Search -->
                         <div class="filter-group">
@@ -108,58 +109,58 @@
                                 {% empty %}
                                 {% endfor %}
                             </select>
-                      </div>
+                        </div>
                   
-                      <!-- ✅ Category -->
-                      <div class="filter-group">
-                        <label>دسته‌بندی:</label>
-                        <select name="category">
-                          <option value="">همه</option>
-                          {% for category in product_model.CATEGORY_CHOICES %}
-                          <option value="{{ category.0 }}" {% if category_se == category.0 %}selected{% endif %}>{{ category.1 }}</option>
-                          {% empty %}
-                          {% endfor %}
-                        </select>
-                      </div>
+                        <!-- ✅ Category -->
+                        <div class="filter-group">
+                            <label>دسته‌بندی:</label>
+                            <select name="category">
+                                <option value="">همه</option>
+                                {% for category in product_model.CATEGORY_CHOICES %}
+                                <option value="{{ category.0 }}" {% if category_se == category.0 %}selected{% endif %}>{{ category.1 }}</option>
+                                {% empty %}
+                                {% endfor %}
+                            </select>
+                        </div>
                   
-                      <!-- ✅ Skin Type -->
-                      <div class="filter-group">
-                        <label>نوع پوست:</label>
-                        <select name="skin_type">
-                          <option value="">همه</option>
-                          {% for skin_type in product_model.SKIN_TYPE_CHOICES %}
-                          <option value="{{ skin_type.0 }}" {% if skin_type_se == skin_type.0 %}selected{% endif %}>{{ skin_type.1 }}</option>
-                          {% empty %}
-                          {% endfor %}
-                        </select>
-                      </div>
+                        <!-- ✅ Skin Type -->
+                        <div class="filter-group">
+                            <label>نوع پوست:</label>
+                            <select name="skin_type">
+                                <option value="">همه</option>
+                                {% for skin_type in product_model.SKIN_TYPE_CHOICES %}
+                                <option value="{{ skin_type.0 }}" {% if skin_type_se == skin_type.0 %}selected{% endif %}>{{ skin_type.1 }}</option>
+                                {% empty %}
+                                {% endfor %}
+                            </select>
+                        </div>
                   
-                      <!-- ✅ Concern -->
-                      <div class="filter-group">
-                        <label>مشکل پوستی:</label>
-                        <input type="text" name="concern" value="{{ request.GET.concern }}" placeholder="مثلا جوش">
-                      </div>
+                        <!-- ✅ Concern -->
+                        <div class="filter-group">
+                            <label>مشکل پوستی:</label>
+                            <input type="text" name="concern" value="{{ request.GET.concern }}" placeholder="مثلا جوش">
+                        </div>
                   
-                      <!-- ✅ Price -->
-                      <div class="filter-group price-group">
-                        <label>قیمت:</label>
-                        <input type="number" name="min_price" value="{{ request.GET.min_price }}" placeholder="حداقل">
-                        <input type="number" name="max_price" value="{{ request.GET.max_price }}" placeholder="حداکثر">
-                      </div>
+                        <!-- ✅ Price -->
+                        <div class="filter-group price-group">
+                            <label>قیمت:</label>
+                            <input type="number" name="min_price" value="{{ request.GET.min_price }}" placeholder="حداقل">
+                            <input type="number" name="max_price" value="{{ request.GET.max_price }}" placeholder="حداکثر">
+                        </div>
                   
-                      <!-- ✅ Sorting -->
-                      <div class="filter-group">
-                        <label>مرتب‌سازی:</label>
-                        <select name="sort_by">
-                          <option value="">پیش‌فرض</option>
-                          <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>قیمت کم به زیاد</option>
-                          <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>قیمت زیاد به کم</option>
-                          <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>بالاترین امتیاز</option>
-                          <option value="popularity" {% if request.GET.sort_by == 'popularity' %}selected{% endif %}>محبوبیت</option>
-                        </select>
-                      </div>
+                        <!-- ✅ Sorting -->
+                        <div class="filter-group">
+                            <label>مرتب‌سازی:</label>
+                            <select name="sort_by">
+                                <option value="">پیش‌فرض</option>
+                                <option value="price_low" {% if request.GET.sort_by == 'price_low' %}selected{% endif %}>قیمت کم به زیاد</option>
+                                <option value="price_high" {% if request.GET.sort_by == 'price_high' %}selected{% endif %}>قیمت زیاد به کم</option>
+                                <option value="rating" {% if request.GET.sort_by == 'rating' %}selected{% endif %}>بالاترین امتیاز</option>
+                                <option value="popularity" {% if request.GET.sort_by == 'popularity' %}selected{% endif %}>محبوبیت</option>
+                            </select>
+                        </div>
                   
-                      <button type="submit" class="page_button">اعمال فیلتر</button>
+                        <button type="submit" class="page_button">اعمال فیلتر</button>
                     </form>
                 </aside>
 
