@@ -15,14 +15,14 @@
         <form method="post">
             {% csrf_token %}
             {% for question in questions %}
-                <div class="question">
+                <div class="question" id="qid_{{ question.id }}">
                     <p class="q-text">{{ question.order|persian_numbers }}. {{ question.text }}</p>
 
                     {% with key="question_"|addstr:question.id %}
                         {% if question.type == "single" %}
                             {% for choice in question.choices.all %}
                                 <label>
-                                    <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}"
+                                    <input id="rating_input_{{ question.id }}" type="radio" name="question_{{ question.id }}" value="{{ choice.id }}"
                                         {% if initial_answers|get_item:key == choice.id %}checked{% endif %}>
                                     {{ choice.text }}
                                 </label>

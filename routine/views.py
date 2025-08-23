@@ -611,7 +611,6 @@ def routine_search(request, search_query):
     products = products.filter(q_objects)
     if len(products) <= 20:
         products = Product.objects.all()
-    print(products)
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 12000
     BRAND_BASE_SCORE = 10000
