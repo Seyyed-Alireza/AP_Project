@@ -18,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkbox = document.getElementById(`know_${idPart}`);
         if (checkbox) {
             rangeDisable(idPart);
-            console.log('here')
         }
     });
 });
@@ -31,9 +30,54 @@ function rangeDisable(qid) {
     if (checkbox.checked) {
         input.disabled = true;
         output.style.display = 'none';
+        let id_counter = parseInt(qid, 10) + 1;
+        while (true) {
+            const q = document.getElementById(`rating_input_${id_counter}`);
+            if (!q) {
+                break;
+            }
+            if (q.type === "range") {
+                break;
+            }
+            q.required = true;
+            q.addEventListener("invalid", function () {
+                this.setCustomValidity("لطفاً یک گزینه را انتخاب کنید");
+            });
+        
+            q.addEventListener("input", function () {
+                this.setCustomValidity("");
+            });
+            // radios.forEach(radio => {
+            //     radio.addEventListener("invalid", function () {
+            //         this.setCustomValidity("لطفاً یک گزینه را انتخاب کنید");
+            //     });
+          
+            //     radio.addEventListener("input", function () {
+            //         this.setCustomValidity("");
+            //     });
+            // });
+            const questoin = document.getElementById(`qid_${id_counter}`)
+            questoin.style.display = "block";
+            id_counter += 1;
+        }
     } else {
         input.disabled = false;
-        output.style.display = 'inline'
+        output.style.display = 'inline';
+        let id_counter = parseInt(qid, 10) + 1;
+        while (true) {
+            const q = document.getElementById(`rating_input_${id_counter}`);
+            if (!q) {
+                break;
+            }
+            if (q.type === "range") {
+                break;
+            }
+            q.required = false;
+            q.setCustomValidity("");
+            const questoin = document.getElementById(`qid_${id_counter}`)
+            questoin.style.display = "none";
+            id_counter += 1;
+        }
         updateRatingOutput(qid);
     }
 }
