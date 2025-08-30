@@ -38,17 +38,23 @@ def filter(request, products):
     
 def sort(request, products):
     sort_by = request.GET.get('sort_by')
+    has_sort = False
     if sort_by == 'price_low':
+        has_sort = True
         products = products.order_by('price')
     elif sort_by == 'price_high':
+        has_sort = True
         products = products.order_by('-price')
     elif sort_by == 'rating':
+        has_sort = True
         products = products.order_by('-rating')
     elif sort_by == 'popularity':
+        has_sort = True
         products = products.order_by('-views')
-    return products
+    return products, has_sort
 
 def mainpage(request):
+
     # Start with all products
     products = Product.objects.all()
 
@@ -56,8 +62,7 @@ def mainpage(request):
     products = filter(request, products)
 
     # ---- 🔀 Sorting ----
-    products = sort(request, products)
-
+    products, has_sort = sort(request, products)
     skin_type = request.GET.get('skin_type')
     category = request.GET.get('category')
     brand = request.GET.get('brand')
@@ -68,7 +73,7 @@ def mainpage(request):
     for_cache = ''.join([str(x) for x in filters])
 
     # ---- 🔍 Search ----
-    products = search(request, products, for_cache)
+    products = search(request, products, for_cache, has_sort)
 
     context = {
         'products': products,
@@ -243,7 +248,7 @@ import hashlib
 from django.db.models import Avg
 import time
 
-def search(request, products, for_cache, live=False, routine=False, search_query=None):
+def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None):
     start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -259,21 +264,27 @@ def search(request, products, for_cache, live=False, routine=False, search_query
     cache_key = "search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
-    if cached_ids:
-        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
-        print(time.time() - start)
-        return Product.objects.filter(id__in=cached_ids).order_by(preserved)
+    # if cached_ids:
+    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
+    #     print(time.time() - start)
+    #     return Product.objects.filter(id__in=cached_ids).order_by(preserved)
     query_words = full_query.lower().split()
 
     q_objects = Q()
     for word in query_words:
-        q_objects |= Q(name__icontains=word)# | Q(brand__icontains=word) | Q(description__icontains=word)
+        q_objects |= Q(name__icontains=word) | Q(brand__icontains=word) | Q(description__icontains=word)
 
     products_backup = products
+
+    ##################### BUG ###################
     products = products.filter(q_objects)
-    if len(products) <= 20:
+    if len(products) <= 20 and not for_cache:
         products = products_backup
-    # products = Product.objects.all()
+    ##############################
+
+    if has_sorted:
+        return products
+
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 15000
     BRAND_BASE_SCORE = 9000
@@ -334,6 +345,7 @@ def search(request, products, for_cache, live=False, routine=False, search_query
         cache.set(cache_key, selected_ids, timeout=86400)
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         return Product.objects.filter(id__in=selected_ids).order_by(preserved)
+    
 
     for product in products:
         score = 0
@@ -538,11 +550,13 @@ def live_search(request):
         search_history = SearchHistory.objects.filter(user=request.user).order_by('-searched_at')
         suggestions = [{'name': history.query} for history in search_history][:15]
     else:
+        if not full_query:
+            return JsonResponse('')
         query_words = full_query.split()
         q_objects = Q()
         for word in query_words:
             q_objects |= Q(name__icontains=word) | Q(brand__icontains=word)
-        products = search(request, live=True, for_cache='for_save', products=Product.objects.filter(q_objects))
+        products = search(request, live=True, for_cache='for_save', has_sorted=False, products=Product.objects.filter(q_objects))
         suggestions = []
         for product in products:
             if product.name not in suggestions:

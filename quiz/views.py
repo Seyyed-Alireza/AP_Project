@@ -56,7 +56,7 @@ def skin_quiz_view(request, prof=False):
                 answer.save()
                 try:
                     normal = NORMAL_SKIN_VALUES[questions[i].subject]
-                    total_effects[questions[i].subject] = int(raw_value) - normal
+                    total_effects[questions[i].subject] = int(raw_value)
                 except:
                     pass
                 
@@ -95,6 +95,7 @@ def skin_quiz_view(request, prof=False):
                     elif isinstance(value, str):
                         total_effects[key] = value
             i += 1
+
 
         skin_profile.acne = total_effects.get("acne", 0) - NORMAL_SKIN_VALUES['acne']
         skin_profile.sensitivity = total_effects.get("sensitivity", 0) - NORMAL_SKIN_VALUES['sensitivity']

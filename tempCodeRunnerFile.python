@@ -1,6 +1,20 @@
-x = set()
-
-for _ in range(5):
-    x.add('alireza')
-
-print(x)
+import time 
+n = 20
+total = 0
+for i in range(n):
+    start = time.time()
+    i = 0
+    while i < 10001:
+        i += 1
+    end = time.time()
+    total += end - start
+print(total / n)
+total = 0
+for i in range(n):
+    start = time.time()
+    i = 0
+    while i <= 10000:
+        i += 1
+    end = time.time()
+    total += end - start
+print(total / n)

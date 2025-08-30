@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
             suggestionsBox.style.display = 'none';
             const searchjs = document.getElementById('search_js');
             const btnw = document.querySelector("#container > section.search-bar > form > button");
+            pop.style.display = 'none';
             searchjs.style.position = 'static';
             searchjs.style.zIndex = '0';
             btnw.style.position = 'static';
