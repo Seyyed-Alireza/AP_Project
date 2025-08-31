@@ -86,7 +86,8 @@ def mainpage(request):
     return render(request, 'mainpage/mainpage.html', context)
 
 def more_products(request):
-    query_words = request.GET.get('q').split()
+    q = request.GET.get('query', request.GET.get('help'))
+    query_words = q.split()
     q_objects = Q()
     for word in query_words:
         q_objects |= Q(name__icontains=word)
@@ -106,8 +107,6 @@ def more_products(request):
     max_price = request.GET.get('max_price')
     filters = [brand, category, skin_type, min_price, max_price, sort_by]
     for_cache = ''.join([str(x) for x in filters])
-    print(len(products), '-------------------------------------------------------------')
-    print(products)
     products = search(request, products, for_cache, has_sorted=has_sort, for_more=True)
 
     context = {

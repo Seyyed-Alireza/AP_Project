@@ -46,7 +46,7 @@
                             {% endfor %}
                         {% if substep.1 %}
                             <form class="more-products" action="{% url 'more_products' %}" method="get" >
-                                <input type="hidden" name="q" value="{{ substep.3 }}">
+                                <input type="hidden" name="query" value="{{ substep.3 }}">
                                 <button type="submit">بیشتر</button>
                             </form>
                         {% endif %}
