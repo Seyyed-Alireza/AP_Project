@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>روتین</title>
 
-    <link rel="stylesheet" href="{% static 'routine/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'routine/css/style.css' %}?v=1">
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
 </head>
 <body>
@@ -51,8 +51,8 @@
                             </form>
                         {% endif %}
                         </div>
-                        <div class="step_product_underline"></div>
                     {% empty %}{% endfor %}
+                    <div class="step_product_underline"></div>
                 {% empty %}{% endfor %}
             {% empty %}
                 <p>برای آماده کردن روتین پوستی لطفاً پرسشنامه‌ای که مربوط به اطلاعات پوستی هست را کامل کنید</p>

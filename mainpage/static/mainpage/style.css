@@ -378,13 +378,13 @@ aside {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
-    box-shadow: 0 0 12px rgba(97, 95, 225, 0.5);
+    box-shadow: 0 0 5px rgba(97, 95, 225, 0.5);
     transition: all 200ms;
 }
 
 .product_card:hover {
-    box-shadow: 0 0 25px rgba(97, 95, 255, 1);
-    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(97, 95, 255, 1);
+    transform: scale(1.04);
     cursor: pointer;
 }
 

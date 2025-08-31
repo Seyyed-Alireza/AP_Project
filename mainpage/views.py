@@ -96,7 +96,7 @@ def more_products(request):
     products = filter(request, products)
 
     # ---- 🔀 Sorting ----
-    products = sort(request, products)
+    products, has_sort = sort(request, products)
 
     skin_type = request.GET.get('skin_type')
     category = request.GET.get('category')
@@ -106,7 +106,9 @@ def more_products(request):
     max_price = request.GET.get('max_price')
     filters = [brand, category, skin_type, min_price, max_price, sort_by]
     for_cache = ''.join([str(x) for x in filters])
-    products = search(request, products, for_cache)
+    print(len(products), '-------------------------------------------------------------')
+    print(products)
+    products = search(request, products, for_cache, has_sorted=has_sort, for_more=True)
 
     context = {
         'products': products,
@@ -248,7 +250,7 @@ import hashlib
 from django.db.models import Avg
 import time
 
-def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None):
+def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None, for_more=False):
     start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -270,20 +272,21 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     #     return Product.objects.filter(id__in=cached_ids).order_by(preserved)
     query_words = full_query.lower().split()
 
-    q_objects = Q()
-    for word in query_words:
-        q_objects |= Q(name__icontains=word) | Q(brand__icontains=word) | Q(description__icontains=word)
+    if not for_more:
+        q_objects = Q()
+        for word in query_words:
+            q_objects |= Q(name__icontains=word) | Q(brand__icontains=word) | Q(description__icontains=word)
 
-    products_backup = products
+        products_backup = products
 
-    ##################### BUG ###################
-    products = products.filter(q_objects)
-    if len(products) <= 20 and not for_cache:
-        products = products_backup
-    ##############################
+        ##################### BUG ###################
+        products = products.filter(q_objects)
+        if len(products) <= 20 and not for_cache:
+            products = products_backup
+        ##############################
 
-    if has_sorted:
-        return products
+        if has_sorted:
+            return products
 
     total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
     NAME_BASE_SCORE = 15000
