@@ -20,11 +20,11 @@ html {
 }
 
 body {
-    background: url('images/skincare.jpg') center center / cover no-repeat;
+    background: url('images/bg1.jpg') center center / cover no-repeat;
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    align-items: flex-start;
+    align-items: center;
 }
 
 form {
@@ -38,19 +38,6 @@ form {
     padding: 30px 20px;
     border-radius: 10px;
     width: 400px;
-}
-
-@media only screen and (max-width: 528px) {
-    body {
-        background: url('images/phone-bg.jpg') center center / cover no-repeat;
-        align-items: center;
-    }
-
-    .form-box {
-        margin-top: -100px;
-        background: none;
-        box-shadow: none;
-    }
 }
 
 .form-field {
@@ -123,10 +110,10 @@ button[type="submit"]:active {
     margin-top: 20px;
     text-align: center;
     display: inline-block;
-    background-color: white;
     border: none;
     border-radius: 30%;
-    box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
+    /* background-color: white;
+    box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1); */
 }
 
 .login-link a {
@@ -146,4 +133,22 @@ button[type="submit"]:active {
 
 .errorlist li::marker {
     content: none;
+}
+
+@media only screen and (max-width: 528px) {
+    body {
+        background: url('images/phone-bg.jpg') center center / cover no-repeat;
+        align-items: center;
+    }
+
+    .form-box {
+        margin-top: -100px;
+        background: none;
+        box-shadow: none;
+    }
+
+    .login-link {
+        background-color: white;
+        box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
+    }
 }

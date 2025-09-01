@@ -73,7 +73,7 @@ class Product(models.Model):
     ingredients = models.JSONField(verbose_name="محتویات")
     price = models.PositiveIntegerField()
     rating = models.FloatField(default=0.0)
-    image = models.ImageField(upload_to='product_images/', default='product_images/default.png')
+    image = models.ImageField(upload_to='product_images/', default='product_images/default.jpg')
     views = models.PositiveIntegerField(default=0, verbose_name="تعداد بازدید")
     likes = models.PositiveIntegerField(default=0)
     tags = models.JSONField()
