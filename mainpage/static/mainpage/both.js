@@ -56,6 +56,6 @@ filterButton.addEventListener("click", function(){
     } else if (window.innerWidth < 576) {
         filterMenu.style.display = "none";
         aside.style.border = "none";
-        aside.style.padding = "10px 0 0"
+        aside.style.padding = "0px 0 0"
     }
 });

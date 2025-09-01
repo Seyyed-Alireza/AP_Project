@@ -21,6 +21,7 @@
                 <span class="plan-name">{{ plan.0 }}</span>
                 {% for step in plan.1 %}
                     <p class="step-header"><span class="step-counter">مرحله {{ step.2|persian_numbers }}:</span> {{ step.0 }}</p>
+                    <p class="main_step_description">{{ step.3 }}</p>
                     {% for substep in step.1 %}
                         <p class="substep-header">{{ substep.0 }}</p>
                         <p class="step-description">{{ substep.2 }}</p>
