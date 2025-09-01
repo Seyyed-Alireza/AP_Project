@@ -135,7 +135,7 @@ button[type="submit"]:active {
     content: none;
 }
 
-@media only screen and (max-width: 528px) {
+@media only screen and (max-width: 576px) {
     body {
         background: url('images/phone-bg.jpg') center center / cover no-repeat;
         align-items: center;
