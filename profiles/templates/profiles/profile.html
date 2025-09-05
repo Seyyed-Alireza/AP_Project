@@ -130,7 +130,7 @@
                     {% endfor %}
                 </div>
                 <div class="pay_box">
-                    <p>مبلغ قایل پرداخت: {{ total_shoppingcart_price|persian_numbers }}</p>
+                    <p>مبلغ قایل پرداخت: {{ total_shoppingcart_price|intcomma|persian_numbers }}</p>
                     <form class="pay_button" method="post" action="{% url 'buy_products' %}">
                         {% csrf_token %}
                         <button type="submit">پرداخت</button>

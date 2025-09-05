@@ -129,3 +129,34 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+
+
+document.querySelectorAll('.add-to-cart-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const productId = this.dataset.productId;
+
+        fetch(`/profiles/add-to-cart/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({})
+        })
+        .then(response => response.json().then(data => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+            if (ok) {
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) cartCount.textContent = data.cart_count;
+                alert('محصول به سبد خرید اضافه شد!');
+            } else {
+                alert('خطا در افزودن به سبد خرید');
+            }
+        })
+        .catch(() => {
+            alert('خطا در افزودن به سبد خرید');
+        });
+    });
+});

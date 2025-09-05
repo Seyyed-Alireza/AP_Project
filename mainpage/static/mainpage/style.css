@@ -392,7 +392,8 @@ aside {
 
 .product_card:hover {
     box-shadow: 0 0 15px rgba(97, 95, 255, 1);
-    transform: scale(1.04);
+    transform: scale(1.02);
+    z-index: 0;
     cursor: pointer;
 }
 
@@ -628,8 +629,7 @@ footer {
         margin: 10px 0px 10px;
         border: none;
         position: sticky;
-        top: 0px;
-        z-index: 20;
+        z-index: 1;
     }
 
     .filter-form {

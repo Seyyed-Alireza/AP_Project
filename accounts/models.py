@@ -28,3 +28,11 @@ class ProductSearchHistory(models.Model):
     def __str__(self):
         return f'{self.user.username} - {self.interaction_type} - {self.product}'
 
+class ProductPurchaseHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases_histories')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='purchases_histories')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    purchase_count = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.user.username} has purchased {self.product}'

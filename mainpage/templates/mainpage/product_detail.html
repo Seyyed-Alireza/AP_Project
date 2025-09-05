@@ -118,7 +118,6 @@
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma|persian_numbers }} تومان</p>
                     
-                    <!-- <p class="product_comments_number">امتیاز براساس نظر {{ comments|length|persian_numbers }} خریدار</p> -->
 
                 </div>
             </div>
@@ -162,10 +161,13 @@
                 </div>
             </div>
             <div class="add_product_to_cart">
-                <form method="post" action="{% url 'add_to_cart' product.pk %}">
+                <!-- <form method="post" action="{% url 'add_to_cart' product.pk %}"> -->
+                <form class="add-to-cart-form" data-product-id="{{ product.pk }}">
                     {% csrf_token %}
                     <button type="submit" class="page_button">افزودن به سبد خرید</button>
                 </form>
+                <span id="adding-cart-success">به سبد خرید اضافه شد</span>
+                <span id="adding-cart-fail">خطا، دوباره تلاش کنید</span>
 
             </div>
         </section>

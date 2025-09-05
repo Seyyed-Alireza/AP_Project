@@ -241,7 +241,7 @@ h1 {
 
 .routine_card:hover {
     box-shadow: 0 0 15px rgba(97, 95, 255, 1);
-    transform: scale(1.03);
+    transform: scale(1.02);
     cursor: pointer;
 }
 
@@ -388,7 +388,8 @@ button:active {
 
 .cart_buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
+    gap: 10px;
 }
 
 .cart_button {
@@ -398,8 +399,8 @@ button:active {
 }
 
 .product_card:hover {
-    box-shadow: 0 0 25px rgba(97, 95, 255, 1);
-    transform: scale(1.08);
+    box-shadow: 0 0 15px rgba(97, 95, 255, 1);
+    transform: scale(1.02);
     cursor: pointer;
 }
 

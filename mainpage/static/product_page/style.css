@@ -354,6 +354,11 @@ p {
     margin-top: 5px;
 }
 
+#adding-cart-success, #adding-cart-fail {
+    margin-right: 12px;
+    display: none;
+}
+
 .star {
     color: rgb(196, 166, 0);
     font-size: 30px;

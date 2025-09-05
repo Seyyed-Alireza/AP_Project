@@ -222,19 +222,27 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+import pandas as pd
+
 def get_similar_users(current_skin_types):
     if isinstance(current_skin_types, str):
         current_skin_types = [current_skin_types]
 
-    all_profiles = SkinProfile.objects.select_related('user').filter(skin_type__isnull=False)
+    fields = [
+        f.name for f in SkinProfile._meta.get_fields()
+        if f.concrete and f.name not in ('completed_at', 'quiz_skipped')
+    ]
 
-    similar_users = []
-    for profile in all_profiles:
-        if any(st in profile.skin_type for st in current_skin_types):
-            similar_users.append(profile.user)
-            if len(similar_users) >= 20:
-                break
-    return similar_users
+    fields += ['user__id']
+    all_profiles_panda = pd.DataFrame(list(SkinProfile.objects.select_related('user').filter(skin_type__isnull=False).values(*fields)))
+    print(all_profiles_panda.to_string())
+
+    mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
+    similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
+    print(similar_user_ids)
+
+    return User.objects.filter(id__in=similar_user_ids)
 
 def is_subset(list1, list2):
     return all(item in list2 for item in list1)
@@ -243,7 +251,7 @@ def both_subset(list1, list2):
     return set(list1).issubset(set(list2)) or set(list2).issubset(set(list1))
 
 from quiz.models import SkinProfile
-from accounts.models import ProductSearchHistory
+from accounts.models import ProductSearchHistory, ProductPurchaseHistory
 from django.core.cache import cache
 import hashlib
 from django.db.models import Avg
@@ -307,9 +315,8 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         similar_users = []
 
     if not full_query:
-        purchases = ProductSearchHistory.objects.filter(
+        purchases = ProductPurchaseHistory.objects.filter(
             user__in=similar_users,
-            interaction_type='purchase'
         ).values_list('user_id', 'product_id')
         purchases = set(purchases)
 
@@ -346,6 +353,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         selected_ids = [r[0] for r in results]
         cache.set(cache_key, selected_ids, timeout=86400)
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
+        print(time.time() - start)
         return Product.objects.filter(id__in=selected_ids).order_by(preserved)
     
 

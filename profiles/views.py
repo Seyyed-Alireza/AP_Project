@@ -3,10 +3,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm
 from .models import ShoppingCartItem
 from mainpage.models import Product
-from routine.views import find_step_products, routine_generator
-from routine.models import RoutinePlan
+from routine.views import find_step_products
 from quiz.models import SkinProfile
-from django.urls import reverse
 
 PLAN_NAMES = {
     'full': 'برنامه‌ی کامل (اگه سلامت پوستت خیلی برات مهمه)',
@@ -90,20 +88,26 @@ def profile_edit(request):
     return render(request, 'profiles/profile_edit.html', {'form': form})    
 
 from accounts.models import ProductSearchHistory
+from accounts.models import ProductPurchaseHistory
+from django.http import JsonResponse
+
 @login_required
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, pk=product_id)
-    if not ProductSearchHistory.objects.filter(user=request.user, product=product, interaction_type='cart').exists():
-        ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type='cart')
-    cart_item, created = ShoppingCartItem.objects.get_or_create(
-        user=request.user,
-        product=product,
-        defaults={'quantity': 1}
-    )
-    if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-    return redirect('product_detail', pk=product_id)
+    if request.method == 'POST':
+        product = get_object_or_404(Product, pk=product_id)
+        if not ProductSearchHistory.objects.filter(user=request.user, product=product, interaction_type='cart').exists():
+            ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type='cart')
+        cart_item, created = ShoppingCartItem.objects.get_or_create(
+            user=request.user,
+            product=product,
+            defaults={'quantity': 1}
+        )
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 @login_required
@@ -143,7 +147,13 @@ def buy_products(request):
         for item in cart_items:
             product = item.product
             product.sales_count += item.quantity
-            ProductSearchHistory.objects.create(user=request.user, product=product, interaction_type='purchase')
+            purchase, created = ProductPurchaseHistory.objects.get_or_create(
+                user=request.user,
+                product=product,
+                defaults={'purchase_count': item.quantity}
+            )
+            if not created:
+                purchase.purchase_count += item.quantity
             product.save()
         cart_items.delete()
 
