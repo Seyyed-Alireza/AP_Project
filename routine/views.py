@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from mainpage.views import bayesian_average, similarity
+from mainpage.views import bayesian_average
 from mainpage.models import Product
 from .models import RoutinePlan
 from django.contrib.auth.decorators import login_required

@@ -70,7 +70,7 @@ def mainpage(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     filters = [brand, category, skin_type, min_price, max_price, sort_by]
-    for_cache = ''.join([str(x) for x in filters])
+    for_cache = ''.join([str(x) for x in filters if x != None])
 
     # ---- 🔍 Search ----
     products = search(request, products, for_cache, has_sort)
@@ -86,7 +86,7 @@ def mainpage(request):
     return render(request, 'mainpage/mainpage.html', context)
 
 def more_products(request):
-    q = request.GET.get('query', request.GET.get('help'))
+    q = request.GET.get('query')
     query_words = q.split()
     q_objects = Q()
     for word in query_words:
@@ -108,6 +108,8 @@ def more_products(request):
     filters = [brand, category, skin_type, min_price, max_price, sort_by]
     for_cache = ''.join([str(x) for x in filters])
     products = search(request, products, for_cache, has_sorted=has_sort, for_more=True)
+    from routine.views import routine_search
+    products = routine_search(request, search_query=q)
 
     context = {
         'products': products,
@@ -236,12 +238,12 @@ def get_similar_users(request, current_skin_types):
 
     fields += ['user__id']
     all_profiles_panda = pd.DataFrame(list(SkinProfile.objects.select_related('user').filter(skin_type__isnull=False).values(*fields)))
-    print(all_profiles_panda.to_string())
+    # print(all_profiles_panda.to_string())
 
     mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
     similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
-    print(request.user.username)
-    print(similar_user_ids)
+    # print(request.user.username)
+    # print(similar_user_ids)
 
     return User.objects.filter(id__in=similar_user_ids)
 
@@ -279,7 +281,6 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     #     print(time.time() - start)
     #     return Product.objects.filter(id__in=cached_ids).order_by(preserved)
     query_words = full_query.lower().split()
-
     if not for_more:
         q_objects = Q()
         for word in query_words:
@@ -356,8 +357,6 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         print(time.time() - start)
         return Product.objects.filter(id__in=selected_ids).order_by(preserved)
-    
-
     for product in products:
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')

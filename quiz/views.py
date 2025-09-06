@@ -28,13 +28,13 @@ def skin_quiz_view(request, prof=False):
         Answer.objects.filter(user=request.user).delete()
         total_effects = {
             'acne': 0,
-            'sensitivity': 0,
-            'dryness': 0,
-            'oiliness': 0,
-            'redness': 0,
+            'sensitivity': 3,
+            'dryness': 5,
+            'oiliness': 4,
+            'redness': 1,
             'age_range': None,
-            'hydration': 0,
-            'elasticity': 0,
+            'hydration': 8,
+            'elasticity': 7,
         }
     
         skin_profile = request.user.skinprofile
