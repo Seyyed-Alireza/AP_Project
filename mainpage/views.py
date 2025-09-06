@@ -225,7 +225,7 @@ User = get_user_model()
 
 import pandas as pd
 
-def get_similar_users(current_skin_types):
+def get_similar_users(request, current_skin_types):
     if isinstance(current_skin_types, str):
         current_skin_types = [current_skin_types]
 
@@ -240,6 +240,7 @@ def get_similar_users(current_skin_types):
 
     mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
     similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
+    print(request.user.username)
     print(similar_user_ids)
 
     return User.objects.filter(id__in=similar_user_ids)
@@ -309,7 +310,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     user = request.user
     user_in = False
     if user.is_authenticated and hasattr(user, 'skinprofile'):
-        similar_users = get_similar_users(user.skinprofile.skin_type)
+        similar_users = get_similar_users(request, user.skinprofile.skin_type)
         user_in = True
     else:
         similar_users = []

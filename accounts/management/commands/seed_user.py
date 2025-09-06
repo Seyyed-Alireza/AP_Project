@@ -51,7 +51,8 @@ class Command(BaseCommand):
                 skin_profile.quiz_completed = True
                 skin_profile.quiz_skipped = True
                 skin_profile.completed_at = timezone.now()
-                skin_profile.skin_type = random.choice(['dry', 'oily', 'sensitive', 'combination', 'normal'])
+                k = random.randint(5, 12) // 5
+                skin_profile.skin_type = random.choices(['dry', 'oily', 'sensitive', 'combination', 'normal'], k=k)
                 skin_profile.acne = random.randint(-5, 5)
                 skin_profile.dryness = random.randint(-5, 5)
                 skin_profile.sensitivity = random.randint(-5, 5)
