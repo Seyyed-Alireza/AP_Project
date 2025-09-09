@@ -207,21 +207,58 @@
 
 
 
-                <div class="products">
+                <!-- <div class="products">
                     {% for product in products %}
                         <a href="{% url 'product_detail' product.pk %}" class="product_card">
-                                <div class="product_image_div">
-                                    <img src="{{ product.image.url }}" alt="عکس محصول" class="product_image">
+                            <div class="product_image_div">
+                                <img src="{{ product.image.url }}" alt="عکس محصول" class="product_image">
+                            </div>
+                            <div class="product_info">
+                                <p class="product_name">{{ product.name }}</p>
+                                <p class="product_brand">برند {{ product.brand }}</p>
+                                <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
+                                <div class="product_view-and-rate">
+                                    <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
+                                    <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
                                 </div>
-                                <div class="product_info">
-                                    <p class="product_name">{{ product.name }}</p>
-                                    <p class="product_brand">برند {{ product.brand }}</p>
-                                    <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
-                                    <div class="product_view-and-rate">
-                                        <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
-                                        <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
+                            </div>
+                        </a>
+                    {% empty %}
+                        <p>محصولی برای نمایش وجود ندارد.</p>
+                    {% endfor %}
+                </div> -->
+
+                <div class="recommendations-grid">
+                    {% for product in products %}
+                        <a href="{% url 'product_detail' product.pk %}" class="recommendation-card">
+                            <div class="card-header">
+                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                                <div class="product-info">
+                                    <div class="product-name">
+                                        {{ product.name }}
+                                    </div>
+                                    <div class="product-brand">
+                                        {{ product.brand }}
+                                    </div>
+                                    <div class="product-price">
+                                        <i class="fas fa-tag"></i>
+                                        {{ product.price|intcomma|persian_numbers }} تومان
                                     </div>
                                 </div>
+                            </div>
+                            <div class="reason">
+                                <i class="fas fa-lightbulb" style="color: rgb(184, 178, 101);"></i>
+                                دلیل پیشنهاد
+                            </div>
+                            <div class="view-rate">
+                                <div class="view">
+                                    <i class="fas fa-eye" style="color: rgb(145, 135, 235);"></i>
+                                    {{ product.views|intcomma|persian_numbers }} بازدید
+                                </div>
+                                <div class="rate">
+                                    ⭐ {{ product.rating|persian_numbers }}/{{ 5|persian_numbers }}
+                                </div>
+                            </div>
                         </a>
                     {% empty %}
                         <p>محصولی برای نمایش وجود ندارد.</p>
