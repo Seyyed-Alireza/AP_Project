@@ -94,19 +94,28 @@ class RecommendationEngine:
         """
         if self.user_item_matrix is None:
             self.create_user_item_matrix()
+
+        # Filter out users with no interactions (all zeros)
+        user_interaction_counts = (self.user_item_matrix != 0).sum(axis=1)
+        users_with_interactions = user_interaction_counts[user_interaction_counts > 0].index
+        filtered_matrix = self.user_item_matrix.loc[users_with_interactions].fillna(0)
+        
+        print(f"[DEBUG] User matrix shape: {self.user_item_matrix.shape}")
+        print(f"[DEBUG] Filtered to {len(users_with_interactions)} users with interactions")
+        print(f"[DEBUG] Filtered user matrix shape: {filtered_matrix.shape}")
         
         if SKLEARN_AVAILABLE:
             # Use sklearn for efficient cosine similarity calculation
-            user_similarity = cosine_similarity(self.user_item_matrix.fillna(0))
+            user_similarity = cosine_similarity(filtered_matrix)
+            print(f"[DEBUG] User similarity unique values: {np.unique(user_similarity.flatten())[:10]}")
         else:
             # Manual cosine similarity calculation
-            matrix = self.user_item_matrix.fillna(0)
-            user_similarity = self._manual_cosine_similarity(matrix)
+            user_similarity = self._manual_cosine_similarity(filtered_matrix)
         
         self.user_similarity_matrix = pd.DataFrame(
             user_similarity,
-            index=self.user_item_matrix.index,
-            columns=self.user_item_matrix.index
+            index=filtered_matrix.index,
+            columns=filtered_matrix.index
         )
         
         return self.user_similarity_matrix
@@ -121,17 +130,37 @@ class RecommendationEngine:
         # Transpose to get item-user matrix
         item_user_matrix = self.user_item_matrix.T.fillna(0)
         
+        print(f"[DEBUG] Item-user matrix shape: {item_user_matrix.shape}")
+        print(f"[DEBUG] Matrix non-zero count: {(item_user_matrix != 0).sum().sum()}")
+        
+        # Filter out items with very few interactions (less than 2 users)
+        item_interaction_counts = (item_user_matrix != 0).sum(axis=1)
+        items_with_sufficient_interactions = item_interaction_counts[item_interaction_counts >= 2].index
+        
+        if len(items_with_sufficient_interactions) < 2:
+            # If we don't have enough items with sufficient interactions, use all items
+            print("[DEBUG] Not enough items with 2+ interactions, using all items")
+            filtered_matrix = item_user_matrix
+        else:
+            filtered_matrix = item_user_matrix.loc[items_with_sufficient_interactions]
+            print(f"[DEBUG] Filtered to {len(items_with_sufficient_interactions)} items with 2+ interactions")
+        
+        print(f"[DEBUG] Final matrix shape: {filtered_matrix.shape}")
+        
         if SKLEARN_AVAILABLE:
             # Use sklearn for efficient cosine similarity calculation
-            item_similarity = cosine_similarity(item_user_matrix)
+            item_similarity = cosine_similarity(filtered_matrix)
+            print(f"[DEBUG] Item similarity unique values: {len(np.unique(item_similarity.flatten()))} unique values")
+            print(f"[DEBUG] Similarity range: {item_similarity.min():.3f} to {item_similarity.max():.3f}")
         else:
             # Manual cosine similarity calculation
-            item_similarity = self._manual_cosine_similarity(item_user_matrix)
+            item_similarity = self._manual_cosine_similarity(filtered_matrix)
         
+        # Create similarity matrix with filtered items
         self.item_similarity_matrix = pd.DataFrame(
             item_similarity,
-            index=item_user_matrix.index,
-            columns=item_user_matrix.index
+            index=filtered_matrix.index,
+            columns=filtered_matrix.index
         )
         
         return self.item_similarity_matrix

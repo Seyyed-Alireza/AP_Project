@@ -32,44 +32,56 @@ def ubcf_recommendations(request):
     n_recommendations = int(request.GET.get('count', 10))
     
     try:
-        # Temporarily return popular products to test the view
-        print(f"[DEBUG] Getting popular products for user {user_id}")
+        # Use actual UBCF algorithm
+        print(f"[DEBUG] Getting UBCF recommendations for user {user_id}")
         
-        from django.db.models import F
-        popular_products = Product.objects.annotate(
-            popularity_score=F('sales_count') + F('rating') * 10
-        ).order_by('-popularity_score')[:n_recommendations]
+        engine = RecommendationEngine()
+        ubcf_recommendations = engine.user_based_collaborative_filtering(
+            user_id, 
+            n_recommendations=n_recommendations,
+            include_reasons=True
+        )
         
-        print(f"[DEBUG] Found {popular_products.count()} popular products")
+        print(f"[DEBUG] UBCF engine returned {len(ubcf_recommendations)} recommendations")
         
-        # Create recommendation objects with popular products
-        recommendations = []
-        for product in popular_products:
-            recommendations.append({
-                'product': product,
-                'reason': f"محصول محبوب | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}",
-                'predicted_rating': product.rating
-            })
-        
-        print(f"[DEBUG] Final recommendations list has {len(recommendations)} items")
-        
-        # Get user similarity matrix (temporarily disabled)
-        matrix_data = None
-        avg_similarity = 0
+        # If no recommendations from UBCF, fall back to popular products
+        if not ubcf_recommendations:
+            print("[DEBUG] No UBCF recommendations, falling back to popular products")
+            from django.db.models import F
+            popular_products = Product.objects.annotate(
+                popularity_score=F('sales_count') + F('rating') * 10
+            ).order_by('-popularity_score')[:n_recommendations]
+            
+            recommendations = []
+            for product in popular_products:
+                recommendations.append({
+                    'product': product,
+                    'reason': f"محصول محبوب (عدم داده کافی برای UBCF) | امتیاز: {product.rating:.1f}",
+                    'predicted_rating': product.rating
+                })
+        else:
+            recommendations = ubcf_recommendations
+            
+        print(f"[DEBUG] Final UBCF recommendations list has {len(recommendations)} items")
         
         # Calculate stats
         total_users = User.objects.count()
         total_products = Product.objects.count()
-        avg_similarity = 0  # Temporarily disabled
+        
+        # Get user similarity matrix for display
+        user_similarity_matrix = engine.calculate_user_similarity()
+        display_matrix = user_similarity_matrix.iloc[:15, :15] if user_similarity_matrix is not None else None
+        
+        avg_similarity = user_similarity_matrix.values.mean() if user_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
         context = {
             'recommendations': recommendations,
-            'user_similarity_matrix': matrix_data,
+            'user_similarity_matrix': display_matrix,
             'total_users': total_users,
             'total_products': total_products,
-            'avg_similarity': avg_similarity,
-            'coverage': coverage,
+            'avg_similarity': round(avg_similarity, 3),
+            'coverage': round(coverage, 1),
             'method': 'UBCF',
         }
         
@@ -77,8 +89,10 @@ def ubcf_recommendations(request):
         
     except Exception as e:
         print(f"Error in UBCF recommendations: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return render(request, 'recommendations/ubcf.html', {
-            'error': 'خطا در تولید توصیه‌ها',
+            'error': f'خطا در تولید توصیه‌های UBCF: {str(e)}',
             'total_users': User.objects.count(),
             'total_products': Product.objects.count(),
         })
@@ -99,44 +113,56 @@ def ibcf_recommendations(request):
     n_recommendations = int(request.GET.get('count', 10))
     
     try:
-        # Temporarily return popular products to test the view
-        print(f"[DEBUG] Getting popular products for IBCF user {user_id}")
+        # Use actual IBCF algorithm
+        print(f"[DEBUG] Getting IBCF recommendations for user {user_id}")
         
-        from django.db.models import F
-        popular_products = Product.objects.annotate(
-            popularity_score=F('sales_count') + F('rating') * 10
-        ).order_by('-popularity_score')[:n_recommendations]
+        engine = RecommendationEngine()
+        ibcf_recommendations = engine.item_based_collaborative_filtering(
+            user_id, 
+            n_recommendations=n_recommendations,
+            include_reasons=True
+        )
         
-        print(f"[DEBUG] Found {popular_products.count()} popular products for IBCF")
+        print(f"[DEBUG] IBCF engine returned {len(ibcf_recommendations)} recommendations")
         
-        # Create recommendation objects with popular products
-        recommendations = []
-        for product in popular_products:
-            recommendations.append({
-                'product': product,
-                'reason': f"محصول محبوب | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}",
-                'predicted_rating': product.rating
-            })
-        
+        # If no recommendations from IBCF, fall back to popular products
+        if not ibcf_recommendations:
+            print("[DEBUG] No IBCF recommendations, falling back to popular products")
+            from django.db.models import F
+            popular_products = Product.objects.annotate(
+                popularity_score=F('sales_count') + F('rating') * 10
+            ).order_by('-popularity_score')[:n_recommendations]
+            
+            recommendations = []
+            for product in popular_products:
+                recommendations.append({
+                    'product': product,
+                    'reason': f"محصول محبوب (عدم داده کافی برای IBCF) | امتیاز: {product.rating:.1f}",
+                    'predicted_rating': product.rating
+                })
+        else:
+            recommendations = ibcf_recommendations
+            
         print(f"[DEBUG] Final IBCF recommendations list has {len(recommendations)} items")
-        
-        # Get item similarity matrix (temporarily disabled)
-        matrix_data = None
-        avg_similarity = 0
         
         # Calculate stats
         total_users = User.objects.count()
         total_products = Product.objects.count()
-        avg_similarity = 0  # Temporarily disabled
+        
+        # Get item similarity matrix for display
+        item_similarity_matrix = engine.calculate_item_similarity()
+        display_matrix = item_similarity_matrix.iloc[:15, :15] if item_similarity_matrix is not None else None
+        
+        avg_similarity = item_similarity_matrix.values.mean() if item_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
         context = {
             'recommendations': recommendations,
-            'item_similarity_matrix': matrix_data,
+            'item_similarity_matrix': display_matrix,
             'total_users': total_users,
             'total_products': total_products,
-            'avg_similarity': avg_similarity,
-            'coverage': coverage,
+            'avg_similarity': round(avg_similarity, 3),
+            'coverage': round(coverage, 1),
             'method': 'IBCF',
         }
         
@@ -144,8 +170,10 @@ def ibcf_recommendations(request):
         
     except Exception as e:
         print(f"Error in IBCF recommendations: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return render(request, 'recommendations/ibcf.html', {
-            'error': 'خطا در تولید توصیه‌ها',
+            'error': f'خطا در تولید توصیه‌های IBCF: {str(e)}',
             'total_users': User.objects.count(),
             'total_products': Product.objects.count(),
         })
@@ -213,6 +241,7 @@ def similarity_matrices_view(request):
             'user_item_matrix': user_item_matrix,
             'total_users': User.objects.count(),
             'total_products': Product.objects.count(),
+            'total_possible_relations': User.objects.count() * Product.objects.count(),
         }
         
         return render(request, 'recommendations/similarity_matrices.html', context)
@@ -229,9 +258,13 @@ def cf_dashboard(request):
     """
     Simple dashboard for collaborative filtering
     """
+    total_users = User.objects.count()
+    total_products = Product.objects.count()
+    
     context = {
-        'total_users': User.objects.count(),
-        'total_products': Product.objects.count(),
+        'total_users': total_users,
+        'total_products': total_products,
+        'total_possible_relations': total_users * total_products,
     }
     
     return render(request, 'recommendations/cf_dashboard.html', context)
