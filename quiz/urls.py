@@ -1,6 +1,8 @@
 from django.urls import path
 from .views import skin_quiz_view, skin_quiz_view_prof, from_prof, skip_quiz
 
+app_name = 'quiz'
+
 urlpatterns = [
     path('', skin_quiz_view, name='quiz'),
     path('prof', skin_quiz_view_prof, name='quiz_prof'),

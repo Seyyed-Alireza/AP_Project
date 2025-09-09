@@ -34,56 +34,32 @@ class RecommendationEngine:
     def create_user_item_matrix(self):
         """
         Creates user-item interaction matrix from purchase and interaction history
-        Only includes users who have interactions to optimize performance
         """
-        # Get users who have interactions, purchases, or comments
-        interacting_users = set()
-        
-        # Add users from interactions
-        for user_id in ProductSearchHistory.objects.values_list('user_id', flat=True).distinct():
-            interacting_users.add(user_id)
-        
-        # Add users from purchases  
-        for user_id in ProductPurchaseHistory.objects.values_list('user_id', flat=True).distinct():
-            interacting_users.add(user_id)
-            
-        # Add users from comments
-        for user_id in Comment.objects.values_list('user_id', flat=True).distinct():
-            interacting_users.add(user_id)
-        
-        # Get all products that have interactions
-        interacted_products = set()
-        for product_id in ProductSearchHistory.objects.values_list('product_id', flat=True).distinct():
-            interacted_products.add(product_id)
-        for product_id in ProductPurchaseHistory.objects.values_list('product_id', flat=True).distinct():
-            interacted_products.add(product_id)
-        for product_id in Comment.objects.values_list('product_id', flat=True).distinct():
-            interacted_products.add(product_id)
-        
-        user_ids = sorted(list(interacting_users))
-        product_ids = sorted(list(interacted_products))
+        # Get all users and products
+        users = User.objects.all()
+        products = Product.objects.all()
         
         # Create empty matrix
+        user_ids = [u.id for u in users]
+        product_ids = [p.id for p in products]
+        
         matrix = pd.DataFrame(0.0, index=user_ids, columns=product_ids)
         
         # Fill with purchase data (highest weight)
         purchases = ProductPurchaseHistory.objects.all()
         for purchase in purchases:
-            if purchase.user.id in user_ids and purchase.product.id in product_ids:
-                matrix.loc[purchase.user.id, purchase.product.id] += purchase.purchase_count * 5.0
+            matrix.loc[purchase.user.id, purchase.product.id] += purchase.purchase_count * 5.0
         
         # Fill with interaction data
         interactions = ProductSearchHistory.objects.all()
         for interaction in interactions:
-            if interaction.user.id in user_ids and interaction.product.id in product_ids:
-                weight = self.interaction_weights.get(interaction.interaction_type, 1.0)
-                matrix.loc[interaction.user.id, interaction.product.id] += weight
+            weight = self.interaction_weights.get(interaction.interaction_type, 1.0)
+            matrix.loc[interaction.user.id, interaction.product.id] += weight
         
         # Fill with ratings from comments
         comments = Comment.objects.all()
         for comment in comments:
-            if comment.user.id in user_ids and comment.product.id in product_ids:
-                matrix.loc[comment.user.id, comment.product.id] += comment.rating
+            matrix.loc[comment.user.id, comment.product.id] += comment.rating
         
         self.user_item_matrix = matrix
         return matrix
@@ -211,12 +187,10 @@ class RecommendationEngine:
         sorted_recommendations = sorted(recommendations.items(), key=lambda x: x[1], reverse=True)
         
         if include_reasons:
-            result = [(product_id, recommendation_details.get(product_id, "")) 
-                     for product_id, score in sorted_recommendations[:n_recommendations]]
-            return result
+            return [(product_id, recommendation_details.get(product_id, "")) 
+                   for product_id, score in sorted_recommendations[:n_recommendations]]
         else:
-            result = [product_id for product_id, score in sorted_recommendations[:n_recommendations]]
-            return result
+            return [product_id for product_id, score in sorted_recommendations[:n_recommendations]]
     
     def item_based_collaborative_filtering(self, user_id, n_recommendations=10, include_reasons=False):
         """

@@ -1,479 +1,273 @@
-{% load humanize %}
 {% load static %}
-{% load persian_filters %}
-
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>داشبورد فیلترینگ مشارکتی</title>
-    <link rel="stylesheet" href="{% static 'mainpage/style.css' %}?v=2">
-    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <title>داشبورد سیستم توصیه</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'Inter', 'Vazir', sans-serif;
+            font-family: 'Vazir', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #333;
+            padding: 20px 0;
         }
-        
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
+        .container {
+            max-width: 1000px;
         }
-        
-        .dashboard-header {
+        .dashboard-card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
             border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .dashboard-title {
-            font-size: 3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
-        
-        .dashboard-subtitle {
-            color: #666;
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .nav-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-        
-        .nav-btn {
-            padding: 1rem 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid transparent;
-            border-radius: 50px;
-            text-decoration: none;
-            color: #667eea;
-            font-weight: 600;
-            transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .nav-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
-            border-color: #667eea;
-            background: rgba(255, 255, 255, 1);
-        }
-        
-        .stats-section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .stats-title {
-            text-align: center;
-            color: #667eea;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 15px;
-            text-align: center;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
             transition: transform 0.3s ease;
         }
-        
-        .stat-card:nth-child(2) {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        .stat-card:nth-child(3) {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        }
-        
-        .stat-card:hover {
+        .dashboard-card:hover {
             transform: translateY(-5px);
         }
-        
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .stat-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-value {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-        
-        .recommendations-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        
-        .recommendation-panel {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .panel-header {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .panel-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .ubcf-panel .panel-title {
-            color: #667eea;
-        }
-        
-        .ibcf-panel .panel-title {
-            color: #f5576c;
-        }
-        
-        .panel-description {
-            color: #666;
-            font-size: 0.9rem;
-        }
-        
-        .recommendation-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: rgba(255, 255, 255, 0.7);
+        .method-card {
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-        
-        .recommendation-item:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .item-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            object-fit: cover;
-        }
-        
-        .item-info {
-            flex: 1;
-        }
-        
-        .item-name {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-            color: #333;
-        }
-        
-        .item-brand {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .item-prediction {
-            background: linear-gradient(135deg, #ffecd2, #fcb69f);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #d2691e;
-            display: inline-block;
-            margin-bottom: 0.3rem;
-        }
-        
-        .item-reasoning {
-            font-size: 0.8rem;
-            color: #666;
-            line-height: 1.3;
-        }
-        
-        .view-more-btn {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            cursor: pointer;
             text-decoration: none;
-            text-align: center;
+            color: inherit;
+        }
+        .method-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: inherit;
+            text-decoration: none;
+        }
+        .btn-gradient {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            color: white;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 15px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-        
-        .ibcf-panel .view-more-btn {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-        }
-        
-        .view-more-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .empty-state {
+            color: white;
             text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-        
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .recommendation-item {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-        
-        .recommendation-item:nth-child(1) { animation-delay: 0.1s; }
-        .recommendation-item:nth-child(2) { animation-delay: 0.2s; }
-        .recommendation-item:nth-child(3) { animation-delay: 0.3s; }
-        .recommendation-item:nth-child(4) { animation-delay: 0.4s; }
-        .recommendation-item:nth-child(5) { animation-delay: 0.5s; }
-        
-        @media (max-width: 768px) {
-            .dashboard-container {
-                padding: 1rem;
-            }
-            
-            .dashboard-title {
-                font-size: 2rem;
-            }
-            
-            .recommendations-section {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Dashboard Header -->
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">داشبورد فیلترینگ مشارکتی</h1>
-            <p class="dashboard-subtitle">سیستم پیشنهاد هوشمند با الگوریتم‌های UBCF و IBCF</p>
-            
-            <!-- Navigation Buttons -->
-            <div class="nav-buttons">
-                <a href="{% url 'recommendations:ubcf_recommendations' %}" class="nav-btn">
-                    <i class="fas fa-users"></i>
-                    پیشنهادات UBCF
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-card p-4 mb-4">
+            <div class="text-center">
+                <h1 class="mb-3">
+                    <i class="fas fa-brain text-primary me-3"></i>
+                    سیستم توصیه محصولات
+                </h1>
+                <p class="text-muted">فیلترینگ مشارکتی مبتنی بر کاربر و آیتم</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="stats-card">
+                    <i class="fas fa-users fa-2x mb-3"></i>
+                    <h3>{{ total_users }}</h3>
+                    <p class="mb-0">تعداد کاربران</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="stats-card">
+                    <i class="fas fa-cubes fa-2x mb-3"></i>
+                    <h3>{{ total_products }}</h3>
+                    <p class="mb-0">تعداد محصولات</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Methods Section -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <a href="{% url 'recommendations:ubcf' %}" class="method-card d-block p-4 text-decoration-none">
+                    <div class="text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="mb-3">فیلترینگ مبتنی بر کاربر</h4>
+                        <h5 class="text-primary mb-3">UBCF</h5>
+                        <p class="text-muted mb-3">
+                            این روش بر اساس کاربران مشابه شما، محصولاتی را که احتمالاً آن‌ها را خواهید پسندید، پیشنهاد می‌دهد.
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">شناسایی</small><br>
+                                <i class="fas fa-search text-primary"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">محاسبه</small><br>
+                                <i class="fas fa-calculator text-info"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">توصیه</small><br>
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                        </div>
+                        <button class="btn btn-gradient mt-3">
+                            <i class="fas fa-eye me-2"></i>مشاهده توصیه‌ها
+                        </button>
+                    </div>
                 </a>
-                <a href="{% url 'recommendations:ibcf_recommendations' %}" class="nav-btn">
-                    <i class="fas fa-box"></i>
-                    پیشنهادات IBCF
-                </a>
-                <a href="{% url 'recommendations:similarity_matrices' %}" class="nav-btn">
-                    <i class="fas fa-table"></i>
-                    ماتریس‌های شباهت
-                </a>
-                <a href="{% url 'mainpage' %}" class="nav-btn">
-                    <i class="fas fa-home"></i>
-                    صفحه اصلی
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <a href="{% url 'recommendations:ibcf' %}" class="method-card d-block p-4 text-decoration-none">
+                    <div class="text-center">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-cubes fa-2x text-info"></i>
+                        </div>
+                        <h4 class="mb-3">فیلترینگ مبتنی بر آیتم</h4>
+                        <h5 class="text-info mb-3">IBCF</h5>
+                        <p class="text-muted mb-3">
+                            این روش بر اساس محصولاتی که قبلاً پسندیده‌اید، محصولات مشابه را پیشنهاد می‌دهد.
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">تحلیل</small><br>
+                                <i class="fas fa-chart-line text-primary"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">شباهت</small><br>
+                                <i class="fas fa-link text-info"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">پیشنهاد</small><br>
+                                <i class="fas fa-gift text-warning"></i>
+                            </div>
+                        </div>
+                        <button class="btn btn-gradient mt-3">
+                            <i class="fas fa-eye me-2"></i>مشاهده توصیه‌ها
+                        </button>
+                    </div>
                 </a>
             </div>
         </div>
 
-        <!-- Statistics Section -->
-        {% if similarity_info %}
-        <div class="stats-section">
-            <h3 class="stats-title">آمار سیستم پیشنهاد</h3>
-            <div class="stats-grid">
-                {% if similarity_info.user_similarity_shape %}
-                <div class="stat-card">
-                    <div class="stat-icon">👥</div>
-                    <div class="stat-title">ماتریس شباهت کاربران</div>
-                    <div class="stat-value">{{ similarity_info.user_similarity_shape.0 }}×{{ similarity_info.user_similarity_shape.1 }}</div>
-                </div>
-                {% endif %}
-                
-                {% if similarity_info.item_similarity_shape %}
-                <div class="stat-card">
-                    <div class="stat-icon">📦</div>
-                    <div class="stat-title">ماتریس شباهت آیتم‌ها</div>
-                    <div class="stat-value">{{ similarity_info.item_similarity_shape.0 }}×{{ similarity_info.item_similarity_shape.1 }}</div>
-                </div>
-                {% endif %}
-                
-                {% if similarity_info.sparsity %}
-                <div class="stat-card">
-                    <div class="stat-icon">📊</div>
-                    <div class="stat-title">پراکندگی داده‌ها</div>
-                    <div class="stat-value">{{ similarity_info.sparsity|floatformat:1|persian_numbers }}%</div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- Recommendations Section -->
-        <div class="recommendations-section">
-            <!-- UBCF Panel -->
-            <div class="recommendation-panel ubcf-panel">
-                <div class="panel-header">
-                    <h3 class="panel-title">
-                        <i class="fas fa-users"></i>
-                        پیشنهادات UBCF
-                    </h3>
-                    <p class="panel-description">بر اساس کاربران مشابه شما</p>
-                </div>
-                
-                {% if ubcf_recommendations %}
-                    {% for rec in ubcf_recommendations %}
-                    <div class="recommendation-item">
-                        <img src="{{ rec.product.image.url }}" alt="{{ rec.product.name }}" class="item-image">
-                        <div class="item-info">
-                            <div class="item-name">{{ rec.product.name|truncatechars:30 }}</div>
-                            <div class="item-brand">{{ rec.product.brand }}</div>
-                            <div class="item-prediction">
-                                پیش‌بینی: {{ rec.predicted_rating|floatformat:1|persian_numbers }}/5
-                            </div>
-                            <div class="item-reasoning">{{ rec.reasoning|truncatechars:80 }}</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    <a href="{% url 'recommendations:ubcf_recommendations' %}" class="view-more-btn">
-                        مشاهده همه پیشنهادات UBCF
+        <!-- Additional Features -->
+        <div class="dashboard-card p-4">
+            <h4 class="mb-3">
+                <i class="fas fa-tools text-primary me-2"></i>
+                ابزارهای تحلیلی
+            </h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="{% url 'recommendations:similarity_matrices' %}" class="btn btn-outline-primary w-100 py-3">
+                        <i class="fas fa-table me-2"></i>
+                        مشاهده ماتریس‌های شباهت
                     </a>
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">🤖</div>
-                        <p>داده کافی برای پیشنهاد بر اساس کاربران وجود ندارد</p>
-                    </div>
-                {% endif %}
-            </div>
-
-            <!-- IBCF Panel -->
-            <div class="recommendation-panel ibcf-panel">
-                <div class="panel-header">
-                    <h3 class="panel-title">
-                        <i class="fas fa-box"></i>
-                        پیشنهادات IBCF
-                    </h3>
-                    <p class="panel-description">بر اساس آیتم‌های مشابه</p>
                 </div>
-                
-                {% if ibcf_recommendations %}
-                    {% for rec in ibcf_recommendations %}
-                    <div class="recommendation-item">
-                        <img src="{{ rec.product.image.url }}" alt="{{ rec.product.name }}" class="item-image">
-                        <div class="item-info">
-                            <div class="item-name">{{ rec.product.name|truncatechars:30 }}</div>
-                            <div class="item-brand">{{ rec.product.brand }}</div>
-                            <div class="item-prediction">
-                                پیش‌بینی: {{ rec.predicted_rating|floatformat:1|persian_numbers }}/5
-                            </div>
-                            <div class="item-reasoning">{{ rec.reasoning|truncatechars:80 }}</div>
-                        </div>
+                <div class="col-md-6 mb-3">
+                    <div class="d-grid">
+                        <button class="btn btn-outline-info py-3" onclick="showPredictModal()">
+                            <i class="fas fa-brain me-2"></i>
+                            پیش‌بینی امتیاز محصول
+                        </button>
                     </div>
-                    {% endfor %}
-                    <a href="{% url 'recommendations:ibcf_recommendations' %}" class="view-more-btn">
-                        مشاهده همه پیشنهادات IBCF
-                    </a>
-                {% else %}
-                    <div class="empty-state">
-                        <div class="empty-icon">📦</div>
-                        <p>داده کافی برای پیشنهاد بر اساس آیتم‌ها وجود ندارد</p>
-                    </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Prediction Modal -->
+    <div class="modal fade" id="predictModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">پیش‌بینی امتیاز محصول</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="predictForm">
+                        <div class="mb-3">
+                            <label for="productId" class="form-label">شناسه محصول</label>
+                            <input type="number" class="form-control" id="productId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="method" class="form-label">روش پیش‌بینی</label>
+                            <select class="form-select" id="method">
+                                <option value="both">هر دو روش</option>
+                                <option value="ubcf">UBCF</option>
+                                <option value="ibcf">IBCF</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div id="predictionResult" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-primary" onclick="predictRating()">پیش‌بینی</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Add smooth animations on load
-        window.addEventListener('load', () => {
-            document.body.style.opacity = '1';
-        });
-        
-        // Add hover effects
-        document.querySelectorAll('.recommendation-item').forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                item.style.transform = 'translateX(-5px) scale(1.02)';
-            });
-            item.addEventListener('mouseleave', () => {
-                item.style.transform = 'translateX(0) scale(1)';
-            });
-        });
+        function showPredictModal() {
+            new bootstrap.Modal(document.getElementById('predictModal')).show();
+        }
+
+        function predictRating() {
+            const productId = document.getElementById('productId').value;
+            const method = document.getElementById('method').value;
+            const resultDiv = document.getElementById('predictionResult');
+
+            if (!productId) {
+                resultDiv.innerHTML = '<div class="alert alert-warning">لطفاً شناسه محصول را وارد کنید</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> در حال پیش‌بینی...</div>';
+
+            fetch(`/recommendations/api/predict-rating/${productId}/?method=${method}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.predicted_rating !== null) {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-success">
+                                <h6>نتیجه پیش‌بینی:</h6>
+                                <p class="mb-1"><strong>امتیاز پیش‌بینی شده:</strong> ${data.predicted_rating}</p>
+                                <p class="mb-0"><strong>روش:</strong> ${data.method}</p>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-warning">
+                                امکان پیش‌بینی امتیاز برای این محصول وجود ندارد.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            خطا در پیش‌بینی امتیاز: ${error.message}
+                        </div>
+                    `;
+                });
+        }
     </script>
 </body>
 </html>

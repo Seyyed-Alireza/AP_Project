@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
@@ -9,63 +9,58 @@ import json
 import pandas as pd
 
 
-def test_view(request):
-    """
-    Simple test view
-    """
-    print("[DEBUG] Test view called!")
-    return HttpResponse("Test view works! User: " + str(request.user.username if request.user.is_authenticated else 'Anonymous'))
-
-
+@login_required
 def ubcf_recommendations(request):
     """
     User-Based Collaborative Filtering recommendations view
     """
-    print(f"[DEBUG] UBCF view called! User: {request.user.username if request.user.is_authenticated else 'Anonymous'}")
-    
-    if not request.user.is_authenticated:
-        print("[DEBUG] User not authenticated, redirecting...")
-        from django.shortcuts import redirect
-        return redirect('accounts:login')
-    
     user_id = request.user.id
     n_recommendations = int(request.GET.get('count', 10))
     
+    engine = RecommendationEngine()
+    
     try:
-        # Temporarily return popular products to test the view
-        print(f"[DEBUG] Getting popular products for user {user_id}")
+        # Get UBCF recommendations with reasons
+        recommendations_with_reasons = engine.user_based_collaborative_filtering(
+            user_id, n_recommendations, include_reasons=True
+        )
         
-        from django.db.models import F
-        popular_products = Product.objects.annotate(
-            popularity_score=F('sales_count') + F('rating') * 10
-        ).order_by('-popularity_score')[:n_recommendations]
+        # Get recommended products
+        recommended_ids = [pid for pid, reason in recommendations_with_reasons]
+        products = Product.objects.filter(id__in=recommended_ids)
         
-        print(f"[DEBUG] Found {popular_products.count()} popular products")
-        
-        # Create recommendation objects with popular products
+        # Create recommendation objects with additional info
         recommendations = []
-        for product in popular_products:
+        for product in products:
+            # Find the reason for this product
+            reason = next((reason for pid, reason in recommendations_with_reasons if pid == product.id), "")
+            
+            # Get predicted rating
+            predicted_rating = engine.predict_rating(user_id, product.id, method='ubcf')
+            
             recommendations.append({
                 'product': product,
-                'reason': f"محصول محبوب | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}",
-                'predicted_rating': product.rating
+                'reason': reason,
+                'predicted_rating': predicted_rating
             })
         
-        print(f"[DEBUG] Final recommendations list has {len(recommendations)} items")
-        
-        # Get user similarity matrix (temporarily disabled)
-        matrix_data = None
-        avg_similarity = 0
+        # Get user similarity matrix (limited for display)
+        user_similarity_matrix = engine.calculate_user_similarity()
+        if user_similarity_matrix is not None:
+            # Limit to first 10 users for display
+            limited_matrix = user_similarity_matrix.iloc[:10, :10]
+        else:
+            limited_matrix = None
         
         # Calculate stats
         total_users = User.objects.count()
         total_products = Product.objects.count()
-        avg_similarity = 0  # Temporarily disabled
+        avg_similarity = user_similarity_matrix.values.mean() if user_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
         context = {
             'recommendations': recommendations,
-            'user_similarity_matrix': matrix_data,
+            'user_similarity_matrix': limited_matrix,
             'total_users': total_users,
             'total_products': total_products,
             'avg_similarity': avg_similarity,
@@ -84,55 +79,58 @@ def ubcf_recommendations(request):
         })
 
 
+@login_required
 def ibcf_recommendations(request):
     """
     Item-Based Collaborative Filtering recommendations view
     """
-    print(f"[DEBUG] IBCF view called! User: {request.user.username if request.user.is_authenticated else 'Anonymous'}")
-    
-    if not request.user.is_authenticated:
-        print("[DEBUG] User not authenticated, redirecting...")
-        from django.shortcuts import redirect
-        return redirect('accounts:login')
-    
     user_id = request.user.id
     n_recommendations = int(request.GET.get('count', 10))
     
+    engine = RecommendationEngine()
+    
     try:
-        # Temporarily return popular products to test the view
-        print(f"[DEBUG] Getting popular products for IBCF user {user_id}")
+        # Get IBCF recommendations with reasons
+        recommendations_with_reasons = engine.item_based_collaborative_filtering(
+            user_id, n_recommendations, include_reasons=True
+        )
         
-        from django.db.models import F
-        popular_products = Product.objects.annotate(
-            popularity_score=F('sales_count') + F('rating') * 10
-        ).order_by('-popularity_score')[:n_recommendations]
+        # Get recommended products
+        recommended_ids = [pid for pid, reason in recommendations_with_reasons]
+        products = Product.objects.filter(id__in=recommended_ids)
         
-        print(f"[DEBUG] Found {popular_products.count()} popular products for IBCF")
-        
-        # Create recommendation objects with popular products
+        # Create recommendation objects with additional info
         recommendations = []
-        for product in popular_products:
+        for product in products:
+            # Find the reason for this product
+            reason = next((reason for pid, reason in recommendations_with_reasons if pid == product.id), "")
+            
+            # Get predicted rating
+            predicted_rating = engine.predict_rating(user_id, product.id, method='ibcf')
+            
             recommendations.append({
                 'product': product,
-                'reason': f"محصول محبوب | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}",
-                'predicted_rating': product.rating
+                'reason': reason,
+                'predicted_rating': predicted_rating
             })
         
-        print(f"[DEBUG] Final IBCF recommendations list has {len(recommendations)} items")
-        
-        # Get item similarity matrix (temporarily disabled)
-        matrix_data = None
-        avg_similarity = 0
+        # Get item similarity matrix (limited for display)
+        item_similarity_matrix = engine.calculate_item_similarity()
+        if item_similarity_matrix is not None:
+            # Limit to first 10 products for display
+            limited_matrix = item_similarity_matrix.iloc[:10, :10]
+        else:
+            limited_matrix = None
         
         # Calculate stats
         total_users = User.objects.count()
         total_products = Product.objects.count()
-        avg_similarity = 0  # Temporarily disabled
+        avg_similarity = item_similarity_matrix.values.mean() if item_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
         context = {
             'recommendations': recommendations,
-            'item_similarity_matrix': matrix_data,
+            'item_similarity_matrix': limited_matrix,
             'total_users': total_users,
             'total_products': total_products,
             'avg_similarity': avg_similarity,

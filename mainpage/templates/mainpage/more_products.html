@@ -94,7 +94,7 @@
 
             <div class="products">
                 {% for product in products %}
-                    <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                    <a href="{% url 'mainpage:product_detail' product.pk %}" class="product_card">
                             <div class="product_image_div">
                                 <img src="{{ product.image.url }}" alt="عمس محصول" class="product_image">
                             </div>
