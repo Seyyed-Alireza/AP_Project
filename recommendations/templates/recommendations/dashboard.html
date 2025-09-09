@@ -1,0 +1,166 @@
+{% load humanize %}
+{% load static %}
+{% load persian_filters %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد پیشنهادات</title>
+    <link rel="stylesheet" href="{% static 'mainpage/style.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+</head>
+<body>
+    <header>
+        <div class="header_container">
+            <div class="logo_name">
+                <div class="logo">
+                    لوگو سایت
+                </div>
+                <div class="name">
+                    اسم سایت
+                </div>
+            </div>
+            {% if user.is_authenticated %}
+                {% csrf_token %}
+                <button id="user_name" type="button">
+                    {{ user.username }}
+                    {% if user.userprofile.profile_picture %}
+                        <img class="prof_pic" src="{{ user.userprofile.profile_picture.url }}" alt="عکس پروفایل" width="120" height="120">
+                    {% else %}
+                        <img class="prof_pic_default" src="{% static 'images/default.svg' %}" alt="عکس پیش‌فرض" width="120">
+                    {% endif %}
+                </button>
+                <div id="user_box">
+                    <p class="box_name"><span style="font-size: 15px;">نام:</span> {{ user.username }}</p>
+                    <p onclick="window.location.href='{% url 'mainpage' %}'">
+                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        </svg>
+                        صفحه اصلی
+                    </p>
+                    <p onclick="window.location.href='{% url 'profile' %}'">
+                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.5 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
+                        صفحه شخصی
+                    </p>
+                    <p onclick="window.location.href='{% url 'editprofile' %}'">
+                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                        </svg>
+                        ویرایش اطلاعات
+                    </p>
+                    <p onclick="window.location.href='{% url 'recommendations:dashboard' %}'">
+                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                        </svg>
+                        پیشنهادات شخصی
+                    </p>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="signout">
+                            <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-account-arrow-right-outline" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19,21V19H15V17H19V15L22,18L19,21M13,18C13,18.71 13.15,19.39 13.42,20H2V17C2,14.79 5.58,13 10,13C11,13 11.96,13.09 12.85,13.26C13.68,13.42 14.44,13.64 15.11,13.92C13.83,14.83 13,16.32 13,18M4,17V18H11C11,16.96 11.23,15.97 11.64,15.08L10,15C6.69,15 4,15.9 4,17M10,4A4,4 0 0,1 14,8A4,4 0 0,1 10,12A4,4 0 0,1 6,8A4,4 0 0,1 10,4M10,6A2,2 0 0,0 8,8A2,2 0 0,0 10,10A2,2 0 0,0 12,8A2,2 0 0,0 10,6Z"/>
+                            </svg>
+                            خروج
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <button id="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="container" style="margin-top: 20px; padding: 20px;">
+        <h2 style="text-align: right; margin-bottom: 30px;">داشبورد پیشنهادات شخصی‌سازی شده</h2>
+        
+        <!-- Comprehensive Recommendations -->
+        <div style="margin-bottom: 40px;">
+            <h4 style="text-align: right; margin-bottom: 15px; color: #007bff;">پیشنهادات جامع</h4>
+            {% if comprehensive_products %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for product in comprehensive_products %}
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <img src="{{ product.image.url }}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px; margin-bottom: 8px;" alt="{{ product.name }}">
+                            <h6 style="font-size: 0.9em; margin-bottom: 5px;">{{ product.name|truncatechars:30 }}</h6>
+                            <p style="color: #666; font-size: 0.8em; margin-bottom: 8px;">{{ product.brand }}</p>
+                            <a href="{% url 'product_detail' product.id %}" style="display: block; background: #007bff; color: white; padding: 6px; text-decoration: none; border-radius: 4px; font-size: 0.8em;">مشاهده</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #666; text-align: right;">پیشنهادی یافت نشد</p>
+            {% endif %}
+        </div>
+        
+        <!-- User-Based CF -->
+        <div style="margin-bottom: 40px;">
+            <h4 style="text-align: right; margin-bottom: 15px; color: #28a745;">بر اساس کاربران مشابه</h4>
+            {% if ubcf_products %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for product in ubcf_products %}
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <img src="{{ product.image.url }}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px; margin-bottom: 8px;" alt="{{ product.name }}">
+                            <h6 style="font-size: 0.9em; margin-bottom: 5px;">{{ product.name|truncatechars:30 }}</h6>
+                            <p style="color: #666; font-size: 0.8em; margin-bottom: 8px;">{{ product.brand }}</p>
+                            <a href="{% url 'product_detail' product.id %}" style="display: block; background: #28a745; color: white; padding: 6px; text-decoration: none; border-radius: 4px; font-size: 0.8em;">مشاهده</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #666; text-align: right;">پیشنهادی یافت نشد</p>
+            {% endif %}
+        </div>
+        
+        <!-- Item-Based CF -->
+        <div style="margin-bottom: 40px;">
+            <h4 style="text-align: right; margin-bottom: 15px; color: #17a2b8;">بر اساس محصولات مشابه</h4>
+            {% if ibcf_products %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for product in ibcf_products %}
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <img src="{{ product.image.url }}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px; margin-bottom: 8px;" alt="{{ product.name }}">
+                            <h6 style="font-size: 0.9em; margin-bottom: 5px;">{{ product.name|truncatechars:30 }}</h6>
+                            <p style="color: #666; font-size: 0.8em; margin-bottom: 8px;">{{ product.brand }}</p>
+                            <a href="{% url 'product_detail' product.id %}" style="display: block; background: #17a2b8; color: white; padding: 6px; text-decoration: none; border-radius: 4px; font-size: 0.8em;">مشاهده</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #666; text-align: right;">پیشنهادی یافت نشد</p>
+            {% endif %}
+        </div>
+        
+        <!-- Skin Profile Based -->
+        <div style="margin-bottom: 40px;">
+            <h4 style="text-align: right; margin-bottom: 15px; color: #ffc107;">بر اساس پروفایل پوست</h4>
+            {% if skin_products %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for product in skin_products %}
+                        <div style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 10px; text-align: center; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <img src="{{ product.image.url }}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 5px; margin-bottom: 8px;" alt="{{ product.name }}">
+                            <h6 style="font-size: 0.9em; margin-bottom: 5px;">{{ product.name|truncatechars:30 }}</h6>
+                            <p style="color: #666; font-size: 0.8em; margin-bottom: 8px;">{{ product.brand }}</p>
+                            <a href="{% url 'product_detail' product.id %}" style="display: block; background: #ffc107; color: black; padding: 6px; text-decoration: none; border-radius: 4px; font-size: 0.8em;">مشاهده</a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="color: #666; text-align: right;">لطفاً ابتدا آزمون پوست را تکمیل کنید</p>
+                <a href="{% url 'quiz_view' %}" style="background: #ffc107; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px;">تکمیل آزمون پوست</a>
+            {% endif %}
+        </div>
+        
+        <!-- Navigation -->
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'recommendations:user_recommendations' %}?method=comprehensive" style="background: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 0 10px;">مشاهده همه پیشنهادات</a>
+            <a href="{% url 'mainpage' %}" style="background: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 0 10px;">صفحه اصلی</a>
+        </div>
+    </main>
+
+    <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
+</body>
+</html>

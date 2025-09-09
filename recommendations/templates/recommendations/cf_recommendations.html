@@ -1,0 +1,455 @@
+{% load humanize %}
+{% load static %}
+{% load persian_filters %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیشنهادات {{ method_name }}</title>
+    <link rel="stylesheet" href="{% static 'mainpage/style.css' %}?v=2">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .modern-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .modern-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .modern-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .method-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .method-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .method-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .method-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .product-brand {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .prediction-badge {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(252, 182, 159, 0.3);
+        }
+        
+        .prediction-title {
+            font-weight: 600;
+            color: #d2691e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .prediction-rating {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d2691e;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+            margin: 0.5rem 0;
+        }
+        
+        .reasoning-box {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(168, 237, 234, 0.3);
+        }
+        
+        .reasoning-text {
+            color: #0066cc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .product-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .product-card:nth-child(1) { animation-delay: 0.1s; }
+        .product-card:nth-child(2) { animation-delay: 0.2s; }
+        .product-card:nth-child(3) { animation-delay: 0.3s; }
+        .product-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        @media (max-width: 768px) {
+            .modern-container {
+                padding: 1rem;
+            }
+            
+            .modern-title {
+                font-size: 2rem;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .method-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modern-container">
+        <!-- Modern Header -->
+        <div class="modern-header">
+            <h1 class="modern-title">{{ method_name }}</h1>
+            <p class="modern-subtitle">سیستم پیشنهاد هوشمند با الگوریتم {{ method }}</p>
+            
+            <!-- Method Selection -->
+            <div class="method-selector">
+                <a href="{% url 'recommendations:ubcf_recommendations' %}" 
+                   class="method-btn {% if method == 'UBCF' %}active{% endif %}">
+                    <i class="fas fa-users"></i> UBCF
+                </a>
+                <a href="{% url 'recommendations:ibcf_recommendations' %}" 
+                   class="method-btn {% if method == 'IBCF' %}active{% endif %}">
+                    <i class="fas fa-box"></i> IBCF
+                </a>
+                <a href="{% url 'recommendations:cf_dashboard' %}" class="method-btn">
+                    <i class="fas fa-chart-line"></i> داشبورد
+                </a>
+                <a href="{% url 'recommendations:similarity_matrices' %}" class="method-btn">
+                    <i class="fas fa-table"></i> ماتریس‌ها
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        {% if similarity_info %}
+        <div class="stats-grid">
+            {% if similarity_info.user_similarity_shape %}
+            <div class="stat-card">
+                <div class="stat-icon">�</div>
+                <h3>ماتریس کاربران</h3>
+                <p>{{ similarity_info.user_similarity_shape.0 }}×{{ similarity_info.user_similarity_shape.1 }}</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.item_similarity_shape %}
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <h3>ماتریس آیتم‌ها</h3>
+                <p>{{ similarity_info.item_similarity_shape.0 }}×{{ similarity_info.item_similarity_shape.1 }}</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.sparsity %}
+            <div class="stat-card">
+                <div class="stat-icon">🕳️</div>
+                <h3>پراکندگی</h3>
+                <p>{{ similarity_info.sparsity|floatformat:1|persian_numbers }}%</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.non_zero_entries %}
+            <div class="stat-card">
+                <div class="stat-icon">�</div>
+                <h3>داده‌های موثر</h3>
+                <p>{{ similarity_info.non_zero_entries|persian_numbers }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Recommendations -->
+        {% if recommendations %}
+            <div class="recommendations-grid">
+                {% for rec in recommendations %}
+                <div class="product-card">
+                    <img src="{{ rec.product.image.url }}" alt="{{ rec.product.name }}" class="product-image">
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">{{ rec.product.name }}</h3>
+                        <p class="product-brand">{{ rec.product.brand }}</p>
+                        
+                        <!-- Prediction Badge -->
+                        <div class="prediction-badge">
+                            <div class="prediction-title">
+                                <i class="fas fa-bullseye"></i>
+                                پیش‌بینی امتیاز شما
+                            </div>
+                            <div class="prediction-rating">{{ rec.predicted_rating|floatformat:1|persian_numbers }}/5</div>
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if rec.predicted_rating >= i|add:0 %}
+                                        ★
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <small>{{ rec.method }}</small>
+                        </div>
+                        
+                        <!-- Reasoning -->
+                        {% if rec.reasoning %}
+                        <div class="reasoning-box">
+                            <div class="reasoning-text">
+                                <i class="fas fa-lightbulb"></i>
+                                {{ rec.reasoning }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Current Rating & Price -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if rec.product.rating >= i|add:0 %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                <small>({{ rec.product.rating|persian_numbers }})</small>
+                            </div>
+                            <strong style="color: #667eea;">{{ rec.product.price|floatformat:0|persian_numbers }} تومان</strong>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="product-actions">
+                            <a href="{% url 'product_detail' rec.product.id %}" class="action-btn primary-btn">
+                                مشاهده محصول
+                            </a>
+                            <a href="{% url 'recommendations:predict_rating' rec.product.id %}" class="action-btn secondary-btn">
+                                تحلیل دقیق
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🤖</div>
+                <h3>هنوز پیشنهادی نداریم!</h3>
+                <p>برای دریافت پیشنهادات شخصی‌سازی شده، با محصولات تعامل کنید</p>
+                <a href="{% url 'mainpage' %}" class="action-btn primary-btn" style="display: inline-block; margin-top: 1rem;">
+                    کاوش محصولات
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'profiles',
     'quiz',
     'routine',
-    'rest_framework',
+    'recommendations',
+    # 'rest_framework',  # Temporarily commented out
 ]
 
 MIDDLEWARE = [
