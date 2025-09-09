@@ -47,15 +47,17 @@ document.addEventListener("DOMContentLoaded", function() {
 const filterButton = document.getElementById("filter-toggle")
 
 filterButton.addEventListener("click", function(){
-    const filterMenu = document.getElementById("filter-menu")
-    const aside = document.getElementById("aside")
-    if (filterMenu.style.display !== "flex") {
-        filterMenu.style.display = "flex";
-        aside.style.border = "1px solid #ccc";
-        aside.style.padding = "10px 5px 10px"
-    } else if (window.innerWidth < 576) {
-        filterMenu.style.display = "none";
-        aside.style.border = "none";
-        aside.style.padding = "0px 0 0"
+    if (window.innerWidth < 576) {
+        const filterMenu = document.getElementById("filter-menu")
+        const aside = document.getElementById("aside")
+        if (filterMenu.style.display !== "flex") {
+            filterMenu.style.display = "flex";
+            aside.style.border = "1px solid #ccc";
+            aside.style.padding = "10px 5px 10px"
+        } else if (window.innerWidth < 576) {
+            filterMenu.style.display = "none";
+            aside.style.border = "none";
+            aside.style.padding = "0px 0 0"
+        }
     }
 });

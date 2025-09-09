@@ -129,10 +129,20 @@ class MainpageAPIView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
-        products = search(self.request)
-        filter(self.request, products)
-        sort(self.request, products)
-        return products[:20]
+        products = Product.objects.all()
+        products = filter(self.request, products)
+        products, has_sort = sort(self.request, products)
+        skin_type = self.request.GET.get('skin_type')
+        category = self.request.GET.get('category')
+        brand = self.request.GET.get('brand')
+        sort_by = self.request.GET.get('sort_by')
+        min_price = self.request.GET.get('min_price')
+        max_price = self.request.GET.get('max_price')
+        filters = [brand, category, skin_type, min_price, max_price, sort_by]
+        for_cache = ''.join([str(x) for x in filters if x != None])
+
+        products = search(self.request, products, for_cache, has_sort)
+        return products
 
 #####################################################################
 
@@ -288,16 +298,16 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
 
         products_backup = products
 
-        ##################### BUG ###################
         products = products.filter(q_objects)
         if len(products) <= 20 and not for_cache:
             products = products_backup
-        ##############################
 
         if has_sorted:
             return products
-
-    total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 0
+    total_rating_average = cache.get(f'total_rating_average{cache_key}')
+    if not total_rating_average or not isinstance(total_rating_average, (int, float)):
+        total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 2.5
+        cache.set(key=f'total_rating_average{cache_key}', value=total_rating_average, timeout=86400)
     NAME_BASE_SCORE = 15000
     BRAND_BASE_SCORE = 9000
     INGREDIENT_BASE_SCORE = 4000
