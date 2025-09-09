@@ -858,7 +858,7 @@ def routine_search(request, search_query):
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
             
     results.sort(key=lambda x: x[1], reverse=True)
-    selected_ids = [r[0] for r in results[:5]]
+    selected_ids = [r[0] for r in results]
     cache.set(cache_key, selected_ids, timeout=86400)
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)
