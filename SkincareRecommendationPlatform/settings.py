@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'profiles',
     'quiz',
     'routine',
+    'recommendations',
     'rest_framework',
 ]
 

@@ -215,6 +215,18 @@
                 <p>برای ارسال نطر وارد <a href="{% url 'login' %}?next={{ request.path }}">حساب کاربری </a> شوید</p>
             {% endif %}
         </section>
+
+        <!-- Similar Products Section -->
+        <section class="similar-products" style="margin: 40px 0; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+            <h3 style="text-align: right; margin-bottom: 20px; color: #333;">محصولات مشابه</h3>
+            <div style="text-align: center;">
+                <a href="{% url 'recommendations:similar_products' product.id %}" 
+                   class="page_button" 
+                   style="display: inline-block; padding: 12px 24px; text-decoration: none; background-color: #007bff; color: white; border-radius: 5px;">
+                    مشاهده محصولات مشابه
+                </a>
+            </div>
+        </section>
     </main>
 
     <footer>
