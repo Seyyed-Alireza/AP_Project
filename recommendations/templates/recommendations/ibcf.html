@@ -88,36 +88,38 @@
                         ماتریس شباهت محصولات
                     </h4>
                     <div class="similarity-matrix">
-                        {% if item_similarity_matrix %}
-                            <table class="table table-sm table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>محصول</th>
-                                        {% for product_id in item_similarity_matrix.columns %}
-                                            <th>{{ product_id }}</th>
-                                        {% endfor %}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for row in item_similarity_matrix.rows %}
+                        {% if matrix_exists %}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-striped">
+                                    <thead class="table-dark">
                                         <tr>
-                                            <td><strong>{{ row.item_id }}</strong></td>
-                                            {% for value in row.values %}
-                                                <td>
-                                                    <span class="badge 
-                                                        {% if value > 0.7 %}bg-success
-                                                        {% elif value > 0.5 %}bg-warning
-                                                        {% elif value > 0.3 %}bg-info
-                                                        {% else %}bg-secondary
-                                                        {% endif %}">
-                                                        {{ value|floatformat:2 }}
-                                                    </span>
-                                                </td>
+                                            <th>محصول</th>
+                                            {% for col in item_similarity_matrix.columns %}
+                                                <th class="text-center">{{ col }}</th>
                                             {% endfor %}
                                         </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in item_similarity_matrix.rows %}
+                                            <tr>
+                                                <td><strong>{{ row.index }}</strong></td>
+                                                {% for value in row.values %}
+                                                    <td class="text-center">
+                                                        <span class="badge 
+                                                            {% if value > 0.7 %}bg-success
+                                                            {% elif value > 0.5 %}bg-warning
+                                                            {% elif value > 0.3 %}bg-info
+                                                            {% else %}bg-secondary
+                                                            {% endif %}">
+                                                            {{ value|floatformat:3 }}
+                                                        </span>
+                                                    </td>
+                                                {% endfor %}
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         {% else %}
                             <div class="alert alert-info">
                                 <i class="fas fa-info-circle me-2"></i>

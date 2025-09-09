@@ -84,9 +84,29 @@ def ubcf_recommendations(request):
         avg_similarity = user_similarity_matrix.values.mean() if user_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
+        # Convert DataFrame to list of lists for template use
+        matrix_data = None
+        matrix_exists = False
+        if display_matrix is not None and not display_matrix.empty:
+            matrix_exists = True
+            # Prepare matrix data for template
+            rows_data = []
+            for i, (row_idx, row) in enumerate(display_matrix.iterrows()):
+                row_data = {
+                    'index': str(row_idx)[:8],  # Truncate long user names
+                    'values': [round(val, 3) for val in row.values]
+                }
+                rows_data.append(row_data)
+            
+            matrix_data = {
+                'columns': [str(col)[:8] for col in display_matrix.columns],
+                'rows': rows_data
+            }
+        
         context = {
             'recommendations': recommendations,
-            'user_similarity_matrix': display_matrix,
+            'user_similarity_matrix': matrix_data,
+            'matrix_exists': matrix_exists,
             'total_users': total_users,
             'total_products': total_products,
             'avg_similarity': round(avg_similarity, 3),
@@ -165,9 +185,29 @@ def ibcf_recommendations(request):
         avg_similarity = item_similarity_matrix.values.mean() if item_similarity_matrix is not None else 0
         coverage = (len(recommendations) / n_recommendations * 100) if n_recommendations > 0 else 0
         
+        # Convert DataFrame to list of lists for template use
+        matrix_data = None
+        matrix_exists = False
+        if display_matrix is not None and not display_matrix.empty:
+            matrix_exists = True
+            # Prepare matrix data for template
+            rows_data = []
+            for i, (row_idx, row) in enumerate(display_matrix.iterrows()):
+                row_data = {
+                    'index': str(row_idx)[:8],  # Truncate long product names
+                    'values': [round(val, 3) for val in row.values]
+                }
+                rows_data.append(row_data)
+            
+            matrix_data = {
+                'columns': [str(col)[:8] for col in display_matrix.columns],
+                'rows': rows_data
+            }
+        
         context = {
             'recommendations': recommendations,
-            'item_similarity_matrix': display_matrix,
+            'item_similarity_matrix': matrix_data,
+            'matrix_exists': matrix_exists,
             'total_users': total_users,
             'total_products': total_products,
             'avg_similarity': round(avg_similarity, 3),
