@@ -81,7 +81,12 @@ def get_ubcf_recommendations(request):
                 'count': len(products_data)
             })
         else:
-            return render(request, 'recommendations/cf_recommendations.html', context)
+            # Add additional context for the modern template
+            context.update({
+                'brands': Product.objects.values_list('brand', flat=True).distinct().exclude(brand__isnull=True).exclude(brand=''),
+                'confidence': 85  # Default confidence level
+            })
+            return render(request, 'recommendations/modern_ubcf.html', context)
     
     except Exception as e:
         if request.headers.get('Accept') == 'application/json':
@@ -162,7 +167,12 @@ def get_ibcf_recommendations(request):
                 'count': len(products_data)
             })
         else:
-            return render(request, 'recommendations/cf_recommendations.html', context)
+            # Add additional context for the modern template
+            context.update({
+                'brands': Product.objects.values_list('brand', flat=True).distinct().exclude(brand__isnull=True).exclude(brand=''),
+                'confidence': 88  # Default confidence level for IBCF
+            })
+            return render(request, 'recommendations/modern_ibcf.html', context)
     
     except Exception as e:
         if request.headers.get('Accept') == 'application/json':
@@ -283,7 +293,7 @@ def similarity_matrices_view(request):
             'user_item_matrix_sample': user_item_matrix.head(10).to_html() if not user_item_matrix.empty else None,
         }
         
-        return render(request, 'recommendations/similarity_matrices.html', context)
+        return render(request, 'recommendations/similarity_matrices_modern.html', context)
     
     except Exception as e:
         return render(request, 'recommendations/error_page.html', {'error': str(e)})
@@ -336,7 +346,7 @@ def cf_dashboard(request):
             'similarity_info': similarity_info
         }
         
-        return render(request, 'recommendations/cf_dashboard.html', context)
+        return render(request, 'recommendations/modern_dashboard.html', context)
     
     except Exception as e:
         return render(request, 'recommendations/error_page.html', {'error': str(e)})

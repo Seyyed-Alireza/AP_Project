@@ -1,0 +1,719 @@
+{% load humanize %}
+{% load static %}
+{% load persian_filters %}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیشنهادات UBCF - فیلترینگ مشارکتی کاربر محور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #f1f5f9;
+            --accent: #06b6d4;
+            --warning: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --purple-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --blue-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --pink-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --green-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --orange-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--purple-gradient);
+        }
+
+        .header-content {
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Filter Section */
+        .filter-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .filter-input {
+            padding: 0.8rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--purple-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Results Counter */
+        .results-info {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .results-count {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .algorithm-badge {
+            background: var(--purple-gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Recommendations Grid */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recommendation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--purple-gradient);
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .product-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 15px;
+            object-fit: cover;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .product-brand {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .product-price {
+            background: var(--green-gradient);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .prediction-section {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .prediction-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .prediction-rating {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .prediction-confidence {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .reasoning-section {
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .reasoning-title {
+            font-weight: 700;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .reasoning-text {
+            color: var(--dark);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn {
+            background: var(--purple-gradient);
+            color: white;
+        }
+
+        .secondary-btn {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .empty-action {
+            padding: 1rem 2rem;
+            background: var(--purple-gradient);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .empty-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recommendation-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .recommendation-card:nth-child(1) { animation-delay: 0.1s; }
+        .recommendation-card:nth-child(2) { animation-delay: 0.2s; }
+        .recommendation-card:nth-child(3) { animation-delay: 0.3s; }
+        .recommendation-card:nth-child(4) { animation-delay: 0.4s; }
+        .recommendation-card:nth-child(5) { animation-delay: 0.5s; }
+        .recommendation-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .back-btn {
+                position: static;
+                margin-bottom: 1rem;
+                align-self: flex-start;
+            }
+
+            .header-content {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .product-image {
+                align-self: center;
+            }
+
+            .card-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <a href="{% url 'recommendations:cf_dashboard' %}" class="back-btn">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت
+            </a>
+            <div class="header-content">
+                <h1 class="page-title">
+                    <i class="fas fa-users"></i>
+                    پیشنهادات UBCF
+                </h1>
+                <p class="page-subtitle">
+                    فیلترینگ مشارکتی کاربر محور - پیشنهادات بر اساس کاربران با سلیقه مشابه
+                </p>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="GET" class="filter-grid">
+                <div class="filter-item">
+                    <label class="filter-label">جستجو در نام محصول</label>
+                    <input type="text" name="search" class="filter-input" placeholder="نام محصول..." value="{{ request.GET.search }}">
+                </div>
+                <div class="filter-item">
+                    <label class="filter-label">برند</label>
+                    <select name="brand" class="filter-input">
+                        <option value="">همه برندها</option>
+                        {% for brand in brands %}
+                            <option value="{{ brand }}" {% if request.GET.brand == brand %}selected{% endif %}>{{ brand }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label class="filter-label">حداقل امتیاز پیش‌بینی</label>
+                    <select name="min_rating" class="filter-input">
+                        <option value="">همه امتیازها</option>
+                        <option value="3" {% if request.GET.min_rating == "3" %}selected{% endif %}>3+ ستاره</option>
+                        <option value="4" {% if request.GET.min_rating == "4" %}selected{% endif %}>4+ ستاره</option>
+                        <option value="4.5" {% if request.GET.min_rating == "4.5" %}selected{% endif %}>4.5+ ستاره</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <button type="submit" class="filter-btn">
+                        <i class="fas fa-search"></i>
+                        اعمال فیلتر
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Info -->
+        <div class="results-info">
+            <div class="results-count">
+                <i class="fas fa-list"></i>
+                {{ recommendations|length }} پیشنهاد یافت شد
+            </div>
+            <div class="algorithm-badge">
+                <i class="fas fa-brain"></i>
+                الگوریتم UBCF
+            </div>
+        </div>
+
+        <!-- Recommendations Grid -->
+        {% if recommendations %}
+            <div class="recommendations-grid">
+                {% for rec in recommendations %}
+                <div class="recommendation-card">
+                    <div class="card-header">
+                        <img src="{{ rec.product.image.url }}" alt="{{ rec.product.name }}" class="product-image">
+                        <div class="product-info">
+                            <h3 class="product-name">{{ rec.product.name }}</h3>
+                            <div class="product-brand">{{ rec.product.brand }}</div>
+                            {% if rec.product.price %}
+                                <div class="product-price">
+                                    <i class="fas fa-tag"></i>
+                                    {{ rec.product.price|floatformat:0|persian_numbers }} تومان
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="prediction-section">
+                        <div class="prediction-title">
+                            <i class="fas fa-star"></i>
+                            پیش‌بینی امتیاز
+                        </div>
+                        <div class="prediction-rating">
+                            {{ rec.predicted_rating|floatformat:1|persian_numbers }}/5 ⭐
+                        </div>
+                        <div class="prediction-confidence">
+                            اعتماد: {{ rec.confidence|floatformat:1|persian_numbers }}%
+                        </div>
+                    </div>
+
+                    <div class="reasoning-section">
+                        <div class="reasoning-title">
+                            <i class="fas fa-lightbulb"></i>
+                            دلیل پیشنهاد
+                        </div>
+                        <div class="reasoning-text">
+                            {{ rec.reasoning }}
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="/products/{{ rec.product.id }}/" class="action-btn primary-btn">
+                            <i class="fas fa-eye"></i>
+                            مشاهده محصول
+                        </a>
+                        <button class="action-btn secondary-btn" onclick="addToWishlist({{ rec.product.id }})">
+                            <i class="fas fa-heart"></i>
+                            افزودن به علاقه‌مندی‌ها
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="empty-title">پیشنهادی یافت نشد</h3>
+                <p class="empty-text">
+                    متأسفانه برای شما پیشنهاد مناسبی بر اساس الگوریتم UBCF یافت نشد.
+                    لطفاً فیلترها را تغییر دهید یا بعداً دوباره تلاش کنید.
+                </p>
+                <a href="{% url 'recommendations:cf_dashboard' %}" class="empty-action">
+                    <i class="fas fa-arrow-right"></i>
+                    بازگشت به داشبورد
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Enhanced animations and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add staggered animation to cards
+            const cards = document.querySelectorAll('.recommendation-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Add parallax effect
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const header = document.querySelector('.page-header');
+                if (header) {
+                    header.style.transform = `translateY(${scrolled * 0.1}px)`;
+                }
+            });
+
+            // Auto-submit form on filter change
+            const filterInputs = document.querySelectorAll('.filter-input');
+            filterInputs.forEach(input => {
+                if (input.type !== 'text') {
+                    input.addEventListener('change', () => {
+                        input.form.submit();
+                    });
+                }
+            });
+        });
+
+        // Add to wishlist function
+        function addToWishlist(productId) {
+            // Show loading state
+            const button = event.target.closest('.secondary-btn');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال افزودن...';
+            button.disabled = true;
+
+            // Simulate API call (replace with actual implementation)
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-check"></i> افزودن شد';
+                button.style.background = 'var(--success)';
+                button.style.color = 'white';
+                button.style.borderColor = 'var(--success)';
+                
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.style.background = '';
+                    button.style.color = '';
+                    button.style.borderColor = '';
+                }, 2000);
+            }, 1000);
+        }
+
+        // Add search functionality with debounce
+        let searchTimeout;
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    // Auto-submit search after 1 second of no typing
+                    this.form.submit();
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+</html>

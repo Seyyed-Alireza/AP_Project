@@ -750,7 +750,7 @@ class AdvancedRecommendationEngine:
         
         return self.item_similarity_matrix
     
-    def user_based_collaborative_filtering(self, user_id, n_recommendations=10, include_reasons=False):
+    def user_based_collaborative_filtering(self, user_id, n_recommendations=10, include_reasons=False):# -> list[tuple[Any, str]] | list | list[tuple]:
         """
         UBCF: Recommend products based on similar users' preferences
         """

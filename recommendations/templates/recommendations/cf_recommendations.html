@@ -10,185 +10,446 @@
     <title>پیشنهادات {{ method_name }}</title>
     <link rel="stylesheet" href="{% static 'mainpage/style.css' %}?v=2">
     <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Vazir', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .modern-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .modern-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modern-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .modern-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .method-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .method-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .method-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .method-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+        
+        .product-brand {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .prediction-badge {
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(252, 182, 159, 0.3);
+        }
+        
+        .prediction-title {
+            font-weight: 600;
+            color: #d2691e;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .prediction-rating {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d2691e;
+        }
+        
+        .rating-stars {
+            color: #ffc107;
+            margin: 0.5rem 0;
+        }
+        
+        .reasoning-box {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(168, 237, 234, 0.3);
+        }
+        
+        .reasoning-text {
+            color: #0066cc;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .secondary-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .product-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        .product-card:nth-child(1) { animation-delay: 0.1s; }
+        .product-card:nth-child(2) { animation-delay: 0.2s; }
+        .product-card:nth-child(3) { animation-delay: 0.3s; }
+        .product-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        @media (max-width: 768px) {
+            .modern-container {
+                padding: 1rem;
+            }
+            
+            .modern-title {
+                font-size: 2rem;
+            }
+            
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .method-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="header_container">
-            <div class="logo_name">
-                <div class="logo">
-                    لوگو سایت
-                </div>
-                <div class="name">
-                    اسم سایت
-                </div>
+    <div class="modern-container">
+        <!-- Modern Header -->
+        <div class="modern-header">
+            <h1 class="modern-title">{{ method_name }}</h1>
+            <p class="modern-subtitle">سیستم پیشنهاد هوشمند با الگوریتم {{ method }}</p>
+            
+            <!-- Method Selection -->
+            <div class="method-selector">
+                <a href="{% url 'recommendations:ubcf_recommendations' %}" 
+                   class="method-btn {% if method == 'UBCF' %}active{% endif %}">
+                    <i class="fas fa-users"></i> UBCF
+                </a>
+                <a href="{% url 'recommendations:ibcf_recommendations' %}" 
+                   class="method-btn {% if method == 'IBCF' %}active{% endif %}">
+                    <i class="fas fa-box"></i> IBCF
+                </a>
+                <a href="{% url 'recommendations:cf_dashboard' %}" class="method-btn">
+                    <i class="fas fa-chart-line"></i> داشبورد
+                </a>
+                <a href="{% url 'recommendations:similarity_matrices' %}" class="method-btn">
+                    <i class="fas fa-table"></i> ماتریس‌ها
+                </a>
             </div>
-            {% if user.is_authenticated %}
-                {% csrf_token %}
-                <button id="user_name" type="button">
-                    {{ user.username }}
-                    {% if user.userprofile.profile_picture %}
-                        <img class="prof_pic" src="{{ user.userprofile.profile_picture.url }}" alt="عکس پروفایل" width="120" height="120">
-                    {% else %}
-                        <img class="prof_pic_default" src="{% static 'images/default.svg' %}" alt="عکس پیش‌فرض" width="120">
-                    {% endif %}
-                </button>
-                <div id="user_box">
-                    <p class="box_name"><span style="font-size: 15px;">نام:</span> {{ user.username }}</p>
-                    <p onclick="window.location.href='{% url 'mainpage' %}'">
-                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                        </svg>
-                        صفحه اصلی
-                    </p>
-                    <p onclick="window.location.href='{% url 'profile' %}'">
-                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.5 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                        صفحه شخصی
-                    </p>
-                    <p onclick="window.location.href='{% url 'editprofile' %}'">
-                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                        </svg>
-                        ویرایش پروفایل
-                    </p>
-                    <p onclick="window.location.href='{% url 'recommendations:cf_dashboard' %}'">
-                        <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423L16.5 15.75l.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-                        </svg>
-                        پیشنهادات
-                    </p>
-                </div>
-            {% else %}
-                <button class="login_btn" onclick="window.location.href='{% url 'login' %}'">ورود</button>
+        </div>
+
+        <!-- Statistics -->
+        {% if similarity_info %}
+        <div class="stats-grid">
+            {% if similarity_info.user_similarity_shape %}
+            <div class="stat-card">
+                <div class="stat-icon">�</div>
+                <h3>ماتریس کاربران</h3>
+                <p>{{ similarity_info.user_similarity_shape.0 }}×{{ similarity_info.user_similarity_shape.1 }}</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.item_similarity_shape %}
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <h3>ماتریس آیتم‌ها</h3>
+                <p>{{ similarity_info.item_similarity_shape.0 }}×{{ similarity_info.item_similarity_shape.1 }}</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.sparsity %}
+            <div class="stat-card">
+                <div class="stat-icon">🕳️</div>
+                <h3>پراکندگی</h3>
+                <p>{{ similarity_info.sparsity|floatformat:1|persian_numbers }}%</p>
+            </div>
+            {% endif %}
+            
+            {% if similarity_info.non_zero_entries %}
+            <div class="stat-card">
+                <div class="stat-icon">�</div>
+                <h3>داده‌های موثر</h3>
+                <p>{{ similarity_info.non_zero_entries|persian_numbers }}</p>
+            </div>
             {% endif %}
         </div>
-    </header>
+        {% endif %}
 
-    <main>
-        <div class="container" style="margin-top: 100px; padding: 20px;">
-            <div style="background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <h2 style="text-align: right; margin-bottom: 20px;">
-                    {{ method_name }}
-                    <small style="color: #666;">({{ method }})</small>
-                </h2>
-                
-                <!-- Method Selection -->
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-                    <h5 style="margin-bottom: 15px;">نوع الگوریتم:</h5>
-                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-                        <a href="{% url 'recommendations:ubcf_recommendations' %}" style="padding: 8px 16px; text-decoration: none; border-radius: 5px; {% if method == 'UBCF' %}background: #007bff; color: white;{% else %}background: white; color: #007bff; border: 1px solid #007bff;{% endif %}">
-                            UBCF (بر اساس کاربر)
-                        </a>
-                        <a href="{% url 'recommendations:ibcf_recommendations' %}" style="padding: 8px 16px; text-decoration: none; border-radius: 5px; {% if method == 'IBCF' %}background: #007bff; color: white;{% else %}background: white; color: #007bff; border: 1px solid #007bff;{% endif %}">
-                            IBCF (بر اساس آیتم)
-                        </a>
-                        <a href="{% url 'recommendations:cf_dashboard' %}" style="padding: 8px 16px; text-decoration: none; border-radius: 5px; background: white; color: #28a745; border: 1px solid #28a745;">
-                            داشبورد CF
-                        </a>
-                        <a href="{% url 'recommendations:similarity_matrices' %}" style="padding: 8px 16px; text-decoration: none; border-radius: 5px; background: white; color: #ffc107; border: 1px solid #ffc107;">
-                            ماتریس‌های شباهت
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Similarity Info -->
-                {% if similarity_info %}
-                <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                    <h6 style="color: #1976d2; margin-bottom: 10px;">اطلاعات ماتریس‌های شباهت:</h6>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; font-size: 14px;">
-                        {% if similarity_info.user_similarity_shape %}
-                            <div>📊 ماتریس شباهت کاربران: {{ similarity_info.user_similarity_shape.0 }}×{{ similarity_info.user_similarity_shape.1 }}</div>
-                        {% endif %}
-                        {% if similarity_info.item_similarity_shape %}
-                            <div>📦 ماتریس شباهت آیتم‌ها: {{ similarity_info.item_similarity_shape.0 }}×{{ similarity_info.item_similarity_shape.1 }}</div>
-                        {% endif %}
-                        {% if similarity_info.user_item_matrix_shape %}
-                            <div>🎯 ماتریس کاربر-آیتم: {{ similarity_info.user_item_matrix_shape.0 }}×{{ similarity_info.user_item_matrix_shape.1 }}</div>
-                        {% endif %}
-                        {% if similarity_info.sparsity %}
-                            <div>🕳️ پراکندگی: {{ similarity_info.sparsity|floatformat:3|persian_numbers }}%</div>
-                        {% endif %}
-                        {% if similarity_info.non_zero_entries %}
-                            <div>📈 ورودی‌های غیر صفر: {{ similarity_info.non_zero_entries|persian_numbers }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
-                
-                {% if recommendations %}
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-                        {% for rec in recommendations %}
-                            <div style="background: white; border: 1px solid #ddd; border-radius: 10px; padding: 15px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
-                                <img src="{{ rec.product.image.url }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;" alt="{{ rec.product.name }}">
-                                <h6 style="text-align: right; margin-bottom: 5px;">{{ rec.product.name }}</h6>
-                                <p style="color: #666; text-align: right; margin-bottom: 5px;">{{ rec.product.brand }}</p>
-                                <p style="color: #666; text-align: right; font-size: 0.9em; margin-bottom: 10px;">{{ rec.product.get_category_display_fa }}</p>
-                                
-                                <!-- Predicted Rating -->
-                                <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 10px; border-right: 3px solid #ffc107;">
-                                    <strong style="color: #856404; display: block; margin-bottom: 5px;">
-                                        🎯 پیش‌بینی امتیاز: {{ rec.predicted_rating|floatformat:1|persian_numbers }}/5
-                                    </strong>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="color: #ffc107;">
-                                            {% for i in "12345" %}
-                                                {% if rec.predicted_rating >= i|add:0 %}
-                                                    ★
-                                                {% else %}
-                                                    ☆
-                                                {% endif %}
-                                            {% endfor %}
-                                        </div>
-                                        <small style="color: #856404;">{{ rec.method }}</small>
-                                    </div>
-                                </div>
-                                
-                                <!-- Reasoning -->
-                                {% if rec.reasoning %}
-                                    <div style="background: #e3f2fd; padding: 8px; border-radius: 5px; margin-bottom: 10px; border-right: 3px solid #2196f3;">
-                                        <small style="color: #1976d2; text-align: right; display: block;">
-                                            💡 {{ rec.reasoning|truncatechars:100 }}
-                                        </small>
-                                    </div>
-                                {% endif %}
-                                
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <div style="color: #ffc107;">
-                                        {% for i in "12345" %}
-                                            {% if rec.product.rating >= i|add:0 %}
-                                                ★
-                                            {% else %}
-                                                ☆
-                                            {% endif %}
-                                        {% endfor %}
-                                        <small>({{ rec.product.rating|persian_numbers }})</small>
-                                    </div>
-                                    <strong style="color: #007bff;">{{ rec.product.price|floatformat:0|persian_numbers }} تومان</strong>
-                                </div>
-                                
-                                <div style="display: flex; gap: 5px;">
-                                    <a href="{% url 'product_detail' rec.product.id %}" style="flex: 1; text-align: center; background: #007bff; color: white; padding: 8px; text-decoration: none; border-radius: 5px; font-size: 14px;">
-                                        مشاهده
-                                    </a>
-                                    <a href="{% url 'recommendations:predict_rating' rec.product.id %}" style="flex: 1; text-align: center; background: #28a745; color: white; padding: 8px; text-decoration: none; border-radius: 5px; font-size: 14px;">
-                                        پیش‌بینی دقیق
-                                    </a>
-                                </div>
+        <!-- Recommendations -->
+        {% if recommendations %}
+            <div class="recommendations-grid">
+                {% for rec in recommendations %}
+                <div class="product-card">
+                    <img src="{{ rec.product.image.url }}" alt="{{ rec.product.name }}" class="product-image">
+                    
+                    <div class="product-info">
+                        <h3 class="product-name">{{ rec.product.name }}</h3>
+                        <p class="product-brand">{{ rec.product.brand }}</p>
+                        
+                        <!-- Prediction Badge -->
+                        <div class="prediction-badge">
+                            <div class="prediction-title">
+                                <i class="fas fa-bullseye"></i>
+                                پیش‌بینی امتیاز شما
                             </div>
-                        {% endfor %}
+                            <div class="prediction-rating">{{ rec.predicted_rating|floatformat:1|persian_numbers }}/5</div>
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if rec.predicted_rating >= i|add:0 %}
+                                        ★
+                                    {% else %}
+                                        ☆
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <small>{{ rec.method }}</small>
+                        </div>
+                        
+                        <!-- Reasoning -->
+                        {% if rec.reasoning %}
+                        <div class="reasoning-box">
+                            <div class="reasoning-text">
+                                <i class="fas fa-lightbulb"></i>
+                                {{ rec.reasoning }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Current Rating & Price -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <div class="rating-stars">
+                                {% for i in "12345" %}
+                                    {% if rec.product.rating >= i|add:0 %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                <small>({{ rec.product.rating|persian_numbers }})</small>
+                            </div>
+                            <strong style="color: #667eea;">{{ rec.product.price|floatformat:0|persian_numbers }} تومان</strong>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="product-actions">
+                            <a href="{% url 'product_detail' rec.product.id %}" class="action-btn primary-btn">
+                                مشاهده محصول
+                            </a>
+                            <a href="{% url 'recommendations:predict_rating' rec.product.id %}" class="action-btn secondary-btn">
+                                تحلیل دقیق
+                            </a>
+                        </div>
                     </div>
-                {% else %}
-                    <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 10px;">
-                        <h4>هیچ پیشنهادی یافت نشد</h4>
-                        <p>لطفاً ابتدا با محصولات تعامل کنید یا آن‌ها را امتیازدهی کنید تا بتوانیم پیشنهادهای بهتری ارائه دهیم.</p>
-                        <a href="{% url 'mainpage' %}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">مشاهده محصولات</a>
-                    </div>
-                {% endif %}
+                </div>
+                {% endfor %}
             </div>
-        </div>
-    </main>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🤖</div>
+                <h3>هنوز پیشنهادی نداریم!</h3>
+                <p>برای دریافت پیشنهادات شخصی‌سازی شده، با محصولات تعامل کنید</p>
+                <a href="{% url 'mainpage' %}" class="action-btn primary-btn" style="display: inline-block; margin-top: 1rem;">
+                    کاوش محصولات
+                </a>
+            </div>
+        {% endif %}
+    </div>
 
-    <script src="{% static 'mainpage/index.js' %}" charset="utf-8"></script>
+    <script>
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+    </script>
 </body>
 </html>
