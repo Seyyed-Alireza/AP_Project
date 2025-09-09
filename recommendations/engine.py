@@ -240,11 +240,29 @@ class RecommendationEngine:
         sorted_recommendations = sorted(recommendations.items(), key=lambda x: x[1], reverse=True)
         
         if include_reasons:
-            result = [(product_id, recommendation_details.get(product_id, "")) 
-                     for product_id, score in sorted_recommendations[:n_recommendations]]
+            result = []
+            for product_id, predicted_rating in sorted_recommendations[:n_recommendations]:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    result.append({
+                        'product': product,
+                        'reason': recommendation_details.get(product_id, ""),
+                        'predicted_rating': round(predicted_rating, 2)
+                    })
+                except Product.DoesNotExist:
+                    continue
             return result
         else:
-            result = [product_id for product_id, score in sorted_recommendations[:n_recommendations]]
+            result = []
+            for product_id, predicted_rating in sorted_recommendations[:n_recommendations]:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    result.append({
+                        'product': product,
+                        'predicted_rating': round(predicted_rating, 2)
+                    })
+                except Product.DoesNotExist:
+                    continue
             return result
     
     def item_based_collaborative_filtering(self, user_id, n_recommendations=10, include_reasons=False):
@@ -326,10 +344,30 @@ class RecommendationEngine:
         sorted_recommendations = sorted(recommendations.items(), key=lambda x: x[1], reverse=True)
         
         if include_reasons:
-            return [(product_id, recommendation_details.get(product_id, "")) 
-                   for product_id, score in sorted_recommendations[:n_recommendations]]
+            result = []
+            for product_id, predicted_rating in sorted_recommendations[:n_recommendations]:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    result.append({
+                        'product': product,
+                        'reason': recommendation_details.get(product_id, ""),
+                        'predicted_rating': round(predicted_rating, 2)
+                    })
+                except Product.DoesNotExist:
+                    continue
+            return result
         else:
-            return [product_id for product_id, score in sorted_recommendations[:n_recommendations]]
+            result = []
+            for product_id, predicted_rating in sorted_recommendations[:n_recommendations]:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    result.append({
+                        'product': product,
+                        'predicted_rating': round(predicted_rating, 2)
+                    })
+                except Product.DoesNotExist:
+                    continue
+            return result
     
     def predict_rating(self, user_id, product_id, method='both'):
         """
@@ -420,7 +458,7 @@ class RecommendationEngine:
             popularity_score=F('sales_count') + F('rating') * 10
         ).order_by('-popularity_score')[:n_recommendations]
         
-        return [product.id for product in popular_products]
+        return [{'product': product, 'predicted_rating': product.rating} for product in popular_products]
     
     def _get_popular_products_with_reasons(self, n_recommendations=10, reason="محصولات محبوب"):
         """
@@ -430,8 +468,10 @@ class RecommendationEngine:
             popularity_score=F('sales_count') + F('rating') * 10
         ).order_by('-popularity_score')[:n_recommendations]
         
-        return [(product.id, f"{reason} | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}") 
-                for product in popular_products]
+        return [{'product': product, 
+                'reason': f"{reason} | امتیاز: {product.rating:.1f} | فروش: {product.sales_count}",
+                'predicted_rating': product.rating} 
+               for product in popular_products]
     
     def get_similarity_matrices(self):
         """

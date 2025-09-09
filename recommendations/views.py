@@ -22,6 +22,7 @@ def ubcf_recommendations(request):
     User-Based Collaborative Filtering recommendations view
     """
     print(f"[DEBUG] UBCF view called! User: {request.user.username if request.user.is_authenticated else 'Anonymous'}")
+    print(f"[DEBUG] User ID: {request.user.id if request.user.is_authenticated else 'None'}")
     
     if not request.user.is_authenticated:
         print("[DEBUG] User not authenticated, redirecting...")
@@ -30,6 +31,14 @@ def ubcf_recommendations(request):
     
     user_id = request.user.id
     n_recommendations = int(request.GET.get('count', 10))
+    
+    # Check user's interaction data
+    from accounts.models import ProductSearchHistory, ProductPurchaseHistory
+    from mainpage.models import Comment
+    search_count = ProductSearchHistory.objects.filter(user_id=user_id).count()
+    purchase_count = ProductPurchaseHistory.objects.filter(user_id=user_id).count()
+    comment_count = Comment.objects.filter(user_id=user_id).count()
+    print(f"[DEBUG] User {user_id} data: {search_count} searches, {purchase_count} purchases, {comment_count} comments")
     
     try:
         # Use actual UBCF algorithm
