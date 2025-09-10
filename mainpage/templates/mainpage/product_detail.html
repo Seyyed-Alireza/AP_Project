@@ -162,10 +162,14 @@
             </div>
             <div class="add_product_to_cart">
                 <!-- <form method="post" action="{% url 'profiles:add_to_cart' product.pk %}"> -->
+                {% if user.is_authenticated %}
                 <form class="add-to-cart-form" data-product-id="{{ product.pk }}">
                     {% csrf_token %}
                     <button type="submit" class="page_button">افزودن به سبد خرید</button>
                 </form>
+                {% else %}
+                    <p>برای افزودن به سبد خرید وارد حساب  <a href="{% url 'accounts:login' %}?next={{ request.path }}">حساب کاربری </a> شوید</p>
+                {% endif %}
                 <span id="adding-cart-success">به سبد خرید اضافه شد</span>
                 <span id="adding-cart-fail">خطا، دوباره تلاش کنید</span>
 
