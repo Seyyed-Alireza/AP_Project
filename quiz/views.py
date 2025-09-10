@@ -160,7 +160,7 @@ def skip_quiz(request):
         profile.quiz_skipped = True
         profile.save()
         from_profile = request.POST.get('from_profile')
-        return redirect('profile' if from_profile else 'mainpage')
+        return redirect('profiles:profile' if from_profile else 'mainpage')
         return JsonResponse({'success': True})
     return JsonResponse({'success': False}, status=100)
 
