@@ -518,22 +518,22 @@ aside {
     cursor: pointer;
 }
 
-@media (max-width: 576px) {
+/* @media (max-width: 576px) {
     .recommendation-card {
         padding: 1.2rem;
     }
-}
+} */
 
 .card-header:first-child {
     border-radius: var(--bs-card-inner-border-radius) var(--bs-card-inner-border-radius) 0 0;
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
     .card-header {
         flex-direction: column;
         text-align: center;
     }
-}
+} */
 
 .card-header {
     display: flex;
@@ -579,17 +579,26 @@ aside {
 .product-price {
     background: var(--orange-gradient);
     color: white;
-    padding: 0.3rem 0.8rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: inline-block;
+}
+
+@media (max-width: 576px) {
+    .product-price {
+        font-size: 1rem;
+    }
 }
 
 .reason {
     background: rgba(16, 185, 129, 0.1);
     border-radius: 15px;
-    padding: 1rem;
+    padding: 0.5rem;
     margin-bottom: 1.5rem;
     border-right: 4px solid var(--success);
 }
@@ -597,9 +606,10 @@ aside {
 .view-rate {
     background: rgba(102, 126, 234, 0.1);
     border-radius: 15px;
-    padding: 1rem;
+    padding: 0.5rem;
     border-right: 4px solid var(--primary);
     display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 

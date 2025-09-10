@@ -53,6 +53,7 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['password2'].error_messages = {
             'required': 'تکرار رمز عبور الزامی است.',
             'password_mismatch': 'رمزهای عبور با هم مطابقت ندارند.',
+            'too similar': 'رمز عبور خیلی شبیه به نام کاربری است.',
         }
 
     def clean_username(self):
@@ -87,11 +88,13 @@ class CustomUserCreationForm(UserCreationForm):
                             translated_errors.append("رمز عبور خیلی ساده است.")
                         elif "entirely numeric" in err:
                             translated_errors.append("رمز عبور نباید فقط شامل اعداد باشد.")
+                        elif "too similar" in err:
+                            translated_errors.append("رمز عبور خیلی شبیه به نام کاربری است.")
                         else:
                             translated_errors.append("رمز عبور معتبر نیست.")
 
                     self.add_error("password1", translated_errors)
-                    self.add_error("password2", translated_errors)  # اضافه کردن خطا به هر دو فیلد
+                    self.add_error("password2", translated_errors)
 
     
 

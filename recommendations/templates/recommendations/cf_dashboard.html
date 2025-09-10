@@ -1,0 +1,273 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد سیستم توصیه</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Vazir', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 1000px;
+        }
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .method-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        .method-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            color: inherit;
+            text-decoration: none;
+        }
+        .btn-gradient {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            padding: 12px 30px;
+            font-weight: 500;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #764ba2, #667eea);
+            color: white;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="dashboard-card p-4 mb-4">
+            <div class="text-center">
+                <h1 class="mb-3">
+                    <i class="fas fa-brain text-primary me-3"></i>
+                    سیستم توصیه محصولات
+                </h1>
+                <p class="text-muted">فیلترینگ مشارکتی مبتنی بر کاربر و آیتم</p>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="stats-card">
+                    <i class="fas fa-users fa-2x mb-3"></i>
+                    <h3>{{ total_users }}</h3>
+                    <p class="mb-0">تعداد کاربران</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="stats-card">
+                    <i class="fas fa-cubes fa-2x mb-3"></i>
+                    <h3>{{ total_products }}</h3>
+                    <p class="mb-0">تعداد محصولات</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Methods Section -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <a href="{% url 'recommendations:ubcf' %}" class="method-card d-block p-4 text-decoration-none">
+                    <div class="text-center">
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-users fa-2x text-primary"></i>
+                        </div>
+                        <h4 class="mb-3">فیلترینگ مبتنی بر کاربر</h4>
+                        <h5 class="text-primary mb-3">UBCF</h5>
+                        <p class="text-muted mb-3">
+                            این روش بر اساس کاربران مشابه شما، محصولاتی را که احتمالاً آن‌ها را خواهید پسندید، پیشنهاد می‌دهد.
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">شناسایی</small><br>
+                                <i class="fas fa-search text-primary"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">محاسبه</small><br>
+                                <i class="fas fa-calculator text-info"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">توصیه</small><br>
+                                <i class="fas fa-star text-warning"></i>
+                            </div>
+                        </div>
+                        <button class="btn btn-gradient mt-3">
+                            <i class="fas fa-eye me-2"></i>مشاهده توصیه‌ها
+                        </button>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6 mb-4">
+                <a href="{% url 'recommendations:ibcf' %}" class="method-card d-block p-4 text-decoration-none">
+                    <div class="text-center">
+                        <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                             style="width: 80px; height: 80px;">
+                            <i class="fas fa-cubes fa-2x text-info"></i>
+                        </div>
+                        <h4 class="mb-3">فیلترینگ مبتنی بر آیتم</h4>
+                        <h5 class="text-info mb-3">IBCF</h5>
+                        <p class="text-muted mb-3">
+                            این روش بر اساس محصولاتی که قبلاً پسندیده‌اید، محصولات مشابه را پیشنهاد می‌دهد.
+                        </p>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-muted">تحلیل</small><br>
+                                <i class="fas fa-chart-line text-primary"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">شباهت</small><br>
+                                <i class="fas fa-link text-info"></i>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted">پیشنهاد</small><br>
+                                <i class="fas fa-gift text-warning"></i>
+                            </div>
+                        </div>
+                        <button class="btn btn-gradient mt-3">
+                            <i class="fas fa-eye me-2"></i>مشاهده توصیه‌ها
+                        </button>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Additional Features -->
+        <div class="dashboard-card p-4">
+            <h4 class="mb-3">
+                <i class="fas fa-tools text-primary me-2"></i>
+                ابزارهای تحلیلی
+            </h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <a href="{% url 'recommendations:similarity_matrices' %}" class="btn btn-outline-primary w-100 py-3">
+                        <i class="fas fa-table me-2"></i>
+                        مشاهده ماتریس‌های شباهت
+                    </a>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="d-grid">
+                        <button class="btn btn-outline-info py-3" onclick="showPredictModal()">
+                            <i class="fas fa-brain me-2"></i>
+                            پیش‌بینی امتیاز محصول
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prediction Modal -->
+    <div class="modal fade" id="predictModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">پیش‌بینی امتیاز محصول</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="predictForm">
+                        <div class="mb-3">
+                            <label for="productId" class="form-label">شناسه محصول</label>
+                            <input type="number" class="form-control" id="productId" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="method" class="form-label">روش پیش‌بینی</label>
+                            <select class="form-select" id="method">
+                                <option value="both">هر دو روش</option>
+                                <option value="ubcf">UBCF</option>
+                                <option value="ibcf">IBCF</option>
+                            </select>
+                        </div>
+                    </form>
+                    <div id="predictionResult" class="mt-3"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-primary" onclick="predictRating()">پیش‌بینی</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function showPredictModal() {
+            new bootstrap.Modal(document.getElementById('predictModal')).show();
+        }
+
+        function predictRating() {
+            const productId = document.getElementById('productId').value;
+            const method = document.getElementById('method').value;
+            const resultDiv = document.getElementById('predictionResult');
+
+            if (!productId) {
+                resultDiv.innerHTML = '<div class="alert alert-warning">لطفاً شناسه محصول را وارد کنید</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> در حال پیش‌بینی...</div>';
+
+            fetch(`/recommendations/api/predict-rating/${productId}/?method=${method}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.predicted_rating !== null) {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-success">
+                                <h6>نتیجه پیش‌بینی:</h6>
+                                <p class="mb-1"><strong>امتیاز پیش‌بینی شده:</strong> ${data.predicted_rating}</p>
+                                <p class="mb-0"><strong>روش:</strong> ${data.method}</p>
+                            </div>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `
+                            <div class="alert alert-warning">
+                                امکان پیش‌بینی امتیاز برای این محصول وجود ندارد.
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            خطا در پیش‌بینی امتیاز: ${error.message}
+                        </div>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>

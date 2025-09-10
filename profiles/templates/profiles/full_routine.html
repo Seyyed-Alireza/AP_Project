@@ -28,7 +28,7 @@
                         <p class="step-suggestions">محصولات پیشنهادی:</p>
                         <div class="step_products">
                             {% for product in substep.1 %}
-                                <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                                <a href="{% url 'mainpage:product_detail' product.pk %}" class="product_card">
                                     <div class="product_card_image_div">
                                         <img src="{{ product.image.url }}" alt="عمس محصول" class="product_card_image">
                                     </div>
@@ -46,7 +46,7 @@
                                 <p>محصولی برای این منظور پیدا نشد</p>
                             {% endfor %}
                         {% if substep.1 %}
-                            <form class="more-products" action="{% url 'more_products' %}" method="get" >
+                                                        <form class="more-products" action="{% url 'mainpage:more_products' %}" method="get" >
                                 <input type="hidden" name="query" value="{{ substep.3 }}">
                                 <button type="submit">بیشتر</button>
                             </form>
@@ -60,7 +60,7 @@
             {% endfor %}
         </section>
 
-        <button onclick="window.location.href='{% url 'profile' %}'">بازگشت به صفحه شخصی</button>
+        <button onclick="window.location.href='{% url 'profiles:profile' %}'">بازگشت به صفحه شخصی</button>
     </div>
 </body>
 </html>

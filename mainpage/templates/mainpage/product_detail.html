@@ -37,19 +37,19 @@
                 <div id="viewport">
                     <div id="user_box">
                         <p class="box_name"><span style="font-size: 15px;">نام:</span> {{ user.username }}</p>
-                        <p onclick="window.location.href='{% url 'mainpage' %}'">
+                        <p onclick="window.location.href='{% url 'mainpage:mainpage' %}'">
                             <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                             </svg>
                             صفحه اصلی
                         </p>
-                        <p onclick="window.location.href='{% url 'profile' %}'">
+                        <p onclick="window.location.href='{% url 'profiles:profile' %}'">
                             <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                             </svg>
                             صفحه شخصی
                         </p>
-                        <p onclick="window.location.href='{% url 'editprofile' %}'">
+                        <p onclick="window.location.href='{% url 'profiles:editprofile' %}'">
                             <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                             </svg>
@@ -67,7 +67,7 @@
                     </div>
                 </div>
             {% else %}
-                <button id="register-login-button" type="button" onclick="window.location.href='{% url 'login' %}'">ورود/ ثبت نام</button> 
+                <button id="register-login-button" type="button" onclick="window.location.href='{% url 'accounts:login' %}'">ورود/ ثبت نام</button> 
             {% endif %}
         </div>
     </header>
@@ -97,7 +97,7 @@
                             <span class="hide_text" >علاقه‌مندی</span>
                         </span>
                         {% if user.is_authenticated %}
-                            <form method="POST" action="{% url 'like_product' product.id %}">
+                            <form method="POST" action="{% url 'mainpage:like_product' product.id %}">
                                 {% csrf_token %}
                                 <button id="like" class="hide_button" data-product-id="{{ product.id }}">
                                     <svg class="like-ico {% if liked %}active{% endif %}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
@@ -161,7 +161,7 @@
                 </div>
             </div>
             <div class="add_product_to_cart">
-                <!-- <form method="post" action="{% url 'add_to_cart' product.pk %}"> -->
+                <!-- <form method="post" action="{% url 'profiles:add_to_cart' product.pk %}"> -->
                 <form class="add-to-cart-form" data-product-id="{{ product.pk }}">
                     {% csrf_token %}
                     <button type="submit" class="page_button">افزودن به سبد خرید</button>
@@ -212,10 +212,24 @@
                     </form>
                 {% endif %}
             {% else %}
-                <p>برای ارسال نطر وارد <a href="{% url 'login' %}?next={{ request.path }}">حساب کاربری </a> شوید</p>
+                <p>برای ارسال نطر وارد <a href="{% url 'accounts:login' %}?next={{ request.path }}">حساب کاربری </a> شوید</p>
             {% endif %}
         </section>
 
+<<<<<<< HEAD
+=======
+        <!-- Similar Products Section -->
+        <section class="similar-products" style="margin: 40px 0; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
+            <h3 style="text-align: right; margin-bottom: 20px; color: #333;">محصولات مشابه</h3>
+            <div style="text-align: center;">
+                <a href="{% url 'recommendations:ibcf' %}" 
+                   class="page_button" 
+                   style="display: inline-block; padding: 12px 24px; text-decoration: none; background-color: #007bff; color: white; border-radius: 5px;">
+                    مشاهده محصولات مشابه (IBCF)
+                </a>
+            </div>
+        </section>
+>>>>>>> 9011e2b4d97a4f8a11b635a42cc00019fe42b878
     </main>
 
     <footer>
