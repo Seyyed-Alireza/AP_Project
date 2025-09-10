@@ -298,7 +298,6 @@ def get_similar_users(request, current_skin_types):
     mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
     similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
     # print(request.user.username)
-    print(similar_user_ids)
 
     return User.objects.filter(id__in=similar_user_ids)
 
@@ -680,6 +679,7 @@ def live_search(request):
         for word in query_words:
             q_objects |= Q(name__icontains=word) | Q(brand__icontains=word)
         products = search(request, live=True, for_cache='for_save', has_sorted=False, products=Product.objects.filter(q_objects))
+        products = [i[0] for i in products]
         suggestions = []
         for product in products:
             if product.name not in suggestions:
