@@ -11,7 +11,19 @@ def bayesian_average(product, total_rating_average):
 def filter(request, products):
     brand = request.GET.get('brand')
     category = request.GET.get('category')
+    category_en = [c[0] for c in Product.CATEGORY_CHOICES]
+    if category not in category_en:
+        for cat in Product.CATEGORY_CHOICES:
+            if cat[1] == category:
+                category = cat[0]
+                break
     skin_type = request.GET.get('skin_type')
+    skin_types_en = [s[0] for s in Product.SKIN_TYPE_CHOICES]
+    if skin_type not in skin_types_en:
+        for sk in Product.SKIN_TYPE_CHOICES:
+            if sk[1] == skin_type:
+                skin_type = sk[0]
+                break
     concern = request.GET.get('concern')
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
@@ -25,8 +37,8 @@ def filter(request, products):
     if skin_type:
         products = products.filter(skin_types__icontains=skin_type)
 
-    if concern:
-        products = products.filter(concerns_targeted__icontains=concern)
+    # if concern:
+    #     products = products.filter(concerns_targeted__icontains=concern)
 
     if min_price:
         products = products.filter(price__gte=min_price)
@@ -159,7 +171,22 @@ class MainpageAPIView(generics.ListAPIView):
             {**serializer.data[i], "reason": self.products_reasons[queryset[i].id]}
             for i in range(len(queryset))
         ]
-        return Response(data_with_reasons)
+
+        all_products = Product.objects.all()
+        brands = all_products.values_list('brand', flat=True).distinct()
+        categories = all_products.values_list('category', flat=True).distinct()
+        categories = [category[1] for category in Product.CATEGORY_CHOICES]
+        # skin_types = all_products.values_list('skin_type', flat=True).distinct()
+        skin_types = ['مختلط', 'خشک', 'چرب', 'حساس', 'نرمال']
+
+        return Response({
+            'products': data_with_reasons,
+            'brands': list(brands),
+            'categories': list(categories),
+            'skin_types': list(skin_types),
+        })
+    
+# class BrandsAPI
 
 
 #####################################################################
@@ -621,7 +648,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
 
 
         if score > base_score + 1:
-            results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+            results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average), reason))
             
     results.sort(key=lambda x: x[1], reverse=True)
     if routine:

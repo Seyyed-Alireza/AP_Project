@@ -16,23 +16,38 @@ function MainPage() {
     sort_by: "",
   });
   const [products, setProducts] = useState([]);
-  const [brands, setBrands] = useState(["Brand1", "Brand2"]); // جایگزین با API
-  const [categories, setCategories] = useState(["Category1", "Category2"]); // جایگزین با API
-  const [skinTypes, setSkinTypes] = useState(["Dry", "Oily", "Normal"]); // جایگزین با API
+  const [brands, setBrands] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [skinTypes, setSkinTypes] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [activeFilters, setActiveFilters] = useState(filters);
 
   useEffect(() => {
-    let url = "http://127.0.0.1:8000/api/mainpage/";
-    if (searchQuery) {
-      url += `?q=${encodeURIComponent(searchQuery)}`;
-    }
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error(err));
-  }, [searchQuery]);
+  const params = new URLSearchParams();
+
+  if (searchQuery) params.append("q", searchQuery);
+  if (activeFilters.brand) params.append("brand", activeFilters.brand);
+  if (activeFilters.category) params.append("category", activeFilters.category);
+  if (activeFilters.skin_type) params.append("skin_type", activeFilters.skin_type);
+  if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
+  if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
+  if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
+
+  const url = `http://127.0.0.1:8000/api/mainpage/?${params.toString()}`;
+
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+      setProducts(data.products);
+      setBrands(data.brands);
+      setCategories(data.categories);
+      setSkinTypes(data.skin_types);
+    })
+    .catch((err) => console.error(err));
+}, [searchQuery, activeFilters]);
+
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -49,6 +64,11 @@ function MainPage() {
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
+  };
+
+  const handleApplyFilters = (e) => {
+    e.preventDefault();
+    setActiveFilters(filters);
   };
 
   const handleSearchInputChange = (e) => {
@@ -153,6 +173,7 @@ function MainPage() {
                 style={{
                     display: windowWidth < 576 ? (showFilterForm ? "flex" : "none") : "flex",
                 }}
+                onSubmit={handleApplyFilters}
             >
               {/* برند */}
               <div className="filter-group">

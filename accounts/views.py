@@ -82,3 +82,18 @@ from django.shortcuts import render
 def home(request):
     return render(request, 'mainpage/mainpage.html')
 
+
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth.models import User
+from .serializers import CurrentUserSerializer
+
+@api_view(['GET'])
+def current_user(request):
+    user = request.user
+    if user.is_authenticated:
+        serializer = CurrentUserSerializer(user)
+        return Response(serializer.data)
+    else:
+        return Response(None)
