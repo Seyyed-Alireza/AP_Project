@@ -81,7 +81,7 @@ def profile_edit(request):
                 profile.profile_picture = None
 
             form.save()
-            return redirect('profile')
+            return redirect('profiles:profile')
     else:
         form = UserProfileForm(instance=profile)
 
@@ -126,7 +126,7 @@ def decrease_cart_item(request, product_id):
                 interaction.delete()
             except:
                 pass
-    return redirect('profile')
+    return redirect('profiles:profile')
 
 @login_required
 def remove_cart_item(request, product_id):
@@ -137,7 +137,7 @@ def remove_cart_item(request, product_id):
         interaction.delete()
     except:
         pass
-    return redirect('profile')
+    return redirect('profiles:profile')
 
 @login_required
 def buy_products(request):
@@ -157,4 +157,4 @@ def buy_products(request):
             product.save()
         cart_items.delete()
 
-        return redirect('profile')
+        return redirect('profiles:profile')

@@ -106,10 +106,10 @@ def more_products(request):
     min_price = request.GET.get('min_price')
     max_price = request.GET.get('max_price')
     filters = [brand, category, skin_type, min_price, max_price, sort_by]
-    for_cache = ''.join([str(x) for x in filters])
-    # products = search(request, products, for_cache, has_sorted=has_sort, for_more=True)
+    for_cache = ''.join([str(x) for x in filters if x != None])
+    products = search(request, products, for_cache, has_sorted=has_sort, for_more=True)
     from routine.views import routine_search
-    products = routine_search(request, search_query=q)
+    # products = routine_search(request, search_query=q)
 
     context = {
         'products': products,

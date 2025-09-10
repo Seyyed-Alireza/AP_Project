@@ -284,7 +284,7 @@ def routine_generator(request):
         routine.steps = steps
         routine.save()
 
-    return redirect('profile')
+    return redirect('profiles:profile')
 
 @login_required
 def generate_full_plan(request):
@@ -858,7 +858,7 @@ def routine_search(request, search_query):
             results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
             
     results.sort(key=lambda x: x[1], reverse=True)
-    selected_ids = [r[0] for r in results]
+    selected_ids = [r[0] for r in results[:5]]
     cache.set(cache_key, selected_ids, timeout=86400)
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     return Product.objects.filter(id__in=selected_ids).order_by(preserved)

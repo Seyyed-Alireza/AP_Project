@@ -55,7 +55,7 @@
                     </svg>
                     ویرایش اطلاعات
                 </p>
-                <form method="post" action="{% url 'logout' %}">
+                <form method="post" action="{% url 'mainpage:logout' %}">
                     {% csrf_token %}
                     <button type="submit" class="signout">
                         <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-account-arrow-right-outline" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
@@ -168,7 +168,7 @@
 
                 <!-- <div class="products">
                     {% for product in products %}
-                        <a href="{% url 'product_detail' product.pk %}" class="product_card">
+                        <a href="{% url 'mainpage:product_detail' product.pk %}" class="product_card">
                             <div class="product_image_div">
                                 <img src="{{ product.image.url }}" alt="عکس محصول" class="product_image">
                             </div>
@@ -189,7 +189,7 @@
 
                 <div class="recommendations-grid">
                     {% for product in products %}
-                        <a href="{% url 'product_detail' product.pk %}" class="recommendation-card">
+                        <a href="{% url 'mainpage:product_detail' product.pk %}" class="recommendation-card">
                             <div class="card-header">
                                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                                 <div class="product-info">

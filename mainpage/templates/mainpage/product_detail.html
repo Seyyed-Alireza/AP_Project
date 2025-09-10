@@ -55,7 +55,7 @@
                             </svg>
                             ویرایش اطلاعات
                         </p>
-                        <form method="post" action="{% url 'logout' %}">
+                        <form method="post" action="{% url 'mainpage:logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="signout">
                                 <svg width="24px" height="24px" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-account-arrow-right-outline" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
@@ -216,8 +216,7 @@
             {% endif %}
         </section>
 
-<<<<<<< HEAD
-=======
+
         <!-- Similar Products Section -->
         <section class="similar-products" style="margin: 40px 0; padding: 20px; background-color: #f8f9fa; border-radius: 10px;">
             <h3 style="text-align: right; margin-bottom: 20px; color: #333;">محصولات مشابه</h3>
@@ -229,7 +228,7 @@
                 </a>
             </div>
         </section>
->>>>>>> 9011e2b4d97a4f8a11b635a42cc00019fe42b878
+
     </main>
 
     <footer>

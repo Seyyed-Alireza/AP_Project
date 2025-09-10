@@ -8,7 +8,7 @@ from routine.views import routine_generator
 @login_required
 def skin_quiz_view(request, prof=False):
     if request.user.skinprofile.quiz_skipped:
-        return redirect('mainpage')
+        return redirect('mainpage:mainpage')
 
     questions = Question.objects.prefetch_related('choices').order_by('order')
     prof = False if not prof else True
@@ -152,7 +152,7 @@ def from_prof(request):
     skin_prof = get_object_or_404(SkinProfile, user=request.user)
     skin_prof.quiz_skipped = False
     skin_prof.save()
-    return redirect('quiz_prof')
+    return redirect('quiz:quiz_prof')
 
 def skip_quiz(request):
     if request.method == "POST":

@@ -66,9 +66,9 @@
 <body>
     <h1>برنامه های پوستی شما</h1>
     {% if done %}
-        <button onclick="window.location.href='{% url 'full_routine' %}'">برنامه ی کامل</button>
-        <button onclick="window.location.href='{% url 'hydration_routine' %}'">برنامه ی  آبرسانی</button>
-        <button onclick="window.location.href='{% url 'mini_routine' %}'">برنامه ی کوتاه</button>
+        <button onclick="window.location.href='{% url 'profiles:full_routine' %}'">برنامه ی کامل</button>
+        <button onclick="window.location.href='{% url 'profiles:hydration_routine' %}'">برنامه ی  آبرسانی</button>
+        <button onclick="window.location.href='{% url 'profiles:mini_routine' %}'">برنامه ی کوتاه</button>
     {% else %}
         <p>لطفاً ابندا پرسشنامه را تکمیل کنید</p>
     {% endif %}
