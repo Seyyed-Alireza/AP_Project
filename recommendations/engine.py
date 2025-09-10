@@ -5,13 +5,7 @@ from django.db.models import F
 from accounts.models import ProductSearchHistory, ProductPurchaseHistory
 from mainpage.models import Product, Comment
 import math
-
-try:
-    from sklearn.metrics.pairwise import cosine_similarity
-    SKLEARN_AVAILABLE = True
-except ImportError:
-    SKLEARN_AVAILABLE = False
-    print("Warning: scikit-learn not available. Using fallback similarity calculation.")
+from sklearn.metrics.pairwise import cosine_similarity
 
 
 class RecommendationEngine:
@@ -23,19 +17,37 @@ class RecommendationEngine:
         self.user_item_matrix = None
         self.user_similarity_matrix = None
         self.item_similarity_matrix = None
+        self.matrix_last_updated = None
+        self.cache_duration_minutes = 30  # Cache for 30 minutes
         self.interaction_weights = {
             'view': 1.0,
             'like': 2.0,
             'wishlist': 3.0,
             'cart': 4.0,
-            'purchase': 5.0
+            'purchase': 5.0,
+            'comment': 3.0  # Base weight for comments (multiplied by rating)
         }
     
-    def create_user_item_matrix(self):
+    def create_user_item_matrix(self, force_rebuild=False):
         """
         Creates user-item interaction matrix from purchase and interaction history
         Only includes users who have interactions to optimize performance
+        
+        Args:
+            force_rebuild (bool): Force rebuild even if cache is valid
         """
+        from datetime import datetime, timedelta
+        
+        # Check if we need to rebuild the matrix
+        if not force_rebuild and self.user_item_matrix is not None and self.matrix_last_updated:
+            cache_valid_until = self.matrix_last_updated + timedelta(minutes=self.cache_duration_minutes)
+            if datetime.now() < cache_valid_until:
+                print(f"[INFO] Using cached matrix (updated {self.matrix_last_updated})")
+                return self.user_item_matrix
+        
+        print(f"[INFO] Rebuilding user-item matrix...")
+        start_time = datetime.now()
+        
         # Get users who have interactions, purchases, or comments
         interacting_users = set()
         
@@ -79,13 +91,22 @@ class RecommendationEngine:
                 weight = self.interaction_weights.get(interaction.interaction_type, 1.0)
                 matrix.loc[interaction.user.id, interaction.product.id] += weight
         
-        # Fill with ratings from comments
+        # Fill with ratings from comments (weighted by rating value)
         comments = Comment.objects.all()
         for comment in comments:
             if comment.user.id in user_ids and comment.product.id in product_ids:
-                matrix.loc[comment.user.id, comment.product.id] += comment.rating
+                # Weight comments by rating: higher ratings = stronger preference
+                comment_weight = self.interaction_weights['comment'] * (comment.rating / 5.0)
+                matrix.loc[comment.user.id, comment.product.id] += comment_weight
         
+        # Update cache timestamp
+        self.matrix_last_updated = datetime.now()
         self.user_item_matrix = matrix
+        
+        build_time = (datetime.now() - start_time).total_seconds()
+        print(f"[INFO] Matrix rebuilt in {build_time:.2f} seconds. Shape: {matrix.shape}")
+        print(f"[INFO] Cache valid until: {self.matrix_last_updated + timedelta(minutes=self.cache_duration_minutes)}")
+        
         return matrix
     
     def calculate_user_similarity(self):
@@ -104,13 +125,9 @@ class RecommendationEngine:
         print(f"[DEBUG] Filtered to {len(users_with_interactions)} users with interactions")
         print(f"[DEBUG] Filtered user matrix shape: {filtered_matrix.shape}")
         
-        if SKLEARN_AVAILABLE:
-            # Use sklearn for efficient cosine similarity calculation
-            user_similarity = cosine_similarity(filtered_matrix)
-            print(f"[DEBUG] User similarity unique values: {np.unique(user_similarity.flatten())[:10]}")
-        else:
-            # Manual cosine similarity calculation
-            user_similarity = self._manual_cosine_similarity(filtered_matrix)
+        # Use sklearn for efficient cosine similarity calculation
+        user_similarity = cosine_similarity(filtered_matrix)
+        print(f"[DEBUG] User similarity unique values: {np.unique(user_similarity.flatten())[:10]}")
         
         self.user_similarity_matrix = pd.DataFrame(
             user_similarity,
@@ -147,14 +164,10 @@ class RecommendationEngine:
         
         print(f"[DEBUG] Final matrix shape: {filtered_matrix.shape}")
         
-        if SKLEARN_AVAILABLE:
-            # Use sklearn for efficient cosine similarity calculation
-            item_similarity = cosine_similarity(filtered_matrix)
-            print(f"[DEBUG] Item similarity unique values: {len(np.unique(item_similarity.flatten()))} unique values")
-            print(f"[DEBUG] Similarity range: {item_similarity.min():.3f} to {item_similarity.max():.3f}")
-        else:
-            # Manual cosine similarity calculation
-            item_similarity = self._manual_cosine_similarity(filtered_matrix)
+        # Use sklearn for efficient cosine similarity calculation
+        item_similarity = cosine_similarity(filtered_matrix)
+        print(f"[DEBUG] Item similarity unique values: {len(np.unique(item_similarity.flatten()))} unique values")
+        print(f"[DEBUG] Similarity range: {item_similarity.min():.3f} to {item_similarity.max():.3f}")
         
         # Create similarity matrix with filtered items
         self.item_similarity_matrix = pd.DataFrame(
@@ -164,22 +177,6 @@ class RecommendationEngine:
         )
         
         return self.item_similarity_matrix
-    
-    def _manual_cosine_similarity(self, matrix):
-        """
-        Manual implementation of cosine similarity for when sklearn is not available
-        """
-        matrix_values = matrix.values
-        norms = np.linalg.norm(matrix_values, axis=1)
-        norms = norms.reshape(-1, 1)
-        
-        # Avoid division by zero
-        norms[norms == 0] = 1
-        
-        normalized_matrix = matrix_values / norms
-        similarity = np.dot(normalized_matrix, normalized_matrix.T)
-        
-        return similarity
     
     def user_based_collaborative_filtering(self, user_id, n_recommendations=10, include_reasons=False):
         """
@@ -488,3 +485,73 @@ class RecommendationEngine:
             'item_similarity': self.item_similarity_matrix,
             'user_item_matrix': self.user_item_matrix
         }
+    
+    def get_cache_status(self):
+        """
+        Get information about the matrix cache status
+        """
+        from datetime import datetime, timedelta
+        
+        if self.matrix_last_updated is None:
+            return {
+                'cached': False,
+                'last_updated': None,
+                'cache_valid': False,
+                'expires_in': None,
+                'cache_duration_minutes': self.cache_duration_minutes
+            }
+        
+        cache_valid_until = self.matrix_last_updated + timedelta(minutes=self.cache_duration_minutes)
+        now = datetime.now()
+        cache_valid = now < cache_valid_until
+        
+        if cache_valid:
+            expires_in = (cache_valid_until - now).total_seconds() / 60  # minutes
+        else:
+            expires_in = 0
+        
+        return {
+            'cached': True,
+            'last_updated': self.matrix_last_updated,
+            'cache_valid': cache_valid,
+            'expires_in_minutes': round(expires_in, 1),
+            'cache_duration_minutes': self.cache_duration_minutes,
+            'matrix_shape': self.user_item_matrix.shape if self.user_item_matrix is not None else None
+        }
+    
+    def force_matrix_update(self):
+        """
+        Force an immediate update of the user-item matrix
+        Useful when you know new data has been added and want fresh recommendations
+        """
+        print("[INFO] Forcing matrix update...")
+        # Clear similarity matrices as they need to be recalculated
+        self.user_similarity_matrix = None
+        self.item_similarity_matrix = None
+        return self.create_user_item_matrix(force_rebuild=True)
+    
+    def set_cache_duration(self, minutes):
+        """
+        Set how long the matrix should be cached
+        
+        Args:
+            minutes (int): Cache duration in minutes
+        """
+        self.cache_duration_minutes = minutes
+        print(f"[INFO] Cache duration set to {minutes} minutes")
+    
+    def is_user_in_matrix(self, user_id):
+        """
+        Check if a specific user is included in the current matrix
+        
+        Args:
+            user_id (int): User ID to check
+            
+        Returns:
+            bool: True if user is in matrix, False otherwise
+        """
+        if self.user_item_matrix is None:
+            return False
+        return user_id in self.user_item_matrix.index
+
+
