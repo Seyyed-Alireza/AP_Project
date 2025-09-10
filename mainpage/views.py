@@ -331,13 +331,13 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     cache_key = "search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
-    # if cached_ids:
-    #     ids = list(cached_ids.keys())
-    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
-    #     print(time.time() - start)
-    #     products = Product.objects.filter(id__in=ids).order_by(preserved)
-    #     products = [[prod, cached_ids[prod.id]] for prod in products]
-    #     return products
+    if cached_ids:
+        ids = list(cached_ids.keys())
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
+        print(time.time() - start)
+        products = Product.objects.filter(id__in=ids).order_by(preserved)
+        products = [[prod, cached_ids[prod.id]] for prod in products]
+        return products
 
     query_words = full_query.lower().split()
     if not for_more:
