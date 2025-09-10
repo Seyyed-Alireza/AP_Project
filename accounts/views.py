@@ -49,8 +49,8 @@ def user_login(request):
                 return redirect(product_url)
             skin_profile, created = SkinProfile.objects.get_or_create(user=request.user)
             if not skin_profile.quiz_skipped and not skin_profile.quiz_completed:
-                return redirect('quiz')
-            return redirect('mainpage') 
+                return redirect('quiz:quiz')
+            return redirect('mainpage:mainpage') 
         else:
             return render(request, 'accounts/login.html', {'form': form})
     else:

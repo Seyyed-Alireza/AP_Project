@@ -2,6 +2,8 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 
+app_name = 'mainpage'
+
 urlpatterns = [
     path('', views.mainpage, name='mainpage'),
     path('api/mainpage/', views.MainpageAPIView.as_view(), name='api-mainpage'),
