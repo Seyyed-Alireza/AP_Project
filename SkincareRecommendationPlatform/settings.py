@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'profiles',
     'quiz',
     'routine',
+    # 'rest_framework',  # Temporarily commented out
     'recommendations',
     'rest_framework',
 ]
