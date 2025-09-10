@@ -352,7 +352,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
             products = products_backup
 
         if has_sorted:
-            return products
+            return [[product, 'طبق مرتب سازی'] for product in products]
     total_rating_average = cache.get(f'total_rating_average{cache_key}')
     if not total_rating_average or not isinstance(total_rating_average, (int, float)):
         total_rating_average = Product.objects.aggregate(avg=Avg('rating'))['avg'] or 2.5
