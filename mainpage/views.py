@@ -236,6 +236,7 @@ User = get_user_model()
 
 
 import pandas as pd
+from recommendations.engine import RecommendationEngine
 
 def get_similar_users(request, current_skin_types):
     if isinstance(current_skin_types, str):
@@ -252,6 +253,8 @@ def get_similar_users(request, current_skin_types):
 
     mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
     similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
+    s = RecommendationEngine()
+    print(s.calculate_user_similarity())
     # print(request.user.username)
     # print(similar_user_ids)
 
@@ -607,7 +610,7 @@ def product_detail(request, pk):
 
     if request.method == 'POST':
         if not user.is_authenticated:
-            return redirect('login')
+            return redirect('mainpage:login')
 
         text = request.POST.get('text')
         rating = request.POST.get('rating')
@@ -619,7 +622,7 @@ def product_detail(request, pk):
                 text=text,
                 rating=int(rating)
             )
-            return redirect('product_detail', pk=pk)
+            return redirect('mainpage:product_detail', pk=pk)
 
     liked = None
     if user.is_authenticated and ProductSearchHistory.objects.filter(user=request.user, product=product, interaction_type='like').exists():
