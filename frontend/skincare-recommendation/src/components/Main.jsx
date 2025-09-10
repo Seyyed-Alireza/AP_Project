@@ -20,7 +20,7 @@ function MainPage() {
   const [categories, setCategories] = useState(["Category1", "Category2"]); // جایگزین با API
   const [skinTypes, setSkinTypes] = useState(["Dry", "Oily", "Normal"]); // جایگزین با API
   const [showFilter, setShowFilter] = useState(false);
-  const [showFilterّForm, setShowFilterForm] = useState(false);
+  const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -151,7 +151,7 @@ function MainPage() {
 
             <form className="filter-form" id="filter-menu"
                 style={{
-                    display: windowWidth < 576 && showFilterّForm ? "flex" : "none"
+                    display: windowWidth < 576 ? (showFilterForm ? "flex" : "none") : "flex",
                 }}
             >
               {/* برند */}
@@ -235,7 +235,7 @@ function MainPage() {
           </aside>
 
           {/* نمایش محصولات */}
-          <div className="products">
+          {/* <div className="products">
             {products.length === 0 ? (
               <p>محصولی برای نمایش وجود ندارد.</p>
             ) : (
@@ -255,6 +255,50 @@ function MainPage() {
                   </div>
                 </a>
               ))
+            )}
+          </div> */}
+          <div className="recommendations-grid">
+            {products.length === 0 ? (
+              <p>محصولی برای نمایش وجود ندارد.</p>
+            ) : (
+              products.map((product) => (
+                <a
+                  key={product.id}
+                  href={`/product/${product.id}/`}
+                  className="recommendation-card"
+                >
+                  <div className="card-header">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="product-image"
+                    />
+                    <div className="product-info">
+                      <div className="product-name">{product.name}</div>
+                      <div className="product-brand">{product.brand}</div>
+                      <div className="product-price">
+                        <svg style={{ width: '20px', fill: 'white'}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                          <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clip-rule="evenodd" />
+                        </svg>
+                        {formatter.format(product.price)} تومان
+                      </div>
+                    </div>
+                  </div>
+                  <div className="reason">
+                    <i className="fas fa-lightbulb" style={{ color: "rgb(184, 178, 101)" }}></i>
+                      {product.reason}
+                  </div>
+                      <div className="view-rate">
+                          <div className="view">
+                            <i className="fas fa-eye" style={{ color: "rgb(145, 135, 235)" }}></i>
+                            {formatter.format(product.views)} بازدید
+                          </div>
+                          <div className="rate">
+                            ⭐ {formatter.format(product.rating)}/{formatter.format(5)}
+                          </div>
+                      </div>
+                  </a>
+                ))
             )}
           </div>
         </section>

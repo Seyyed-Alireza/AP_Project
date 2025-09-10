@@ -73,7 +73,7 @@ class SkinProfile(models.Model):
             ('چربی زیاد', self.oiliness),
             ('قرمزی', self.redness),
             ('آبرسان', self.hydration),
-            ('elasticity', self.elasticity),
+            ('کشسانی', self.elasticity),
         ]
 
 

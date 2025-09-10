@@ -168,17 +168,17 @@
 
                 <!-- <div class="products">
                     {% for product in products %}
-                        <a href="{% url 'mainpage:product_detail' product.pk %}" class="product_card">
+                        <a href="{% url 'mainpage:product_detail' product.0.pk %}" class="product_card">
                             <div class="product_image_div">
-                                <img src="{{ product.image.url }}" alt="عکس محصول" class="product_image">
+                                <img src="{{ product.0.image.url }}" alt="عکس محصول" class="product_image">
                             </div>
                             <div class="product_info">
-                                <p class="product_name">{{ product.name }}</p>
-                                <p class="product_brand">برند {{ product.brand }}</p>
-                                <p class="product_price">{{ product.price|intcomma|persian_numbers }} تومان</p>
+                                <p class="product_name">{{ product.0.name }}</p>
+                                <p class="product_brand">برند {{ product.0.brand }}</p>
+                                <p class="product_price">{{ product.0.price|intcomma|persian_numbers }} تومان</p>
                                 <div class="product_view-and-rate">
-                                    <p class="view">{{ product.views|intcomma|persian_numbers }} بازدید</p>
-                                    <p class="rate">{{ product.rating|fa_star_rating|safe }}</p>
+                                    <p class="view">{{ product.0.views|intcomma|persian_numbers }} بازدید</p>
+                                    <p class="rate">{{ product.0.rating|fa_star_rating|safe }}</p>
                                 </div>
                             </div>
                         </a>
@@ -189,33 +189,33 @@
 
                 <div class="recommendations-grid">
                     {% for product in products %}
-                        <a href="{% url 'mainpage:product_detail' product.pk %}" class="recommendation-card">
+                        <a href="{% url 'mainpage:product_detail' product.0.pk %}" class="recommendation-card">
                             <div class="card-header">
-                                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                                <img src="{{ product.0.image.url }}" alt="{{ product.0.name }}" class="product-image">
                                 <div class="product-info">
                                     <div class="product-name">
-                                        {{ product.name }}
+                                        {{ product.0.name }}
                                     </div>
                                     <div class="product-brand">
-                                        {{ product.brand }}
+                                        {{ product.0.brand }}
                                     </div>
                                     <div class="product-price">
                                         <i class="fas fa-tag" style="position: relative; top: 2px;"></i>
-                                        {{ product.price|intcomma|persian_numbers }} تومان
+                                        {{ product.0.price|intcomma|persian_numbers }} تومان
                                     </div>
                                 </div>
                             </div>
                             <div class="reason">
                                 <i class="fas fa-lightbulb" style="color: rgb(184, 178, 101);"></i>
-                                دلیل پیشنهاد
+                                {{ product.1 }}
                             </div>
                             <div class="view-rate">
                                 <div class="view">
                                     <i class="fas fa-eye" style="color: rgb(145, 135, 235);"></i>
-                                    {{ product.views|intcomma|persian_numbers }} بازدید
+                                    {{ product.0.views|intcomma|persian_numbers }} بازدید
                                 </div>
                                 <div class="rate">
-                                    ⭐ {{ product.rating|persian_numbers }}/{{ 5|persian_numbers }}
+                                    ⭐ {{ product.0.rating|persian_numbers }}/{{ 5|persian_numbers }}
                                 </div>
                             </div>
                         </a>

@@ -123,8 +123,10 @@ def more_products(request):
 
 
 
-from rest_framework import generics
 from .serializers import ProductSerializer
+from rest_framework.response import Response
+from rest_framework import generics
+
 class MainpageAPIView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
@@ -139,10 +141,26 @@ class MainpageAPIView(generics.ListAPIView):
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
         filters = [brand, category, skin_type, min_price, max_price, sort_by]
-        for_cache = ''.join([str(x) for x in filters if x != None])
+        for_cache = ''.join([str(x) for x in filters if x is not None])
 
-        products = search(self.request, products, for_cache, has_sort)
-        return products
+        products_with_reasons = search(self.request, products, for_cache, has_sort)
+
+        products_only = [prod for prod, reason in products_with_reasons]
+
+        self.products_reasons = {prod.id: reason for prod, reason in products_with_reasons}
+
+        return products_only
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        
+        data_with_reasons = [
+            {**serializer.data[i], "reason": self.products_reasons[queryset[i].id]}
+            for i in range(len(queryset))
+        ]
+        return Response(data_with_reasons)
+
 
 #####################################################################
 
@@ -236,7 +254,6 @@ User = get_user_model()
 
 
 import pandas as pd
-from recommendations.engine import RecommendationEngine
 
 def get_similar_users(request, current_skin_types):
     if isinstance(current_skin_types, str):
@@ -253,10 +270,8 @@ def get_similar_users(request, current_skin_types):
 
     mask = all_profiles_panda['skin_type'].apply(lambda x: any(st in x for st in current_skin_types))
     similar_user_ids = all_profiles_panda.loc[mask, 'user__id'].head(20).tolist()
-    s = RecommendationEngine()
-    print(s.calculate_user_similarity())
     # print(request.user.username)
-    # print(similar_user_ids)
+    print(similar_user_ids)
 
     return User.objects.filter(id__in=similar_user_ids)
 
@@ -272,6 +287,7 @@ from django.core.cache import cache
 import hashlib
 from django.db.models import Avg
 import time
+from mainpage.models import Comment
 
 def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None, for_more=False):
     start = time.time()
@@ -290,9 +306,13 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
 
     cached_ids = cache.get(cache_key)
     # if cached_ids:
-    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(cached_ids)])
+    #     ids = list(cached_ids.keys())
+    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
     #     print(time.time() - start)
-    #     return Product.objects.filter(id__in=cached_ids).order_by(preserved)
+    #     products = Product.objects.filter(id__in=ids).order_by(preserved)
+    #     products = [[prod, cached_ids[prod.id]] for prod in products]
+    #     return products
+
     query_words = full_query.lower().split()
     if not for_more:
         q_objects = Q()
@@ -313,11 +333,17 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         cache.set(key=f'total_rating_average{cache_key}', value=total_rating_average, timeout=86400)
     NAME_BASE_SCORE = 15000
     BRAND_BASE_SCORE = 9000
-    INGREDIENT_BASE_SCORE = 4000
+    INGREDIENT_BASE_SCORE = 4500
     CONCERN_BASE_SCORE = 5000
     SKIN_TYPE_BASE_SCORE = 5000
-    RATING_BASE_SCORE = 3000
-    SIMILAR_PURCHASE_BASE_SCORE = 1000000
+    RATING_BASE_SCORE = 4000
+    SIMILAR_PURCHASE_BASE_SCORE = 800
+    SIMILAR_LIKE_BASE_SCORE = 500
+    SIMILAR_CART_BASE_SCORE = 400
+    SIMILAR_VIEW_BASE_SCORE = 200
+    SIMILAR_WISH_BASE_SCORE = 250
+    SIMILAR_COMMENT_BASE_SCORE = 150
+    DEFAULT_REASON = 'شاید بپسندید'
     results = []
     base_score = 5
 
@@ -329,28 +355,58 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     else:
         similar_users = []
 
-    if not full_query:
-        purchases = ProductPurchaseHistory.objects.filter(
+    purchases = set(
+        ProductPurchaseHistory.objects.filter(
             user__in=similar_users,
         ).values_list('user_id', 'product_id')
-        purchases = set(purchases)
+    )
 
+    interactions = set(
+        ProductSearchHistory.objects.filter(
+            user__in=similar_users
+        ).values_list('user_id', 'product_id', 'interaction_type')
+    )
+
+    comments = set(
+        Comment.objects.filter(
+            user__in=similar_users
+        ).values_list('user_id', 'product_id')
+    )
+
+    if not full_query:
         if user_in:
             if user.skinprofile.quiz_completed:
                 for product in products:
                     score = 0
+                    reason = DEFAULT_REASON
                     for similar_user in similar_users:
                         if (similar_user.id, product.id) in purchases:
                             score += SIMILAR_PURCHASE_BASE_SCORE
+                            reason = 'کابران مشابه خریده‌اند'
+                        elif (similar_user.id, product.id, 'cart') in interactions:
+                            score += SIMILAR_CART_BASE_SCORE
+                        elif (similar_user.id, product.id, 'wish') in interactions:
+                            score += SIMILAR_WISH_BASE_SCORE
+                        elif (similar_user.id, product.id, 'like') in interactions:
+                            score += SIMILAR_LIKE_BASE_SCORE
+                            reason = 'کابران مشابه علاقه داشتند'
+                        elif (similar_user.id, product.id, 'view') in interactions:
+                            score += SIMILAR_VIEW_BASE_SCORE
+                            reason = 'کابران مشابه بازدید کردند'
+                        elif (similar_user.id, product.id) in comments:
+                            score += SIMILAR_COMMENT_BASE_SCORE
                     concern_similar = False
                     type_similar = False
                     skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                    skin_scores.sort(key=lambda x: x[1], reverse=True)
                     for skin_score in skin_scores:
                         if skin_score[1] > 10:
                             for concern_targeted in product.concerns_targeted:
                                 if both_subset(skin_score[0].split(), concern_targeted.split()):
                                     concern_similar = True
                                     score += CONCERN_BASE_SCORE
+                                    if reason == DEFAULT_REASON:
+                                        reason = 'مناسب مشکل پوست شما'
                                     break
                             if concern_similar:
                                 break
@@ -358,19 +414,27 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
                         if s_t in product.skin_types:
                             type_similar = True
                             score += SKIN_TYPE_BASE_SCORE
+                            if reason == DEFAULT_REASON:
+                                reason = 'مناسب پوست شما'
                             break
-                    results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average)))
+                    results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average), reason))
             else:
-                results = [(product.id, bayesian_average(product, total_rating_average)) for product in products]
+                results = [(product.id, bayesian_average(product, total_rating_average), DEFAULT_REASON) for product in products]
         else:
-            results = [(product.id, bayesian_average(product, total_rating_average)) for product in products]
+            results = [(product.id, bayesian_average(product, total_rating_average), DEFAULT_REASON) for product in products]
         results.sort(key=lambda x: x[1], reverse=True)
-        selected_ids = [r[0] for r in results]
+        id_reason = {r[0]: r[2] for r in results}
+        selected_ids = list(id_reason.keys())
         cache.set(cache_key, selected_ids, timeout=86400)
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         print(time.time() - start)
-        return Product.objects.filter(id__in=selected_ids).order_by(preserved)
+        products = list(Product.objects.filter(id__in=selected_ids).order_by(preserved))
+        products_for_cache = {prod.id: id_reason[prod.id] for prod in products}
+        cache.set(cache_key, products_for_cache, timeout=86400)
+        products = [[prod, id_reason[prod.id]] for prod in products]
+        return products
     for product in products:
+        reason = DEFAULT_REASON
         score = 0
         product_name = product.name.lower().replace('\u200c', ' ')
         product_brand = product.brand.lower().replace('\u200c', ' ')
@@ -388,12 +452,14 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
             if product_name in full_query or word in product_name.split() or word in product_name.replace(' ', '') or product_name in word.replace(' ', ''):
                 name_similar = True
                 score += NAME_BASE_SCORE
+                reason = 'مطابق با چیزی که جستجو کردید'
             else:
                 for p_word in product_name.split():
                         s = similarity(word, p_word)
                         if s > 0.85:
                             name_similar = True
                             score += NAME_BASE_SCORE
+                            reason = 'مطابق با چیزی که جستجو کردید'
                             break
             
             if product_brand in full_query or word in product_brand.split():
@@ -410,17 +476,20 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
                     for s_t in user.skinprofile.skin_type:
                         if s_t in product.skin_types:
                             type_similar = True
+                            reason = 'مناسب پوست شما'
                             score += SKIN_TYPE_BASE_SCORE if not name_similar else SKIN_TYPE_BASE_SCORE / 10
                             break
 
             for concern_targeted in product.concerns_targeted:
                 if both_subset(concern_targeted.split(), [word]):
                     concern_similar = True
+                    reason = 'مناسب مشکل پوست شما'
                     score += CONCERN_BASE_SCORE if not name_similar else CONCERN_BASE_SCORE / 10
                     break
             if user_in:
                 if user.skinprofile.quiz_completed and not concern_similar:
                     skin_scores = SkinProfile.get_skin_scores_for_search(user.skinprofile)
+                    skin_scores.sort(key=lambda x:x[1], reverse=True)
                     for skin_score in skin_scores:
                         if skin_score[1] > 10:
                             for concern_targeted in product.concerns_targeted:
@@ -557,11 +626,15 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     results.sort(key=lambda x: x[1], reverse=True)
     if routine:
         results = results[:10]
-    selected_ids = [r[0] for r in results]
-    cache.set(cache_key, selected_ids, timeout=86400)
+    id_reason = {r[0]: r[2] for r in results}
+    selected_ids = list(id_reason.keys())
     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
     print(time.time() - start)
-    return Product.objects.filter(id__in=selected_ids).order_by(preserved)
+    products = list(Product.objects.filter(id__in=selected_ids).order_by(preserved))
+    products_for_cache = {prod.id: id_reason[prod.id] for prod in products}
+    cache.set(cache_key, products_for_cache, timeout=86400)
+    products = [[prod, id_reason[prod.id]] for prod in products]
+    return products
     
 #####################################################################
 
