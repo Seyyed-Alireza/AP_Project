@@ -21,20 +21,61 @@ a {
     text-decoration: none;
 }
 
-html, body {
-    min-height: 100%;
+/* body {
+    background-image: url('../images/bg2.jpg');
+    background-color: #fff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100%;
     width: 100%;
-    background-color: white;
-    /* display: flex; */
-    /* flex-direction: column; */
+    display: flex;
 }
 
 #root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: auto;
+    background-image: url('../images/bg2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+} */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    background-image: url('../images/bg2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed; /* تصویر ثابت */
 }
 
-.App {
+body {
+    display: flex;
+}
+
+#root {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    height: 100%;
+    width: 100%;
+    flex: 1;
+    /* background: transparent; */
+}
+
+
+/* .App {
     background-image: url('./images/bg2.jpg');
     background-color: #fff;
     background-size: cover;
@@ -45,7 +86,7 @@ html, body {
     width: 100%;
     display: flex;
     flex-direction: column;
-}
+} */
 
 header {
     width: 100%;
@@ -59,6 +100,7 @@ header {
     background-color: skyblue;
     box-shadow: 0px 0px 20px rgb(146, 125, 125);
     border: none;
+    min-height: 60px;
     height: 60px;
 }
 
@@ -244,7 +286,7 @@ main {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 20px 0px 50px;
+    margin: 20px 0px 30px;
 }
 
 .container {
@@ -269,6 +311,7 @@ main {
 
 .search-form {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     gap: 10px;
 }
@@ -278,7 +321,7 @@ main {
     max-width: 800px;
     width: 100%;
     border: 1px solid rgb(150, 150, 150);
-    padding: 0 2px 2px;
+    padding: 0;
     border-radius: 18px;
     display: flex;
 }
@@ -305,7 +348,10 @@ main {
 }
 
 .search-form button {
-    padding: 0px 10px 5px;
+    padding: 1px 10px 6px !important;
+    width: fit-content !important;
+    margin: 0 !important;
+    background-color: #fff;
 }
 
 .suggestions-box {
@@ -788,6 +834,7 @@ footer {
     display: flex;
     flex-direction: column;
     gap: 5px;
+    width: 100%;
 }
 
 .filter-group label {

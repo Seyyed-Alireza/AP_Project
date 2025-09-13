@@ -8,6 +8,37 @@ from django.core.mail import send_mail
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from quiz.models import SkinProfile
 
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt
+def login_api(request):
+    print('hereeeeeeeeeeeeeeeeeeee')
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get("username")
+            password = data.get("password")
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Invalid JSON"}, status=400)
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return JsonResponse({
+                "success": True,
+                "username": user.username,
+                "email": user.email,
+                "id": user.id
+            })
+        else:
+            return JsonResponse({"success": False, "error": "نام کاربری یا رمز عبور اشتباه است"}, status=401)
+
+    return JsonResponse({"success": False, "error": "فقط POST مجاز است"}, status=405)
+
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

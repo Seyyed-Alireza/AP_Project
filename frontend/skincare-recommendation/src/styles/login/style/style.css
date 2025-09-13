@@ -1,0 +1,182 @@
+@font-face {
+    font-family: 'vazir';
+    src: url('/static/fonts/Vazir.ttf') format('truetype');
+    src: url('/static/fonts/Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-family: vazir;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    /* background: url('images/bg1.jpg') center center / cover no-repeat; */
+    background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    align-items: center;
+}
+
+#root {
+    background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    display: flex !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
+    align-items: center !important;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-box {
+    margin-top: 40px;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 400px;
+}
+
+.form-field {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.form-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #333;
+    text-shadow: 0px 0px 10px rgb(40, 40, 40);
+}
+
+.form-field input {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(30px);
+    width: 100%;
+    padding: 8px 12px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    direction: ltr;
+    text-align: right;
+}
+
+.form-field input:hover {
+    border: 1px solid rgb(182, 182, 255);
+}
+
+.form-field input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.form-field .errorlist {
+    color: #cc0000;
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+button[type="submit"] {
+    width: 100%;
+    background-color: #03a7ff;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    border: none;
+    color: white;
+    font-size: 18px;
+    padding: 8px 0 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 200ms;
+}
+
+button[type="submit"]:hover {
+    background-color: rgb(0, 143, 214);
+    box-shadow: 0px 0px 20px rgb(187, 92, 206);
+}
+
+button[type="submit"]:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+    display: inline-block;
+    border: none;
+    border-radius: 30%;
+    /* background-color: white;
+    box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1); */
+}
+
+.login-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.errorlist {
+    list-style-type: none; 
+    padding-left: 0;
+    margin: 0;
+}
+
+.errorlist li::marker {
+    content: none;
+}
+
+@media only screen and (max-width: 576px) {
+    body {
+        align-items: center;
+        background-image: url('../images/phone-bg.jpg') center center / cover no-repeat !important;
+    }
+
+    #root {
+        background-image: url('../images/phone-bg.jpg') center center / cover no-repeat !important;
+    }
+
+    .form-box {
+        margin-top: -100px;
+        background: none;
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .login-link {
+        background-color: white;
+        box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
+    }
+
+    p {
+        background-color: white;
+        box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
+        border-radius: 30%;
+    }
+}
