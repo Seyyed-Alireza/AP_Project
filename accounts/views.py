@@ -54,13 +54,16 @@ def register(request):
                 f'/accounts/activate/{uid}/{token}/'
             )
 
-            send_mail(
-                'فعالسازی حساب کاربری',
-                f'برای فعالسازی حساب خود روی لینک زیر کلیک کنید:\n{activation_link}',
-                'sahseyyedalirezahosseini1384@gmail.com',
-                [user.email],
-                fail_silently=False,
-            )
+            try: 
+                send_mail(
+                    'فعالسازی حساب کاربری',
+                    f'برای فعالسازی حساب خود روی لینک زیر کلیک کنید:\n{activation_link}',
+                    'sahseyyedalirezahosseini1384@gmail.com',
+                    [user.email],
+                    fail_silently=False,
+                )
+            except:
+                return redirect('accounts:login')
 
             return render(request, 'accounts/activation_sent.html')
     else:

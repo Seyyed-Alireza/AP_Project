@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import '../styles/login/style/style.css';
 
@@ -8,6 +8,13 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   const [error, setError] = useState("");
   const [next, setNext] = useState("/"); // مسیر بعد از لاگین
   const navigate = useNavigate();
+  useEffect(() => {
+    const root = document.getElementById("root");
+    root.classList.add("page-login");
+    return () => {
+      root.classList.remove("page-login");
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,8 +77,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
         <button type="submit">ورود</button>
 
         <div className="login-link">
-          <span>حساب کاربری ندارید؟</span>
-          <Link to="/register">ثبت نام کنید</Link>
+          <span>حساب کاربری ندارید؟</span> <Link to="/register">ثبت نام کنید</Link>
         </div>
       </form>
     </div>

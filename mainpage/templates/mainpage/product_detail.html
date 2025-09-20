@@ -113,7 +113,7 @@
                             </span>
                         {% endif %}
                     </div>
-                    <h3>مشخصات محصول</h3>
+                    <h3>مشخصات محصول {{ product.count|persian_numbers }}</h3>
                     <p class="product_name">نام: {{ product.name }}</p>
                     <p class="product_brand">برند: {{ product.brand }}</p>
                     <p class="product_price">قیمت: {{ product.price|intcomma|persian_numbers }} تومان</p>
@@ -182,7 +182,7 @@
             {% for comment in comments %}
                 <div class="user_review_box">
                     <strong>{{ comment.user.username }}</strong>
-                    <span>(امتیاز کاربر: {{ comment.rating|persian_numbers }}/{{5|persian_numbers}})</span>
+                    <span>(امتیاز کاربر: {{ comment.rating|persian_numbers }} از {{5|persian_numbers}})</span>
                     <p class="user_review_text">{{ comment.text }}</p>
                 </div>
     

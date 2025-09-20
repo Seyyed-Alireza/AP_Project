@@ -68,6 +68,8 @@ class Product(models.Model):
     brand_en = models.CharField(max_length=100)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     skin_types = MultiSelectField(choices=SKIN_TYPE_CHOICES, max_length=100)
+    count = models.IntegerField(default=100)
+    status = models.BooleanField(default=True)
     # skin_types_en = models.JSONField()
     concerns_targeted = models.JSONField()
     ingredients = models.JSONField(verbose_name="محتویات")

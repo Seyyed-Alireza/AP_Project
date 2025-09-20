@@ -13,35 +13,33 @@
     font-family: vazir;
 }
 
-html {
+/* html {
     margin: 0;
     padding: 0;
     height: 100%;
-}
+} */
 
 body {
     /* background: url('images/bg1.jpg') center center / cover no-repeat; */
-    background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
+    /* background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
     background-size: cover !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
-    background-attachment: fixed !important;
+    background-attachment: fixed !important; */
     display: flex;
-    justify-content: center;
-    min-height: 100vh;
-    align-items: center;
 }
 
-#root {
-    background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-attachment: fixed !important;
-    display: flex !important;
-    justify-content: center !important;
-    min-height: 100vh !important;
-    align-items: center !important;
+.page-login {
+    background: url('../images/bg1.jpg') center center / cover no-repeat;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    align-items: center;
 }
 
 form {
@@ -153,13 +151,8 @@ button[type="submit"]:active {
 }
 
 @media only screen and (max-width: 576px) {
-    body {
-        align-items: center;
-        background-image: url('../images/phone-bg.jpg') center center / cover no-repeat !important;
-    }
-
-    #root {
-        background-image: url('../images/phone-bg.jpg') center center / cover no-repeat !important;
+    .page-login {
+        background: url('../images/phone-bg.jpg') center center / cover no-repeat !important;
     }
 
     .form-box {

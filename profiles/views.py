@@ -146,6 +146,12 @@ def buy_products(request):
 
         for item in cart_items:
             product = item.product
+            if product.count - item.quantity <= 0:
+                raise ValueError
+            product.count -= item.quantity
+            product.save()
+            if product.count <= 0:
+                product.status = False
             product.sales_count += item.quantity
             purchase, created = ProductPurchaseHistory.objects.get_or_create(
                 user=request.user,

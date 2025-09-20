@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
+import './../styles/cards/product-card.css';
 
 function MainPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -23,6 +24,14 @@ function MainPage() {
   const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeFilters, setActiveFilters] = useState(filters);
+
+  useEffect(() => {
+    const root = document.getElementById("root");
+    root.classList.add("page-main");
+    return () => {
+      root.classList.remove("page-main");
+    };
+  }, []);
 
   useEffect(() => {
   const params = new URLSearchParams();
