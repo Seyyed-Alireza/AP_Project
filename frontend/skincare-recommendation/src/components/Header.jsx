@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../authUser";
 
-const Header = ({ user }) => {
+const Header = () => {
+  const { user, logout } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setShowMenu((prev) => !prev);
@@ -40,42 +44,16 @@ const Header = ({ user }) => {
             {/* منوی کاربر فقط وقتی state فعال باشه نشون داده میشه */}
             {showMenu && (
               <div id="user_box">
-                <p className="box_name">
-                  <span style={{ fontSize: "15px" }}>نام:</span> {user.username}
-                </p>
-
-                <p onClick={() => (window.location.href = "/")}>
-                  صفحه اصلی
-                </p>
-
-                <p onClick={() => (window.location.href = "/profile")}>
-                  صفحه شخصی
-                </p>
-
-                <p onClick={() => (window.location.href = "/editprofile")}>
-                  ویرایش اطلاعات
-                </p>
-
-                <button
-                  type="button"
-                  className="signout"
-                  onClick={() => {
-                    window.location.href = "/logout";
-                  }}
-                >
-                  خروج
-                </button>
+                <p>نام: {user.username}</p>
+                <p onClick={() => navigate("/")}>صفحه اصلی</p>
+                <p onClick={() => navigate("/profile")}>صفحه شخصی</p>
+                <p onClick={() => navigate("/editprofile")}>ویرایش اطلاعات</p>
+                <button onClick={() => { logout(); navigate("/"); }}>خروج</button>
               </div>
             )}
           </>
         ) : (
-          <button
-            id="register-login-button"
-            type="button"
-            onClick={() => (window.location.href = "/login")}
-          >
-            ورود/ ثبت نام
-          </button>
+          <button onClick={() => navigate("/login")}>ورود/ ثبت نام</button>
         )}
       </div>
     </header>

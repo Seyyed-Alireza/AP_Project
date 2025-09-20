@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../authUser";
 import '../styles/login/style/style.css';
 
 function Login({ setUser }) {  // اگر میخوای بعد از ورود user تو App ذخیره بشه
@@ -7,6 +8,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [next, setNext] = useState("/"); // مسیر بعد از لاگین
+  const { login } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
     const root = document.getElementById("root");
@@ -32,9 +34,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
       const data = await res.json();
 
       if (res.ok && data.success) {
-        // ذخیره user در App یا Context
-        if (setUser) setUser(data);
-        // هدایت به مسیر بعدی
+        login(data)
         navigate(next);
       } else {
         setError(data.error || "خطایی رخ داد");
@@ -48,7 +48,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   return (
     <div className="form-box" style={{ direction: "rtl" }}>
       <form onSubmit={handleSubmit} noValidate>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="login-p" style={{ color: "red" }}>{error}</p>}
 
         <input type="hidden" name="next" value={next} />
 
@@ -60,6 +60,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
+            autoComplete="off"
           />
         </div>
 

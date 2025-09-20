@@ -7,7 +7,7 @@ import '../styles/mainpage/style/main.css';
 function MainLayout({ user }) {
   return (
     <>
-      <Header user={user}/>
+      <Header />
       <Nav />
       <main>
         <Outlet />

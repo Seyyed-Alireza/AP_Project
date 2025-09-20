@@ -167,7 +167,7 @@ button[type="submit"]:active {
         box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
     }
 
-    p {
+    .login-p {
         background-color: white;
         box-shadow: 0 0 10px 8px rgba(255, 255, 255, 1);
         border-radius: 30%;
