@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from "./layouts/MainLayout";
-import Home from "./components/Main";
+import Home from "./pages/Home";
 import Login from './pages/login';
-import Header from "./components/Header";
-import Nav from './components/Nav';
-import Main from './components/Main';
-import Footer from './components/Footer';
+import ProductPage from "./pages/productPage";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -24,6 +21,9 @@ function App() {
       <Routes>
         <Route path='/' element={<MainLayout user={user} />}>
           <Route index element={<Home />} />
+        </Route>
+        <Route path='/product/:id' element={<MainLayout user={user} />}>
+          <Route index element={<ProductPage user={user} />} />
         </Route>
         <Route path='/login' element={<Login setUser={setUser} />} />
       </Routes>

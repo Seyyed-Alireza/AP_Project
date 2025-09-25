@@ -50,7 +50,7 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 20px;
-    padding: 1rem;
+    padding: 1rem 1rem 0.8rem;
     border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.2s ease;
     position: relative;
@@ -86,10 +86,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    gap: 1rem;
+    margin-bottom: 1rem;
     padding: var(--bs-card-cap-padding-y) var(--bs-card-cap-padding-x);
-    margin-bottom: 24px;
     color: var(--bs-card-cap-color);
     background-color: var(--bs-card-cap-bg);
     border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);
@@ -112,7 +111,7 @@
     height: 120px;
     border-radius: 15px;
     object-fit: contain;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0px 8px rgba(0, 0, 0, 0.25);
 }
 
 .product-name {
@@ -126,6 +125,7 @@
 .product-price {
     background: var(--orange-gradient);
     color: white;
+    margin-right: -4px;
     padding: 0.3rem 0.6rem;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -148,15 +148,16 @@
 .reason {
     background: rgba(16, 185, 129, 0.1);
     border-radius: 15px;
-    padding: 0.5rem;
-    margin-bottom: 1.5rem;
+    padding: 0.3rem 0.5rem;
+    margin-bottom: 0.6rem;
     border-right: 4px solid var(--success);
 }
 
 .view-rate {
     background: rgba(102, 126, 234, 0.1);
     border-radius: 15px;
-    padding: 0.5rem;
+    padding: 0.3rem 0.5rem;
+    font-size: 1rem;
     border-right: 4px solid var(--primary);
     display: flex;
     align-items: center;
@@ -164,5 +165,5 @@
 }
 
 .rate {
-    font-size: 1.2rem;
+    font-size: 1rem;
 }

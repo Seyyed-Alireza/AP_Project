@@ -146,7 +146,7 @@ function MainPage() {
                 onChange={handleSearchInputChange}
               />
             </div>
-            <button className="page_button" type="submit">
+            <button className="page_button search-form-button" type="submit">
               جستجو
             </button>
           </form>

@@ -76,7 +76,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
           />
         </div>
 
-        <button type="submit">ورود</button>
+        <button type="submit" className="page-button">ورود</button>
 
         <div className="login-link">
           <span>حساب کاربری ندارید؟</span> <Link to="/register">ثبت نام کنید</Link>

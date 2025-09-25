@@ -191,7 +191,10 @@ class MainpageAPIView(generics.ListAPIView):
             return Response({"error": str(e)}, status=500)
 
     
-# class BrandsAPI
+class ProductDetailAPI(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "id"
 
 
 #####################################################################
