@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
 import './../styles/cards/product-card.css';
+import { useAuth } from "../authUser";
 
 function MainPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -24,6 +25,7 @@ function MainPage() {
   const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeFilters, setActiveFilters] = useState(filters);
+  const { user } = useAuth();
 
   useEffect(() => {
     const root = document.getElementById("root");
@@ -43,6 +45,9 @@ function MainPage() {
   if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
   if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
   if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
+  if (user) {
+    params.append("user_id", user.id);
+  }
 
   const url = `http://127.0.0.1:8000/api/mainpage/?${params.toString()}`;
 
@@ -55,7 +60,7 @@ function MainPage() {
       setSkinTypes(data.skin_types);
     })
     .catch((err) => console.error(err));
-}, [searchQuery, activeFilters]);
+}, [searchQuery, activeFilters, user]);
 
 
   useEffect(() => {

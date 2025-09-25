@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MainLayout from "./layouts/MainLayout";
-import Home from "./pages/Home";
+import Home from "./components/Main";
 import Login from './pages/login';
 import Header from "./components/Header";
 import Nav from './components/Nav';

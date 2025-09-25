@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../authUser";
+import '../assets/fonts/font.css';
 import '../styles/login/style/style.css';
 
 function Login({ setUser }) {  // اگر میخوای بعد از ورود user تو App ذخیره بشه

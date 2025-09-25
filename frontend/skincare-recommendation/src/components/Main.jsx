@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-icons';
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
+import './../styles/cards/product-card.css';
+import { useAuth } from "../authUser";
 
 function MainPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -23,6 +25,15 @@ function MainPage() {
   const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeFilters, setActiveFilters] = useState(filters);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const root = document.getElementById("root");
+    root.classList.add("page-main");
+    return () => {
+      root.classList.remove("page-main");
+    };
+  }, []);
 
   useEffect(() => {
   const params = new URLSearchParams();
@@ -34,6 +45,9 @@ function MainPage() {
   if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
   if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
   if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
+  if (user) {
+    params.append("user_id", user.id);
+  }
 
   const url = `http://127.0.0.1:8000/api/mainpage/?${params.toString()}`;
 
@@ -46,7 +60,7 @@ function MainPage() {
       setSkinTypes(data.skin_types);
     })
     .catch((err) => console.error(err));
-}, [searchQuery, activeFilters]);
+}, [searchQuery, activeFilters, user]);
 
 
   useEffect(() => {
@@ -298,8 +312,8 @@ function MainPage() {
                       <div className="product-name">{product.name}</div>
                       <div className="product-brand">{product.brand}</div>
                       <div className="product-price">
-                        <svg style={{ width: '20px', fill: 'white'}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                          <path fill-rule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clip-rule="evenodd" />
+                        <svg style={{ width: '20px', fill: 'white'}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                          <path fillRule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clipRule="evenodd" />
                         </svg>
                         {formatter.format(product.price)} تومان
                       </div>

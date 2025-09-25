@@ -4,9 +4,9 @@ import App from "./App.jsx";
 import { AuthProvider } from "./authUser";   // اضافه کن
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <AuthProvider>   {/* حتما دور کل اپ پیچیده بشه */}
+  // <StrictMode>
+    <AuthProvider>
       <App />
     </AuthProvider>
-  </StrictMode>
+  // </StrictMode>
 );

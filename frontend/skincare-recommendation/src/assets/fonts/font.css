@@ -1,0 +1,24 @@
+* {
+    box-sizing: border-box;
+    margin: 0px;
+    padding: 0px;
+    font-family: vazir;
+    transition: all 300ms;
+    color: black;
+}
+
+@font-face {
+    font-family: 'vazir';
+    src: url('./Vazir.ttf') format('truetype');
+    src: url('./Vazir.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'vazir';
+    src: url('./Vazir-bold.ttf') format('truetype');
+    src: url('./Vazir-bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+}

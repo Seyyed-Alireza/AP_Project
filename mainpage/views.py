@@ -143,6 +143,7 @@ class MainpageAPIView(generics.ListAPIView):
     serializer_class = ProductSerializer
 
     def get_queryset(self):
+        print('--------------------start----------------------')
         products = Product.objects.all()
         products = filter(self.request, products)
         products, has_sort = sort(self.request, products)
@@ -152,10 +153,11 @@ class MainpageAPIView(generics.ListAPIView):
         sort_by = self.request.GET.get('sort_by')
         min_price = self.request.GET.get('min_price')
         max_price = self.request.GET.get('max_price')
+        user_in = self.request.GET.get('user_id')
         filters = [brand, category, skin_type, min_price, max_price, sort_by]
         for_cache = ''.join([str(x) for x in filters if x is not None])
 
-        products_with_reasons = search(self.request, products, for_cache, has_sort)
+        products_with_reasons = search(self.request, products, for_cache, has_sort, api=True, user_in=user_in)
 
         products_only = [prod for prod, reason in products_with_reasons]
 
@@ -164,27 +166,30 @@ class MainpageAPIView(generics.ListAPIView):
         return products_only
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        
-        data_with_reasons = [
-            {**serializer.data[i], "reason": self.products_reasons[queryset[i].id]}
-            for i in range(len(queryset))
-        ]
+        try:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
 
-        all_products = Product.objects.all()
-        brands = all_products.values_list('brand', flat=True).distinct()
-        categories = all_products.values_list('category', flat=True).distinct()
-        categories = [category[1] for category in Product.CATEGORY_CHOICES]
-        # skin_types = all_products.values_list('skin_type', flat=True).distinct()
-        skin_types = ['مختلط', 'خشک', 'چرب', 'حساس', 'نرمال']
+            data_with_reasons = [
+                {**serializer.data[i], "reason": self.products_reasons[queryset[i].id]}
+                for i in range(len(queryset))
+            ]
 
-        return Response({
-            'products': data_with_reasons,
-            'brands': list(brands),
-            'categories': list(categories),
-            'skin_types': list(skin_types),
-        })
+            all_products = Product.objects.all()
+            brands = all_products.values_list('brand', flat=True).distinct()
+            categories = [category[1] for category in Product.CATEGORY_CHOICES]
+            skin_types = ['مختلط', 'خشک', 'چرب', 'حساس', 'نرمال']
+
+            return Response({
+                'products': data_with_reasons,
+                'brands': list(brands),
+                'categories': list(categories),
+                'skin_types': list(skin_types),
+            })
+        except Exception as e:
+            import traceback; traceback.print_exc()
+            return Response({"error": str(e)}, status=500)
+
     
 # class BrandsAPI
 
@@ -232,23 +237,30 @@ close_letters = {
 }
 
 def similarity(user, db):
-    t_length = len(db)
-    each_letter = 100 / t_length
     rate = 0
     user = user.replace('آ', 'ا')
     db = db.replace('آ', 'ا')
-    for i in range(min(len(user), len(db))):
+    db_len = len(db)
+    us_len = len(user)
+    each_letter = 100 / db_len
+    if us_len != db_len and (db in user or user in db):
+        rate = 100
+        rate - 5 * abs(us_len - db_len)
+    for i in range(min(us_len, len(db))):
         if user[i] == db[i]:
             rate += each_letter
         elif db[i] in close_letters:
             if user[i] in close_letters[db[i]]:
                 rate += 0.8 * each_letter
-    if len(user) != t_length and rate > 0.8:
-        rate /= (abs(len(user) - t_length) ** 2 + 0.1)
+            else:
+                rate += 0.1 * each_letter
+
+    if us_len != db_len and rate > 0.8:
+        rate /= (abs(us_len - db_len) ** 2 + 0.1)
     else:
-        rate /= ((abs(len(user) - t_length) + 1) ** 3)
+        rate /= ((abs(us_len - db_len) + 1) ** 3)
     if rate < 45:
-        rate = 0
+        rate /= 3
     elif rate < 65:
         rate /= (67 - rate)
 
@@ -282,7 +294,7 @@ User = get_user_model()
 
 import pandas as pd
 
-def get_similar_users(request, current_skin_types):
+def get_similar_users(current_skin_types):
     if isinstance(current_skin_types, str):
         current_skin_types = [current_skin_types]
 
@@ -315,7 +327,7 @@ from django.db.models import Avg
 import time
 from mainpage.models import Comment
 
-def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None, for_more=False):
+def search(request, products, for_cache, has_sorted, live=False, routine=False, search_query=None, for_more=False, api=False, user_in=None):
     start = time.time()
     if not routine:
         full_query = request.GET.get('q', '').replace('\u200c', ' ')
@@ -331,13 +343,13 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     cache_key = "search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
-    if cached_ids:
-        ids = list(cached_ids.keys())
-        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
-        print(time.time() - start)
-        products = Product.objects.filter(id__in=ids).order_by(preserved)
-        products = [[prod, cached_ids[prod.id]] for prod in products]
-        return products
+    # if cached_ids:
+    #     ids = list(cached_ids.keys())
+    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
+    #     print(time.time() - start)
+    #     products = Product.objects.filter(id__in=ids).order_by(preserved)
+    #     products = [[prod, cached_ids[prod.id]] for prod in products]
+    #     return products
 
     query_words = full_query.lower().split()
     if not for_more:
@@ -348,7 +360,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         products_backup = products
 
         products = products.filter(q_objects)
-        if len(products) <= 20 and not for_cache:
+        if len(products) <= 15 and not for_cache:
             products = products_backup
 
         if has_sorted:
@@ -373,13 +385,28 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     results = []
     base_score = 5
 
-    user = request.user
-    user_in = False
-    if user.is_authenticated and hasattr(user, 'skinprofile'):
-        similar_users = get_similar_users(request, user.skinprofile.skin_type)
-        user_in = True
+    if api:
+        if user_in:
+            try:
+                user = User.objects.get(id=user_in)
+                user_in = True
+                print('user -->', user)
+                similar_users = get_similar_users(user.skinprofile.skin_type)
+            except:
+                similar_users = []
+                user_in = False
+                user = request.user
+        else:
+            user = request.user
+            similar_users = []
     else:
-        similar_users = []
+        user = request.user
+        user_in = False
+        if user.is_authenticated and hasattr(user, 'skinprofile'):
+            similar_users = get_similar_users(user.skinprofile.skin_type)
+            user_in = True
+        else:
+            similar_users = []
 
     purchases = set(
         ProductPurchaseHistory.objects.filter(
@@ -399,6 +426,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         ).values_list('user_id', 'product_id')
     )
 
+    print(similar_users, '----------------')
     if not full_query:
         if user_in:
             if user.skinprofile.quiz_completed:
@@ -459,6 +487,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         cache.set(cache_key, products_for_cache, timeout=86400)
         products = [[prod, id_reason[prod.id]] for prod in products]
         return products
+    
     for product in products:
         reason = DEFAULT_REASON
         score = 0
@@ -488,7 +517,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
                             reason = 'مطابق با چیزی که جستجو کردید'
                             break
             
-            if product_brand in full_query or word in product_brand.split():
+            if both_subset([word], product_brand.split()):
                 brand_similar = True
                 score += BRAND_BASE_SCORE
 
@@ -646,8 +675,8 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
 
 
 
-        if score > base_score + 1:
-            results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average), reason))
+        # if score > base_score + 1:
+        results.append((product.id, score + RATING_BASE_SCORE ** bayesian_average(product, total_rating_average), reason))
             
     results.sort(key=lambda x: x[1], reverse=True)
     if routine:
