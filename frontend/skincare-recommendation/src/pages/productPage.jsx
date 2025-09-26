@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../authUser";
+import "../styles/product_page/style.css"
 
 // Utility functions
 const toPersianDigits = (str) => str.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -49,7 +50,12 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`/api/products/${id}/`);
+                let url = `http://127.0.0.1:8000/api/products/${id}/`;
+                if (user && user.id) {
+                    url += `?user_id=${user.id}`;
+                }
+
+                const res = await fetch(url);
                 if (!res.ok) throw new Error("خطا در دریافت محصول");
                 const data = await res.json();
 
@@ -65,7 +71,7 @@ const ProductPage = () => {
         };
 
         fetchData();
-    }, [id]);
+    }, [id, user]);
 
     if (!product) return <p>در حال بارگذاری محصول...</p>;
 
@@ -79,7 +85,10 @@ const ProductPage = () => {
                     "X-CSRFToken": getCookie("csrftoken"),
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({}),
+                body: JSON.stringify({
+                    product_id: product.id,
+                    user_id: user.id,
+                }),
             });
             if (!res.ok) throw new Error("خطا در ارسال لایک");
             const data = await res.json();
@@ -116,17 +125,40 @@ const ProductPage = () => {
     };
 
     // Handle Comment Form Submit
-    const handleCommentSubmit = (e) => {
+    const handleCommentSubmit = async (e) => {
         e.preventDefault();
         if (!commentText.trim()) {
             setError(true);
             return;
         }
         setError(false);
-        // AJAX or form submit logic here
-        alert(`نظر شما ثبت شد: ${commentText} (امتیاز: ${currentRating})`);
-        setCommentText("");
+      
+        try {
+            const res = await fetch(`/api/comments/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    product_id: product.id,
+                    user_id: user.id,
+                    text: commentText,
+                    rating: currentRating,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setComments((prev) => [...prev, data]); // کامنت جدید رو اضافه کن
+                setCommentText("");
+            } else {
+                alert("خطا در ثبت نظر");
+            }
+        } catch (err) {
+            console.error(err);
+        }
     };
+
 
     return (
         <div className="product-page">

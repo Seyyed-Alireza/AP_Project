@@ -1,3 +1,5 @@
+import "../styles/defaults/nav.css"
+
 function Nav() {
     return (
         <nav>

@@ -1,0 +1,286 @@
+.product-page-root {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+main {
+    flex-grow: 1;
+}
+
+h3 {
+    margin-bottom: 8px;
+}
+
+p {
+    text-align: justify;
+}
+
+.container {
+    width: 100%;
+    max-width: 1360px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.product_info {
+    margin-top: 20px;
+    width: 100%;
+    padding: 0px 0px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.main_info {
+    /* width: 100%; */
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px
+}
+
+.heart-ico {
+    width: 24px;
+}
+
+.heart-ico path {
+    color: #FF1744;
+}
+
+.hide_button {
+    all: unset;
+    display: block;
+}
+
+.hide_button:hover {
+    all: unset;
+    display: block;
+}
+
+.hide_button {
+    all: unset;
+    display: block;
+}
+
+.like-ico {
+    width: 26px;
+    fill: transparent;
+    stroke: rgb(100, 100, 100);
+    stroke-width: 1px;
+    transition: all 200ms ease;
+}
+
+.liked-before {
+    fill: red;
+}
+
+.like-ico:hover {
+    fill: rgb(252, 134, 134);
+    cursor: pointer;
+}
+
+.like-ico.active {
+    fill: red;
+    animation: pulse 0.8s ease;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.2) rotate(-10deg);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.interactions-mobile {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product_details {
+    margin: 10px 40px;
+    width: 100%;
+}
+
+.image_container {
+    display: none;
+}
+
+.product_image {
+    height: 35vw;
+    max-height: 480px;
+    border: none;
+    border-radius: 5px;
+}
+
+.image_underline {
+    display: inline;
+    width: calc(100% + 40px);
+    border-bottom: 1px solid rgb(116, 27, 199);
+    box-shadow: 0px 2px 2px rgb(116, 27, 199);
+}
+
+.product_name, .product_brand, .product_price, .product_rating {
+    margin-bottom: 5px;
+}
+
+.product_rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product_add_exp {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.product_add_exp div {
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.product_add_exp div h3 {
+    display: inline;
+    border-bottom: 1px solid rgb(100, 100, 100);
+}
+
+.product_add_exp div p {
+    margin-top: 5px;
+}
+
+#adding-cart-success, #adding-cart-fail {
+    margin-right: 12px;
+    display: none;
+}
+
+.star {
+    color: rgb(196, 166, 0);
+    font-size: 30px;
+    vertical-align: -3px;
+}
+
+@media only screen and (max-width: 800px) {
+    .hide_text {
+        display: none;
+    }
+
+    .product_image {
+        height: 40vw;
+    }
+}
+
+.users_comments {
+    padding: 10px 0px;
+}
+
+.user_review_box {
+    margin-top: 10px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.user_review_text {
+    text-align: justify;
+}
+
+.fa-star,
+.fa-star-half-stroke {
+    color: gold;
+    font-size: 12px;
+}
+
+.users_comments_upperline {
+    margin-top: 24px;
+    display: block;
+    width: calc(100% + 40px);
+    margin-right: -20px;
+    border-bottom: 1px solid rgb(116, 27, 199);
+    box-shadow: 0px -2px 2px rgb(116, 27, 199);
+}
+
+.users_comments_underline {
+    margin-bottom: 20px;
+    display: block;
+    width: calc(100% + 40px);
+    margin-right: -20px;
+    border-bottom: 1px solid rgb(116, 27, 199);
+    box-shadow: 0px 2px 2px rgb(116, 27, 199);
+}
+
+.comment_box {
+    padding: 10px 0px;
+    width: 100%;
+}
+
+.review_textarea {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    resize: none;
+    transition: all 150ms;
+}
+
+.review_textarea:focus {
+    border: 1px solid black;
+    outline: none;
+}
+
+#error-message {
+    margin-right: 10px;
+    margin-top: -5px;
+}
+
+.rate_and_submit {
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#submit_review_button {
+    margin-top: 0;
+}
+
+.rate_range {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+a {
+    color: #007bff;
+}
+
+@media only screen and (max-width: 576px) {
+    body {
+        font-size: 14px;
+    }
+
+    .rate_and_submit {
+        flex-direction: column;
+        gap: 15px;
+    }
+}

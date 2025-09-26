@@ -196,6 +196,31 @@ class ProductDetailAPI(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
     lookup_field = "id"
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["request"] = self.request
+        return context
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+
+        user_id = request.query_params.get("user_id")
+        commented_before = False
+        if user_id:
+            commented_before = Comment.objects.filter(
+                user_id=user_id,
+                product=instance
+            ).exists()
+
+        return Response({
+            "product": serializer.data,
+            "comments": serializer.data.get("comments", []),
+            "liked": serializer.data.get("is_liked", False),
+            # اگه خواستی می‌تونی اینا رو هم بزاری
+            "commented_before": commented_before,   # اینو بعداً میشه از لاجیک درآورد
+        })
+
 
 #####################################################################
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../authUser";
 import defaultUserPic from "../assets/images/default-user-pic.svg";
+import "../styles/defaults/header.css"
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -66,7 +67,6 @@ const Header = () => {
       <div className="header_container" ref={containerRef}>
         <div className="logo_name">
           <div className="logo">لوگو سایت</div>
-          <div className="name">اسم سایت</div>
         </div>
 
         {user ? (

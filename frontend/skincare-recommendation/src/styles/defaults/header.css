@@ -1,0 +1,138 @@
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    z-index: 10;
+    top: 0px;
+    padding: 4px 20px;
+    background-color: skyblue;
+    box-shadow: 0px 0px 20px rgb(146, 125, 125);
+    border: none;
+    min-height: 60px;
+    height: 60px;
+}
+
+.header_container {
+    width: 100%;
+    max-width: 1380px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo, .name {
+    display: inline-block;
+    margin-left: 20px;
+}
+
+.header-button {
+    padding: 6px 16px;
+    margin-left: 0px;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgb(114, 47, 128);
+    background-color: rgb(2, 136, 209);
+    color: white;
+    transition: all 200ms;
+}
+
+.header-button:hover {
+    box-shadow: 0px 0px 16px rgb(71, 27, 80);
+    background-color: rgb(2, 111, 164);
+    cursor: pointer;
+}
+
+.header-button:active {
+    transform: scale(0.95);
+    transition: all 100ms;
+}
+
+#user_name {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px 0 0;
+    border-radius: 18px;
+}
+
+.prof_pic_default {
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.6);
+    background-color: rgb(180, 234, 255);
+    border-radius: 50%;
+}
+
+.prof_pic {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgb(200, 200, 200);
+    background-color: rgb(180, 234, 255);
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+#viewport {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+#user_box {
+    position: fixed;
+    top: 60px;
+    left: 0px;
+    background-color: #f9f9f9;
+    width: 160px;
+    height: auto;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 8px 0 0;
+    z-index: 100;
+}
+
+.user-menu-info, .user-menu-choice {
+    font-size: 0.9rem;
+    padding: 3px 5px;
+}
+
+.user-menu-info {
+    padding: 2px 10px 5px;
+}
+
+.user-menu-choice {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.user-menu-choice:hover {
+    cursor: pointer;
+    background-color: rgb(234, 234, 234);
+}
+
+.signout {
+    all: unset;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    display: inline;
+    width: 100%;
+    display: flex;
+    gap: 3px;
+    align-items: center;
+    padding: 0px 5px 7px;
+    transition: all 300ms;
+}
+
+.signout:hover {
+    cursor: pointer;
+    background-color: rgb(234, 234, 234);
+    box-shadow: none;
+}
