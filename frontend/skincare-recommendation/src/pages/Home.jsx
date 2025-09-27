@@ -138,6 +138,7 @@ function MainPage() {
                 />
               </svg>
               <input
+                className="main-search-input"
                 type="text"
                 name="q"
                 id="search-input"
@@ -271,31 +272,9 @@ function MainPage() {
           </aside>
 
           {/* نمایش محصولات */}
-          {/* <div className="products">
-            {products.length === 0 ? (
-              <p>محصولی برای نمایش وجود ندارد.</p>
-            ) : (
-              products.map((product) => (
-                <a key={product.id} href={`/product/${product.id}`} className="product_card">
-                  <div className="product_image_div">
-                    <img src={product.image} alt={product.name} className="product_image" />
-                  </div>
-                  <div className="product_info">
-                    <p className="product_name">{product.name}</p>
-                    <p className="product_brand">برند {product.brand}</p>
-                    <p className="product_price">{formatter.format(product.price)} تومان</p>
-                    <div className="product_view-and-rate">
-                        <p className="view">{formatter.format(product.views)} بازدید</p>
-                        <StarRating rating={product.rating} />
-                    </div>
-                  </div>
-                </a>
-              ))
-            )}
-          </div> */}
           <div className="recommendations-grid">
             {products.length === 0 ? (
-              <p>محصولی برای نمایش وجود ندارد.</p>
+              <p>بارگذاری محصولات ...</p>
             ) : (
               products.map((product) => (
                 <a

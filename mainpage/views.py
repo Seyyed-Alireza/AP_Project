@@ -190,6 +190,73 @@ class MainpageAPIView(generics.ListAPIView):
             import traceback; traceback.print_exc()
             return Response({"error": str(e)}, status=500)
 
+############### pagination
+# from rest_framework.pagination import PageNumberPagination
+
+# class ProductPagination(PageNumberPagination):
+#     page_size = 30  # تعداد آیتم در هر صفحه
+#     page_size_query_param = 'page_size'
+#     max_page_size = 100
+
+# class MainpageAPIView(generics.ListAPIView):
+#     serializer_class = ProductSerializer
+#     pagination_class = ProductPagination
+
+#     def get_queryset(self):
+#         products = Product.objects.all()
+#         products = filter(self.request, products)
+#         products, has_sort = sort(self.request, products)
+#         skin_type = self.request.GET.get('skin_type')
+#         category = self.request.GET.get('category')
+#         brand = self.request.GET.get('brand')
+#         sort_by = self.request.GET.get('sort_by')
+#         min_price = self.request.GET.get('min_price')
+#         max_price = self.request.GET.get('max_price')
+#         user_in = self.request.GET.get('user_id')
+#         filters = [brand, category, skin_type, min_price, max_price, sort_by]
+#         for_cache = ''.join([str(x) for x in filters if x is not None])
+
+#         products_with_reasons = search(self.request, products, for_cache, has_sort, api=True, user_in=user_in)
+#         products_only = [prod for prod, reason in products_with_reasons]
+
+#         self.products_reasons = {prod.id: reason for prod, reason in products_with_reasons}
+#         return products_only
+
+#     def list(self, request, *args, **kwargs):
+#         try:
+#             queryset = self.get_queryset()
+
+#             page = self.paginate_queryset(queryset)
+#             if page is not None:
+#                 serializer = self.get_serializer(page, many=True)
+#                 data_with_reasons = [
+#                     {**serializer.data[i], "reason": self.products_reasons[page[i].id]}
+#                     for i in range(len(page))
+#                 ]
+#                 return self.get_paginated_response({
+#                     "products": data_with_reasons,
+#                     "brands": list(Product.objects.values_list('brand', flat=True).distinct()),
+#                     "categories": [category[1] for category in Product.CATEGORY_CHOICES],
+#                     "skin_types": ['مختلط', 'خشک', 'چرب', 'حساس', 'نرمال'],
+#                 })
+
+#             # بدون pagination
+#             serializer = self.get_serializer(queryset, many=True)
+#             data_with_reasons = [
+#                 {**serializer.data[i], "reason": self.products_reasons[queryset[i].id]}
+#                 for i in range(len(queryset))
+#             ]
+#             return Response({
+#                 "products": data_with_reasons,
+#                 "brands": list(Product.objects.values_list('brand', flat=True).distinct()),
+#                 "categories": [category[1] for category in Product.CATEGORY_CHOICES],
+#                 "skin_types": ['مختلط', 'خشک', 'چرب', 'حساس', 'نرمال'],
+#             })
+#         except Exception as e:
+#             import traceback; traceback.print_exc()
+#             return Response({"error": str(e)}, status=500)
+
+
     
 class ProductDetailAPI(generics.RetrieveAPIView):
     queryset = Product.objects.all()
@@ -217,7 +284,6 @@ class ProductDetailAPI(generics.RetrieveAPIView):
             "product": serializer.data,
             "comments": serializer.data.get("comments", []),
             "liked": serializer.data.get("is_liked", False),
-            # اگه خواستی می‌تونی اینا رو هم بزاری
             "commented_before": commented_before,   # اینو بعداً میشه از لاجیک درآورد
         })
 
@@ -371,13 +437,13 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
     cache_key = "search:" + hashlib.md5(raw_key.encode()).hexdigest()
 
     cached_ids = cache.get(cache_key)
-    # if cached_ids:
-    #     ids = list(cached_ids.keys())
-    #     preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
-    #     print(time.time() - start)
-    #     products = Product.objects.filter(id__in=ids).order_by(preserved)
-    #     products = [[prod, cached_ids[prod.id]] for prod in products]
-    #     return products
+    if cached_ids:
+        ids = list(cached_ids.keys())
+        preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
+        print(time.time() - start)
+        products = Product.objects.filter(id__in=ids).order_by(preserved)
+        products = [[prod, cached_ids[prod.id]] for prod in products]
+        return products
 
     query_words = full_query.lower().split()
     if not for_more:

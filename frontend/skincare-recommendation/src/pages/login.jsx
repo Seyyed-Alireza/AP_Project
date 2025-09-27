@@ -47,8 +47,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   };
 
   return (
-    <div className="form-box" style={{ direction: "rtl" }}>
-      <form onSubmit={handleSubmit} noValidate>
+      <form className="form-box" onSubmit={handleSubmit} noValidate>
         {error && <p className="login-p" style={{ color: "red" }}>{error}</p>}
 
         <input type="hidden" name="next" value={next} />
@@ -56,6 +55,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
         <div className="form-field">
           <label htmlFor="username">نام کاربری</label>
           <input
+            className="login-form-input"
             id="username"
             type="text"
             value={username}
@@ -68,6 +68,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
         <div className="form-field">
           <label htmlFor="password">رمز عبور</label>
           <input
+            className="login-form-input"
             id="password"
             type="password"
             value={password}
@@ -82,7 +83,6 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
           <span>حساب کاربری ندارید؟</span> <Link to="/register">ثبت نام کنید</Link>
         </div>
       </form>
-    </div>
   );
 }
 

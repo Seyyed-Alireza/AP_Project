@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../authUser";
 import "../styles/product_page/style.css"
+import "../styles/defaults/button.css"
 
 // Utility functions
 const toPersianDigits = (str) => str.toString().replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -161,47 +162,55 @@ const ProductPage = () => {
 
 
     return (
-        <div className="product-page">
-
-            <main id="container" className="container">
-                <section className="product_info">
-                    <div className="main_info">
-                        <img src={product.image} className="product_image" alt={product.name} />
-                        <div className="image_underline"></div>
-                        <div className="product_details">
-                            <div className="interactions-mobile">
-                                <span className="product_rating">
-                                    <span className="star">&#9733;</span>
-                                    <span style={{ marginRight: -5 }}>
-                                        <span className="hide_text">امتیاز</span> {toPersianDigits(product.rating)}
-                                        <span className="hide_text">
-                                            براساس نظر {toPersianDigits(addComma(product.sales_count))} خریدار
-                                        </span>
+        <div id="container" className="container">
+            <section className="product_info">
+                <div className="main_info">
+                    <img src={product.image} className="product_image" alt={product.name} />
+                    <div className="image_underline"></div>
+                    <div className="product_details">
+                        <div className="interactions-mobile">
+                            <span className="product_rating">
+                                <span className="star">⭐</span>
+                                <span>
+                                    <span className="hide_text">امتیاز</span> {toPersianDigits(product.rating)}
+                                    <span> </span>
+                                    <span className="hide_text">
+                                        براساس نظر {toPersianDigits(addComma(product.sales_count))} خریدار
                                     </span>
-                                    <span style={{ opacity: 0.4 }}>|</span>
-                                    <span>{toPersianDigits(addComma(product.views))} بازدید</span>
-                                    <span style={{ opacity: 0.4 }}>|</span>
-                                    <svg
-                                        className="heart-ico size-6"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        onClick={handleLike}
-                                    >
-                                        <path d="M11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17.752.752 0 0 1-.704 0Z" />
+                                </span>
+                                <span className="seperator-line">|</span>
+                                <span className="veiw-count-display">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 default-svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
+                                    {toPersianDigits(addComma(product.views))}
+                                </span>
+                                <span className="seperator-line">|</span>
+                                <span className="like-display">
+                                    <span className="default-imoji">❤️</span>
+                                    {/* <svg 
+                                        className="heart-ico size-6 default-svg"
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        viewBox="0 0 24 24" 
+                                        fill="currentColor"
+                                    >
+                                        <path d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z" />
+                                    </svg> */}
+
                                     <span id="like-count">{toPersianDigits(addComma(likeCount))}</span>
                                 </span>
-                            </div>
-
-                            <h3>مشخصات محصول {toPersianDigits(product.count)}</h3>
-                            <p className="product_name">نام: {product.name}</p>
-                            <p className="product_brand">برند: {product.brand}</p>
-                            <p className="product_price">
-                                قیمت: {toPersianDigits(addComma(product.price))} تومان
-                            </p>
+                            </span>
                         </div>
+
+                        <h3>مشخصات محصول</h3>
+                        <p className="product_name">نام: {product.name}</p>
+                        <p className="product_brand">برند: {product.brand}</p>
+                        <p className="product_price">
+                            قیمت: {toPersianDigits(addComma(product.price))} تومان
+                        </p>
                     </div>
+                </div>
 
                     <div className="product_add_exp">
                         <div className="product_introduction">
@@ -245,46 +254,53 @@ const ProductPage = () => {
                         )}
                     </div>
                 </section>
-
-                <section className="users_comments">
-                    <h2>نظرات کاربران:</h2>
-                    {comments.length > 0 ? (
-                        comments.map((comment, i) => (
-                            <div className="user_review_box" key={i}>
-                                <strong>{comment.user.username}</strong>
-                                <span>
-                                    (امتیاز کاربر: {toPersianDigits(comment.rating)} از {toPersianDigits(5)})
-                                </span>
-                                <p className="user_review_text">{comment.text}</p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>هنوز نظری برای این محصول ثبت نشده است</p>
-                    )}
-
+                <div class="users_comments_upperline"></div>
+                    <section className="users_comments">
+                        <h2>نظرات کاربران:</h2>
+                        {comments.length > 0 ? (
+                            comments.map((comment, i) => (
+                                <div className="user_review_box" key={i}>
+                                    <strong>{comment.user.username}</strong>
+                                    <span>
+                                        (امتیاز کاربر: {toPersianDigits(comment.rating)} از {toPersianDigits(5)})
+                                    </span>
+                                    <p className="user_review_text">{comment.text}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p>هنوز نظری برای این محصول ثبت نشده است</p>
+                        )}
+                    </section>
+                <div class="users_comments_underline"></div>
                     {user && !commentedBefore && (
-                        <form onSubmit={handleCommentSubmit}>
+                        <form className="comment_box" onSubmit={handleCommentSubmit}>
                             <label>نظر خود را بنویسید:</label>
                             <textarea
+                                className="review_textarea"
+                                placeholder="نظر خود را بنویسید"
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
                                 required
                             />
-                            <label>امتیاز شما:</label>
-                            <input
-                                type="number"
-                                min={1}
-                                max={5}
-                                value={currentRating}
-                                onChange={(e) => setCurrentRating(Number(e.target.value))}
-                            />
-                            {error && <p style={{ color: "red" }}>متن نظر نمی‌تواند خالی باشد!</p>}
-                            <button type="submit">ثبت نظر</button>
+                            <div className="rate_and_submit">
+                                <label>امتیاز شما:</label>
+                                <input
+                                    type="range"
+                                    className="user-range-rating"
+                                    name="rating"
+                                    min={1}
+                                    max={5}
+                                    value={currentRating}
+                                    onChange={(e) => setCurrentRating(Number(e.target.value))}
+                                />
+                                <span><output name="rating_output" id="rating_output">{toPersianDigits(currentRating)}</output> از {toPersianDigits(5)}</span>
+                                {error && <p style={{ color: "red" }}>متن نظر نمی‌تواند خالی باشد!</p>}
+                            </div>
+                            <button type="submit" className="page-button">ثبت نظر</button>
                         </form>
                     )}
-                </section>
-            </main>
-        </div>
+            </div>
+        
     );
 };
 

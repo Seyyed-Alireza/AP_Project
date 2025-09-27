@@ -1,19 +1,3 @@
-/* html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-} */
-
-body {
-    /* background: url('images/bg1.jpg') center center / cover no-repeat; */
-    /* background-image: url('../images/bg1.jpg') center center / cover no-repeat !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-    background-position: center !important;
-    background-attachment: fixed !important; */
-    display: flex;
-}
-
 .page-login {
     background: url('../images/bg1.jpg') center center / cover no-repeat;
     background-size: cover;
@@ -23,19 +7,15 @@ body {
     display: flex;
     justify-content: center;
     width: 100%;
-    min-height: 100vh;
-    align-items: center;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
+    height: 100%;
     align-items: center;
 }
 
 .form-box {
-    margin-top: 40px;
-    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 0;
     border-radius: 10px;
     width: 400px;
 }
@@ -53,7 +33,7 @@ form {
     text-shadow: 0px 0px 10px rgb(40, 40, 40);
 }
 
-.form-field input {
+.login-form-input {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(30px);
     width: 100%;
@@ -67,11 +47,11 @@ form {
     text-align: right;
 }
 
-.form-field input:hover {
+.login-form-input:hover {
     border: 1px solid rgb(182, 182, 255);
 }
 
-.form-field input:focus {
+.login-form-input:focus {
     border-color: #007bff;
     outline: none;
 }
@@ -80,30 +60,6 @@ form {
     color: #cc0000;
     margin-top: 4px;
     font-size: 14px;
-}
-
-.page-button[type="submit"] {
-    width: 100%;
-    background-color: #03a7ff;
-    box-shadow: 0px 0px 10px rgb(114, 47, 128);
-    border: none;
-    color: white;
-    font-size: 18px;
-    padding: 8px 0 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: all 200ms;
-}
-
-.page-button[type="submit"]:hover {
-    background-color: rgb(0, 143, 214);
-    box-shadow: 0px 0px 20px rgb(187, 92, 206);
-}
-
-.page-button[type="submit"]:active {
-    transform: scale(0.95);
-    transition: all 100ms;
 }
 
 .login-link {

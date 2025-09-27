@@ -9,6 +9,8 @@ class CommentSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)  
     is_liked = serializers.SerializerMethodField()
+    skin_types = serializers.SerializerMethodField()
+    category = serializers.SerializerMethodField()
     class Meta:
         model = Product
         fields = '__all__'
@@ -26,3 +28,9 @@ class ProductSerializer(serializers.ModelSerializer):
         if user_id:
             return ProductSearchHistory.objects.filter(user_id=user_id, product=obj, interaction_type='like').exists()
         return False
+    
+    def get_skin_types(self, obj):
+        return obj.get_skin_types_fa()
+
+    def get_category(self, obj):
+        return obj.get_category_display_fa()
