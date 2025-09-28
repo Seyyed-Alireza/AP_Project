@@ -26,6 +26,9 @@ function MainPage() {
   const [showFilterForm, setShowFilterForm] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [activeFilters, setActiveFilters] = useState(filters);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -37,16 +40,19 @@ function MainPage() {
   }, []);
 
   useEffect(() => {
-  const params = new URLSearchParams();
+    setLoading(true);
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("page_size", 40);
 
-  if (searchQuery) params.append("q", searchQuery);
-  if (activeFilters.brand) params.append("brand", activeFilters.brand);
-  if (activeFilters.category) params.append("category", activeFilters.category);
-  if (activeFilters.skin_type) params.append("skin_type", activeFilters.skin_type);
-  if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
-  if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
-  if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
-  if (user) {
+    if (searchQuery) params.append("q", searchQuery);
+    if (activeFilters.brand) params.append("brand", activeFilters.brand);
+    if (activeFilters.category) params.append("category", activeFilters.category);
+    if (activeFilters.skin_type) params.append("skin_type", activeFilters.skin_type);
+    if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
+    if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
+    if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
+    if (user) {
     params.append("user_id", user.id);
   }
 
@@ -55,13 +61,15 @@ function MainPage() {
   fetch(url)
     .then((res) => res.json())
     .then((data) => {
-      setProducts(data.products);
-      setBrands(data.brands);
-      setCategories(data.categories);
-      setSkinTypes(data.skin_types);
+      setProducts(data.results.products);
+      setBrands(data.results.brands);
+      setCategories(data.results.categories);
+      setSkinTypes(data.results.skin_types);
+      setTotalPages(Math.ceil(data.count / 40));
+      setLoading(false);
     })
     .catch((err) => console.error(err));
-}, [searchQuery, activeFilters, user]);
+}, [searchQuery, activeFilters, user, page]);
 
 
   useEffect(() => {
@@ -156,7 +164,7 @@ function MainPage() {
         </section>
 
         {/* بخش محصولات و فیلتر */}
-        <section className="products-box">
+        <section className="products-and-filter">
           <aside 
             id="aside"
             style={{
@@ -270,51 +278,58 @@ function MainPage() {
               <button type="submit" className="page_button">اعمال فیلتر</button>
             </form>
           </aside>
-
+          
+          <div className="products-box">
           {/* نمایش محصولات */}
-          <div className="recommendations-grid">
-            {products.length === 0 ? (
-              <p>بارگذاری محصولات ...</p>
-            ) : (
-              products.map((product) => (
-                <a
-                  key={product.id}
-                  href={`/product/${product.id}/`}
-                  className="recommendation-card"
-                >
-                  <div className="card-header">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="product-image"
-                    />
-                    <div className="product-info">
-                      <div className="product-name">{product.name}</div>
-                      <div className="product-brand">{product.brand}</div>
-                      <div className="product-price">
-                        <svg style={{ width: '20px', fill: 'white'}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
-                          <path fillRule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clipRule="evenodd" />
-                        </svg>
-                        {formatter.format(product.price)} تومان
+            <div className="recommendations-grid">
+              {products.length === 0 ? (
+                <p>بارگذاری محصولات ...</p>
+              ) : (
+                products.map((product) => (
+                  <a
+                    key={product.id}
+                    href={`/product/${product.id}/`}
+                    className="recommendation-card"
+                  >
+                    <div className="card-header">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="product-image"
+                      />
+                      <div className="product-info">
+                        <div className="product-name">{product.name}</div>
+                        <div className="product-brand">{product.brand}</div>
+                        <div className="product-price">
+                          <svg style={{ width: '20px', fill: 'white'}} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                            <path fillRule="evenodd" d="M5.25 2.25a3 3 0 0 0-3 3v4.318a3 3 0 0 0 .879 2.121l9.58 9.581c.92.92 2.39 1.186 3.548.428a18.849 18.849 0 0 0 5.441-5.44c.758-1.16.492-2.629-.428-3.548l-9.58-9.581a3 3 0 0 0-2.122-.879H5.25ZM6.375 7.5a1.125 1.125 0 1 0 0-2.25 1.125 1.125 0 0 0 0 2.25Z" clipRule="evenodd" />
+                          </svg>
+                          {formatter.format(product.price)} تومان
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="reason">
-                    <i className="fas fa-lightbulb" style={{ color: "rgb(184, 178, 101)" }}></i>
-                      {product.reason}
-                  </div>
-                      <div className="view-rate">
-                          <div className="view">
-                            <i className="fas fa-eye" style={{ color: "rgb(145, 135, 235)" }}></i>
-                            {formatter.format(product.views)} بازدید
-                          </div>
-                          <div className="rate">
-                            ⭐ {formatter.format(product.rating)}/{formatter.format(5)}
-                          </div>
-                      </div>
-                  </a>
-                ))
-            )}
+                    <div className="reason">
+                      <i className="fas fa-lightbulb" style={{ color: "rgb(184, 178, 101)" }}></i>
+                        {product.reason}
+                    </div>
+                        <div className="view-rate">
+                            <div className="view">
+                              <i className="fas fa-eye" style={{ color: "rgb(145, 135, 235)" }}></i>
+                              {formatter.format(product.views)} بازدید
+                            </div>
+                            <div className="rate">
+                              ⭐ {formatter.format(product.rating)}/{formatter.format(5)}
+                            </div>
+                        </div>
+                    </a>
+                  ))
+              )}
+            </div>
+            <div className="pagination">
+              <button className="pagination-button" disabled={page === 1} onClick={() => setPage(page - 1)}>قبلی</button>
+              <span>{formatter.format(page)} از {formatter.format(totalPages)}</span>
+              <button className="pagination-button" disabled={page === totalPages} onClick={() => setPage(page + 1)}>بعدی</button>
+            </div>
           </div>
         </section>
       </div>

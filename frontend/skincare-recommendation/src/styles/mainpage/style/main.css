@@ -146,11 +146,24 @@ select::-webkit-scrollbar-button {
     background-color: #f0f0f0;
 }
 
-.products-box {
+.products-and-filter {
     width: 100%;
     display: flex;
     justify-content: flex-start;
     gap: 10px;
+}
+
+.products-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.pagination {
+    display: flex;
+    gap: 5px;
 }
 
 aside {
@@ -194,43 +207,6 @@ aside {
 
     .suggestions-box {
         width: 100%;
-    }
-
-    .products {
-        flex-direction: column;
-    }
-
-    .products a {
-        width: 100%;
-    }
-
-    .product_card {
-        width: 100%;
-        height: 150px;
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-    }
-
-    .product_image {
-        margin: 0 auto;
-    }
-
-    .product_image_div {
-        width: 40%;
-        height: auto;
-    }
-
-    .product_info {
-        display: flex;
-        flex-direction: column;
-        width: 60%;
-        height: auto;
-        margin-top: 8px;
-    }
-
-    .product_view-and-rate {
-        margin-top: auto;
     }
 
     .box_name {
@@ -297,7 +273,7 @@ aside {
 }
 
 @media only screen and (max-width: 576px) {
-    .products-box {
+    .products-and-filter {
         flex-direction: column;
     }
 
