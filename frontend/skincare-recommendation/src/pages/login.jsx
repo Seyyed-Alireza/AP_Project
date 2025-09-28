@@ -22,7 +22,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+    
     try {
       const res = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
         method: "POST",

@@ -194,7 +194,7 @@ from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 
 class ProductPagination(PageNumberPagination):
-    page_size = 42  # تعداد آیتم در هر صفحه
+    page_size = 30  # تعداد آیتم در هر صفحه
     page_size_query_param = 'page_size'
     max_page_size = 100
 
@@ -233,7 +233,7 @@ class MainpageAPIView(generics.ListAPIView):
                     {**serializer.data[i], "reason": self.products_reasons[page[i].id]}
                     for i in range(len(page))
                 ]
-
+        
                 return self.get_paginated_response({
                     "products": data_with_reasons,
                     "brands": list(Product.objects.values_list('brand', flat=True).distinct()),
@@ -439,7 +439,7 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
 
     cached_ids = cache.get(cache_key)
     if cached_ids:
-        ids = cached_ids
+        ids = list(cached_ids.keys())
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(ids)])
         print(time.time() - start)
         products = Product.objects.filter(id__in=ids).order_by(preserved)
@@ -574,7 +574,6 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         results.sort(key=lambda x: x[1], reverse=True)
         id_reason = {r[0]: r[2] for r in results}
         selected_ids = list(id_reason.keys())
-        cache.set(cache_key, selected_ids, timeout=86400)
         preserved = Case(*[When(id=pk, then=pos) for pos, pk in enumerate(selected_ids)])
         print(time.time() - start)
         products = list(Product.objects.filter(id__in=selected_ids).order_by(preserved))

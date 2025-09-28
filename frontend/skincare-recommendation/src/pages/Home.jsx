@@ -55,8 +55,17 @@ function MainPage() {
     if (user) {
     params.append("user_id", user.id);
   }
+  
+  let host = "127.0.0.1";
 
-  const url = `http://127.0.0.1:8000/api/mainpage/?${params.toString()}`;
+  const LOCAL_IP = "10.242.141.61";
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  if (isMobile) {
+    host = LOCAL_IP;
+  }
+  
+  const url = `http://${host}:8000/api/mainpage/?${params.toString()}`;
 
   fetch(url)
     .then((res) => res.json())
