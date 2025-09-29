@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../authUser";
+// import { useAuth } from "../authUser";
+import { useAuth } from "../authContext";
 import '../assets/fonts/font.css';
 import '../styles/login/style/style.css';
 
@@ -22,27 +23,12 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
+
     try {
-      const res = await fetch("http://127.0.0.1:8000/accounts/api/login/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.success) {
-        login(data)
-        navigate(next);
-      } else {
-        setError(data.error || "خطایی رخ داد");
-      }
+      await login(username, password);
+      navigate(next);
     } catch (err) {
-      console.error(err);
-      setError("ارتباط با سرور برقرار نشد");
+      setError(err.message || "ارتباط با سرور برقرار نشد");
     }
   };
 
@@ -55,6 +41,7 @@ function Login({ setUser }) {  // اگر میخوای بعد از ورود user 
         <div className="form-field">
           <label htmlFor="username">نام کاربری</label>
           <input
+            autoFocus="on"
             className="login-form-input"
             id="username"
             type="text"

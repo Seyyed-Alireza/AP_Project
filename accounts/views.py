@@ -12,10 +12,10 @@ from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework_simplejwt.tokens import RefreshToken
 
 @csrf_exempt
 def login_api(request):
-    print('hereeeeeeeeeeeeeeeeeeee')
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -26,12 +26,16 @@ def login_api(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
+            refresh = RefreshToken.for_user(user)
             return JsonResponse({
                 "success": True,
-                "username": user.username,
-                "email": user.email,
-                "id": user.id
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                },
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
             })
         else:
             return JsonResponse({"success": False, "error": "نام کاربری یا رمز عبور اشتباه است"}, status=401)

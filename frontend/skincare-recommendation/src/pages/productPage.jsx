@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../authUser";
+import { useAuth } from "../authContext";
 import "../styles/product_page/style.css"
 import "../styles/defaults/button.css"
 
@@ -51,7 +51,8 @@ const ProductPage = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                let url = `http://127.0.0.1:8000/api/products/${id}/`;
+                const host = window.location.hostname;
+                let url = `http://${host}:8000/api/products/${id}/`;
                 if (user && user.id) {
                     url += `?user_id=${user.id}`;
                 }

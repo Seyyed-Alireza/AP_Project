@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../authUser";
+// import { useAuth } from "../authUser";
+import { useAuth } from "../authContext";
 import defaultUserPic from "../assets/images/default-user-pic.svg";
 import "../styles/defaults/header.css"
 
@@ -77,7 +78,7 @@ const Header = () => {
               ref={btnRef}
               onClick={toggleMenu}
             >
-              {user.username}
+              {user?.username}
               {user.userprofile?.profile_picture ? (
                 <img
                   className="prof_pic"
@@ -105,7 +106,12 @@ const Header = () => {
                 <p className="user-menu-info">
                   نام: {user.username}
                   </p>
-                <p className="user-menu-choice" onClick={() => navigate("/")}>
+                <p className="user-menu-choice" 
+                  onClick={() => {
+                    toggleMenu();
+                    navigate("/");
+                  }}
+                >
                   <svg
                     width="24px"
                     height="24px"
@@ -124,7 +130,12 @@ const Header = () => {
                   </svg>
                   صفحه اصلی
                   </p>
-                <p className="user-menu-choice" onClick={() => navigate("/profile")}>
+                <p className="user-menu-choice" 
+                  onClick={() => {
+                    toggleMenu();
+                    navigate("/profile");
+                  }}
+                >
                   <svg
                     width="24px"
                     height="24px"
@@ -144,7 +155,12 @@ const Header = () => {
 
                   صفحه شخصی
                   </p>
-                <p className="user-menu-choice" onClick={() => navigate("/editprofile")}>
+                <p className="user-menu-choice" 
+                  onClick={() => {
+                    toggleMenu();
+                    navigate("/editprofile");
+                  }}
+                >
                   <svg
                     width="24px"
                     height="24px"

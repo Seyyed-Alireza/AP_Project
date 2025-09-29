@@ -4,7 +4,8 @@ import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
 import './../styles/defaults/product-card.css';
 import "../styles/defaults/button.css"
-import { useAuth } from "../authUser";
+// import { useAuth } from "../authUser";
+import { useAuth } from "../authContext"
 
 function MainPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -29,7 +30,7 @@ function MainPage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   useEffect(() => {
     const root = document.getElementById("root");
@@ -52,22 +53,28 @@ function MainPage() {
     if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
     if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
     if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
-    if (user) {
-    params.append("user_id", user.id);
-  }
-  
-  let host = "127.0.0.1";
+    // if (user) {
+    // params.append("user_id", user.id);
+    // }
 
-  const LOCAL_IP = "10.242.141.61";
+  // let host = "127.0.0.1";
 
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  if (isMobile) {
-    host = LOCAL_IP;
-  }
+  // const LOCAL_IP = "10.242.141.61";
+
+  // const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  // if (isMobile) {
+  //   host = LOCAL_IP;
+  // }
+  const host = window.location.hostname;
   
+  const headers = {};
+  if (token?.access) {
+    headers["Authorization"] = `Bearer ${token.access}`;
+  }
+
   const url = `http://${host}:8000/api/mainpage/?${params.toString()}`;
 
-  fetch(url)
+  fetch(url, { headers })
     .then((res) => res.json())
     .then((data) => {
       setProducts(data.results.products);
