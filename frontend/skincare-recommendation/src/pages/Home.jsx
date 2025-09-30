@@ -41,51 +41,53 @@ function MainPage() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
-    const params = new URLSearchParams();
-    params.append("page", page);
-    params.append("page_size", 40);
+  const fetchMainpage = async () => {
+    try {
+      setLoading(true);
 
-    if (searchQuery) params.append("q", searchQuery);
-    if (activeFilters.brand) params.append("brand", activeFilters.brand);
-    if (activeFilters.category) params.append("category", activeFilters.category);
-    if (activeFilters.skin_type) params.append("skin_type", activeFilters.skin_type);
-    if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
-    if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
-    if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
-    // if (user) {
-    // params.append("user_id", user.id);
-    // }
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("page_size", 40);
 
-  // let host = "127.0.0.1";
+      if (searchQuery) params.append("q", searchQuery);
+      if (activeFilters.brand) params.append("brand", activeFilters.brand);
+      if (activeFilters.category) params.append("category", activeFilters.category);
+      if (activeFilters.skin_type) params.append("skin_type", activeFilters.skin_type);
+      if (activeFilters.min_price) params.append("min_price", activeFilters.min_price);
+      if (activeFilters.max_price) params.append("max_price", activeFilters.max_price);
+      if (activeFilters.sort_by) params.append("sort_by", activeFilters.sort_by);
+      // if (user) params.append("user_id", user.id);
 
-  // const LOCAL_IP = "10.242.141.61";
+      const host = window.location.hostname;
 
-  // const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  // if (isMobile) {
-  //   host = LOCAL_IP;
-  // }
-  const host = window.location.hostname;
-  
-  const headers = {};
-  if (token?.access) {
-    headers["Authorization"] = `Bearer ${token.access}`;
-  }
+      const headers = {};
+      if (token?.access) {
+        headers["Authorization"] = `Bearer ${token.access}`;
+      }
 
-  const url = `http://${host}:8000/api/mainpage/?${params.toString()}`;
+      const url = `http://${host}:8000/api/mainpage/?${params.toString()}`;
 
-  fetch(url, { headers })
-    .then((res) => res.json())
-    .then((data) => {
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error("خطا در دریافت لیست محصولات");
+
+      const data = await res.json();
+
       setProducts(data.results.products);
       setBrands(data.results.brands);
       setCategories(data.results.categories);
       setSkinTypes(data.results.skin_types);
       setTotalPages(Math.ceil(data.count / 40));
+
+    } catch (err) {
+      console.error("❌ خطا در fetchMainpage:", err);
+    } finally {
       setLoading(false);
-    })
-    .catch((err) => console.error(err));
-}, [searchQuery, activeFilters, user, page]);
+    }
+  };
+
+  fetchMainpage();
+}, [searchQuery, activeFilters, user, page, token]);
+
 
 
   useEffect(() => {

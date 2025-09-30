@@ -192,6 +192,7 @@ from rest_framework import generics
 
 ############### pagination
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny
 
 class ProductPagination(PageNumberPagination):
     page_size = 40
@@ -287,6 +288,34 @@ class ProductDetailAPI(generics.RetrieveAPIView):
             "liked": serializer.data.get("is_liked", False),
             "commented_before": commented_before,   # اینو بعداً میشه از لاجیک درآورد
         })
+    
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+class ProductLikeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        product = get_object_or_404(Product, id=pk)
+        user = request.user
+
+        like, created = ProductSearchHistory.objects.get_or_create(user=user, product=product, interaction_type='like')
+        if not created:
+            like.delete()
+            product.likes = max(0, product.likes - 1)
+            liked = False
+        else:
+            product.likes += 1
+            liked = True
+
+        product.save(update_fields=['likes'])
+        return Response(
+            {
+                "liked": liked,
+                "likes": product.likes,
+            },
+            status=status.HTTP_200_OK
+        )
 
 
 #####################################################################

@@ -24,7 +24,7 @@ const getCookie = (name) => {
 
 const ProductPage = () => {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, token } = useAuth();
 
     const [product, setProduct] = useState(null);
     const [comments, setComments] = useState([]);
@@ -52,12 +52,14 @@ const ProductPage = () => {
         const fetchData = async () => {
             try {
                 const host = window.location.hostname;
-                let url = `http://${host}:8000/api/products/${id}/`;
-                if (user && user.id) {
-                    url += `?user_id=${user.id}`;
+                const url = `http://${host}:8000/api/products/${id}/`;
+    
+                const headers = {};
+                if (token?.access) {
+                    headers["Authorization"] = `Bearer ${token.access}`;
                 }
 
-                const res = await fetch(url);
+                const res = await fetch(url, { headers });
                 if (!res.ok) throw new Error("خطا در دریافت محصول");
                 const data = await res.json();
 
@@ -81,23 +83,24 @@ const ProductPage = () => {
     const handleLike = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/like/${product.id}/`, {
+            const host = window.location.hostname;
+
+            const headers = {};
+            if (token?.access) {
+                headers["Authorization"] = `Bearer ${token.access}`;
+            }
+        
+            const url = `http://${host}:8000/api/like/${product.id}/`;
+            const res = await fetch(url, {
                 method: "POST",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken"),
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    product_id: product.id,
-                    user_id: user.id,
-                }),
+                headers
             });
             if (!res.ok) throw new Error("خطا در ارسال لایک");
             const data = await res.json();
             setLikeCount(data.likes);
-            setLikeActive(!likeActive);
+            setLikeActive(data.liked);
         } catch (err) {
-            console.error(err);
+            console.error("❌ Like error:", err);
         }
     };
 
@@ -202,6 +205,21 @@ const ProductPage = () => {
                                     <span id="like-count">{toPersianDigits(addComma(likeCount))}</span>
                                 </span>
                             </span>
+                            <button
+                                onClick={handleLike}
+                                className="hide_button"
+                            >
+                                <svg
+                                    className={`like-ico ${liked ? "active" : ""}`}
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    width={24}
+                                    height={24}
+                                >
+                                    <path d="M7.493 18.5c-.425 0-.82-.236-.975-.632A7.48 7.48 0 0 1 6 15.125c0-1.75.599-3.358 1.602-4.634.151-.192.373-.309.6-.397.473-.183.89-.514 1.212-.924a9.042 9.042 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75A.75.75 0 0 1 15 2a2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23h-.777ZM2.331 10.727a11.969 11.969 0 0 0-.831 4.398 12 12 0 0 0 .52 3.507C2.28 19.482 3.105 20 3.994 20H4.9c.445 0 .72-.498.523-.898a8.963 8.963 0 0 1-.924-3.977c0-1.708.476-3.305 1.302-4.666.245-.403-.028-.959-.5-.959H4.25c-.832 0-1.612.453-1.918 1.227Z" />
+                                </svg>
+                            </button>
                         </div>
 
                         <h3>مشخصات محصول</h3>
@@ -255,7 +273,7 @@ const ProductPage = () => {
                         )}
                     </div>
                 </section>
-                <div class="users_comments_upperline"></div>
+                <div className="users_comments_upperline"></div>
                     <section className="users_comments">
                         <h2>نظرات کاربران:</h2>
                         {comments.length > 0 ? (

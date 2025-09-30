@@ -53,21 +53,6 @@ p {
     color: #FF1744;
 }
 
-.hide_button {
-    all: unset;
-    display: block;
-}
-
-.hide_button:hover {
-    all: unset;
-    display: block;
-}
-
-.hide_button {
-    all: unset;
-    display: block;
-}
-
 .like-ico {
     width: 26px;
     fill: transparent;

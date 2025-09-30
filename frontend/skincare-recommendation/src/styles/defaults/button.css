@@ -66,3 +66,18 @@
 .pagination-button:disabled {
     opacity: 0.5;
 }
+
+.hide_button {
+    all: unset;
+    display: block;
+}
+
+.hide_button:hover {
+    all: unset;
+    display: block;
+}
+
+.hide_button {
+    all: unset;
+    display: block;
+}
