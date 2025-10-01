@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../authContext";
 import defaultUserPic from "../assets/images/default-user-pic.svg";
 import "../styles/defaults/header.css"
+import "../assets/fonts/font.css"
 
 const Header = () => {
   const { user, logout } = useAuth();
@@ -12,12 +13,10 @@ const Header = () => {
 
   const navigate = useNavigate();
 
-  // ریف‌ها برای تشخیص کلیک بیرون
   const btnRef = useRef(null);
   const menuRef = useRef(null);
   const containerRef = useRef(null);
 
-  // منطق محاسبه موقعیت منو
   const setLeft = () => {
     if (!containerRef.current) return;
     const vw = window.innerWidth;
@@ -34,14 +33,12 @@ const Header = () => {
     }
   };
 
-  // اجرای setLeft روی resize
   useEffect(() => {
     setLeft();
     window.addEventListener("resize", setLeft);
     return () => window.removeEventListener("resize", setLeft);
   }, []);
 
-  // بستن منو وقتی بیرون کلیک بشه
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -66,8 +63,11 @@ const Header = () => {
   return (
     <header>
       <div className="header_container" ref={containerRef}>
-        <div className="logo_name">
+        <div className="logo-search">
           <div className="logo">لوگو سایت</div>
+          <div className="header-search">
+          
+          </div>
         </div>
 
         {user ? (

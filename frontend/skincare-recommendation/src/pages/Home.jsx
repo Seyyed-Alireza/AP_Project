@@ -4,7 +4,7 @@ import { faStar as solidStar, faStarHalfAlt } from '@fortawesome/free-solid-svg-
 import { faStar as regularStar } from '@fortawesome/free-regular-svg-icons';
 import './../styles/defaults/product-card.css';
 import "../styles/defaults/button.css"
-// import { useAuth } from "../authUser";
+import "../assets/fonts/font.css"
 import { useAuth } from "../authContext"
 
 function MainPage() {
@@ -96,8 +96,9 @@ function MainPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const widthForForm = 1000
   const toggleFilter = () => {
-    if (windowWidth < 576) {
+    if (windowWidth < widthForForm) {
       setShowFilter((prev) => !prev);
       setShowFilterForm((prev) => !prev);
     }
@@ -186,8 +187,8 @@ function MainPage() {
           <aside 
             id="aside"
             style={{
-              border: windowWidth < 576 && showFilter ? "1px solid #ccc" : "none",
-              padding: windowWidth < 576 && showFilter ? "10px 5px 10px" : "0px 0 0",
+              border: windowWidth < widthForForm && showFilter ? "1px solid #ccc" : "none",
+              padding: windowWidth < widthForForm && showFilter ? "10px 5px 10px" : "0px 0 0",
             }}
             >
             <h3 className="filter-title" id="filter-toggle" onClick={toggleFilter}>
@@ -213,7 +214,7 @@ function MainPage() {
 
             <form className="filter-form" id="filter-menu"
                 style={{
-                    display: windowWidth < 576 ? (showFilterForm ? "flex" : "none") : "flex",
+                    display: windowWidth < widthForForm ? (showFilterForm ? "flex" : "none") : "flex",
                 }}
                 onSubmit={handleApplyFilters}
             >

@@ -550,7 +550,6 @@ def search(request, products, for_cache, has_sorted, live=False, routine=False, 
         ).values_list('user_id', 'product_id')
     )
 
-    print(similar_users, '----------------')
     if not full_query:
         if user_in:
             if user.skinprofile.quiz_completed:

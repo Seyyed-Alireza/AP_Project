@@ -1,4 +1,5 @@
 import "../styles/defaults/nav.css"
+import "../assets/fonts/font.css"
 
 function Nav() {
     return (

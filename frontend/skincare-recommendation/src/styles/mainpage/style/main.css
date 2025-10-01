@@ -22,7 +22,7 @@ main {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 20px 0px 30px;
+    margin: 10px 0px 30px;
 }
 
 .container {
@@ -37,8 +37,7 @@ main {
 
 .search-bar {
     width: 100%;
-    padding: 10px 10px;
-    margin-bottom: 5px;
+    padding: 0px 10px;
 }
 
 #search-input {
@@ -151,6 +150,7 @@ select::-webkit-scrollbar-button {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
+    padding-top: 10px;
 }
 
 .products-box {
@@ -183,22 +183,18 @@ aside {
     .search_box {
         width: 100%;
     }
+
+    .search-bar {
+        width: 100%;
+        padding: 0 0 0 3px;
+    }
 }
 
 
 @media only screen and (max-width: 576px) {
-    * {
-        font-size: 14px;
-    }
-
     .logo, .name {
         display: inline-block;
         margin-left: 5px;
-    }
-
-    .search-bar {
-        width: 100%;
-        padding: 0 10px;
     }
 
     .search_box {
@@ -272,9 +268,11 @@ aside {
     flex: 1;
 }
 
-@media only screen and (max-width: 576px) {
+@media only screen and (max-width: 1000px) {
     .products-and-filter {
         flex-direction: column;
+        gap: 0;
+        padding-top: 0;
     }
 
     .products {

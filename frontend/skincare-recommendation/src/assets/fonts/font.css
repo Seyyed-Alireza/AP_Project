@@ -5,6 +5,13 @@
     font-family: vazir;
     transition: all 300ms;
     color: black;
+    font-size: 13px;
+}
+
+@media only screen and (max-width: 576px) {
+    * {
+        font-size: 12px;
+    }
 }
 
 @font-face {

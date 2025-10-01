@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "../assets/fonts/font.css"
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");

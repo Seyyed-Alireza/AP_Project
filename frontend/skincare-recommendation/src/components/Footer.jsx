@@ -1,4 +1,5 @@
 import "../styles/defaults/footer.css"
+import "../assets/fonts/font.css"
 
 function Footer() {
   return (

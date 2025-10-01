@@ -17,15 +17,26 @@ header {
 .header_container {
     width: 100%;
     max-width: 1380px;
-    padding: 0 20px;
+    padding: 0 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.logo, .name {
+.logo-search {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logo {
     display: inline-block;
-    margin-left: 20px;
+}
+
+.header-search {
+    background-color: white;
+    width: 100px;
+    height: 20px;
 }
 
 .header-button {
@@ -85,6 +96,7 @@ header {
 }
 
 #user_box {
+    font-size: 1.1rem;
     position: fixed;
     top: 60px;
     left: 0px;
@@ -98,7 +110,6 @@ header {
 }
 
 .user-menu-info, .user-menu-choice {
-    font-size: 0.9rem;
     padding: 3px 5px;
 }
 
@@ -107,7 +118,6 @@ header {
 }
 
 .user-menu-choice {
-    font-size: 0.9rem;
     display: flex;
     align-items: center;
     gap: 3px;
@@ -120,7 +130,7 @@ header {
 
 .signout {
     all: unset;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
     box-sizing: border-box;
     display: inline;
     width: 100%;
@@ -137,8 +147,8 @@ header {
     box-shadow: none;
 }
 
-@media only screen and (max-width: 576px) {
+@media only screen and (max-width: 1000px) {
     .header_container {
-        padding: 0px 8px;
+        padding: 0px 6px;
     }
 }
